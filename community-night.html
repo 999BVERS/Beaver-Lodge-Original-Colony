@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- EDIT: Change this to your article title -->
+<title>Article Title — Beaver Lodge Original Colony</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg2: #111113;
+    --bg3: #18181c;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,0.15);
+    --gold-glow: rgba(201,168,76,0.06);
+    --text: #f0ede8;
+    --text-2: #9a9590;
+    --text-3: #5a5753;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text-2);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); background: var(--bg3); }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--text-2);
+    transition: 0.3s;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: rgba(10,10,11,0.97);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    z-index: 99;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .mobile-menu.open { display: flex; }
+
+  .mobile-menu a {
+    padding: 12px 0;
+    font-size: 15px;
+    color: var(--text-2);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+  }
+
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--gold); }
+
+  /* ── ARTICLE LAYOUT ── */
+  .article-wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 7rem 2.5rem 5rem;
+  }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+    color: var(--text-3);
+    text-decoration: none;
+    margin-bottom: 2.5rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--gold); }
+
+  /* ── ARTICLE HEADER ── */
+  .article-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    background: var(--gold-glow);
+    border: 1px solid var(--gold-dim);
+    border-radius: 100px;
+    padding: 3px 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .article-title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .article-excerpt {
+    font-size: 1.1rem;
+    color: var(--text-2);
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+  }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+    color: var(--text-3);
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .article-meta .author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-2);
+  }
+
+  .author-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  /* ── COVER IMAGE ── */
+  .article-cover {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+    display: block;
+  }
+
+  /* ── ARTICLE BODY ── */
+  .article-body { color: var(--text-2); }
+
+  .article-body p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    margin-bottom: 1.5rem;
+    color: var(--text-2);
+  }
+
+  .article-body h2 {
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin: 2.5rem 0 1rem;
+  }
+
+  .article-body h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .article-body ul,
+  .article-body ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .article-body li {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-2);
+    margin-bottom: 0.4rem;
+  }
+
+  .article-body blockquote {
+    border-left: 3px solid var(--gold);
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    margin: 2rem 0;
+    font-size: 1.1rem;
+    color: var(--text);
+    font-style: italic;
+    line-height: 1.75;
+  }
+
+  .article-body a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .article-body img {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .article-body .caption {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: 'Space Mono', monospace;
+    text-align: center;
+    margin-top: -1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── DIVIDER ── */
+  .article-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  /* ── BACK TO ARTICLES ── */
+  .article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 11px 22px;
+    border: 1px solid var(--border-hover);
+    color: var(--text);
+    font-size: 14px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--gold); background: var(--gold-glow); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .article-wrapper { padding: 5rem 1.5rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV — same as main site -->
+<nav>
+  <a href="index.html" class="nav-logo">BLOC</a>
+  <ul class="nav-links">
+    <li><a href="index.html#home">Home</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#bbb">Better Business Beaver</a></li>
+    <li><a href="index.html#team">Team</a></li>
+    <li><a href="index.html#articles">Articles</a></li>
+    <li><a href="index.html#partners">Partners</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#home" onclick="closeMenu()">Home</a>
+  <a href="index.html#about" onclick="closeMenu()">About</a>
+  <a href="index.html#bbb" onclick="closeMenu()">Better Business Beaver</a>
+  <a href="index.html#team" onclick="closeMenu()">Team</a>
+  <a href="index.html#articles" onclick="closeMenu()">Articles</a>
+  <a href="index.html#partners" onclick="closeMenu()">Partners</a>
+</div>
+
+<div class="article-wrapper">
+
+  <!-- Back link -->
+  <a href="index.html#articles" class="back-link">← Back to Articles</a>
+
+  <!-- ═══════════════════════════
+       ARTICLE HEADER
+       EDIT: Update tag, title, excerpt, date, read time, author
+  ═══════════════════════════ -->
+  <div class="article-tag">Event Highlight</div>
+
+  <h1 class="article-title">
+    BLOC's First Community Night — What We Built Together
+  </h1>
+
+  <p class="article-excerpt">
+    More than 60 members showed up for our inaugural night. Here's what happened, what we learned, and what's coming next.
+  </p>
+
+  <div class="article-meta">
+    <div class="author">
+      <div class="author-avatar">AL</div>  <!-- EDIT: Author initials -->
+      <span>Alex Lim</span>               <!-- EDIT: Author name -->
+    </div>
+    <span>·</span>
+    <span>June 15, 2025</span>            <!-- EDIT: Date -->
+    <span>·</span>
+    <span>4 min read</span>               <!-- EDIT: Read time -->
+  </div>
+
+  <!-- ═══════════════════════════
+       COVER IMAGE (optional)
+       EDIT: Replace src with your image URL or file name.
+       Delete this line if you don't have a cover image.
+  ═══════════════════════════ -->
+  <img src="cover.jpg" alt="Community Night" class="article-cover">
+
+  <!-- ═══════════════════════════
+       ARTICLE BODY
+       EDIT: Write your full article below.
+       Use <p> for paragraphs, <h2> for section headings,
+       <blockquote> for quotes, <ul>/<li> for bullet lists.
+  ═══════════════════════════ -->
+  <div class="article-body">
+
+    <p>
+      Last Friday, the Colony came alive. Over 60 members gathered for our very first Community Night — an evening of introductions, ideas, and the kind of energy that reminds you why you started building in the first place.
+    </p>
+
+    <h2>What happened</h2>
+
+    <p>
+      We opened the night with a quick overview of what BLOC is and where we're headed. Then we let the room take over. Members introduced themselves, shared what they're working on, and connected with people they'd only known online until that night.
+    </p>
+
+    <blockquote>
+      "I came not knowing anyone. I left with three potential collaborators and a business card I didn't have before." — Colony Member
+    </blockquote>
+
+    <p>
+      Better Business Beaver also got its first live showcase. Six featured businesses presented their work to the room, and the response was incredible. People were pulling out phones, following accounts, and making introductions on the spot.
+    </p>
+
+    <h2>What we learned</h2>
+
+    <ul>
+      <li>People want more face time — virtual is great but in-person hits different</li>
+      <li>The BBB feature is our strongest hook for new members</li>
+      <li>We need a bigger venue next time</li>
+    </ul>
+
+    <h2>What's next</h2>
+
+    <p>
+      Community Night is now a monthly event. The next one is scheduled for July — details coming soon. If you want to present your business or brand at the next BBB showcase, applications are open now.
+    </p>
+
+    <p>
+      Thank you to everyone who showed up, shared their story, and made the Colony feel real. This is just the beginning.
+    </p>
+
+  </div>
+  <!-- END ARTICLE BODY -->
+
+  <div class="article-divider"></div>
+
+  <!-- Footer nav -->
+  <div class="article-footer">
+    <a href="index.html#articles" class="btn-secondary">← All Articles</a>
+    <a href="index.html#bbb" class="btn-secondary">Better Business Beaver →</a>
+  </div>
+
+</div>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+  }
+</script>
+</body>
+</html>

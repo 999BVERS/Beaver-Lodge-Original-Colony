@@ -591,6 +591,149 @@
   /* ── EDIT GUIDE ── */
   /* To edit this site, search for EDIT: comments */
 
+  /* ── NFT ── */
+#nft { background: var(--bg); }
+
+.nft-hero {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.nft-hero .section-label { justify-content: center; display: flex; }
+.nft-hero h2 { margin-bottom: 1rem; }
+.nft-hero .section-sub { margin: 0 auto 2rem; text-align: center; }
+
+.mint-box {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--gold-glow);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius-lg);
+  padding: 2rem 3rem;
+  margin-bottom: 1rem;
+}
+
+.mint-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.mint-price {
+  font-family: 'Space Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.mint-supply {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.btn-mint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 36px;
+  background: var(--gold);
+  color: #0a0a0b;
+  font-weight: 700;
+  font-size: 15px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: 0.5rem;
+}
+
+.btn-mint:hover { opacity: 0.88; transform: translateY(-2px); }
+
+.nft-frames {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.nft-frame {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.nft-frame:hover { border-color: var(--gold-dim); transform: translateY(-4px); }
+
+.nft-image-box {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.nft-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.nft-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-3);
+}
+
+.nft-placeholder svg {
+  width: 40px; height: 40px;
+  opacity: 0.3;
+}
+
+.nft-placeholder span {
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.nft-info {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.nft-collection {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+}
+
+.nft-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.nft-id {
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: 'Space Mono', monospace;
+}
+
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
     section { padding: 5rem 1.5rem; }
@@ -614,6 +757,7 @@
   <a href="#home" class="nav-logo">BLOC</a>
   <ul class="nav-links">
     <li><a href="#home">Home</a></li>
+    <li><a href="#nft">Mint Here</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#bbb">Better Business Beaver</a></li>
     <li><a href="#team">Team</a></li>
@@ -626,6 +770,7 @@
 </nav>
 <div class="mobile-menu" id="mobileMenu">
   <a href="#home" onclick="closeMenu()">Home</a>
+  <a href="#nft" onclick="closeMenu()">Mint Here</a>
   <a href="#about" onclick="closeMenu()">About</a>
   <a href="#bbb" onclick="closeMenu()">Better Business Beaver</a>
   <a href="#team" onclick="closeMenu()">Team</a>
@@ -639,13 +784,13 @@
 ═══════════════════════════ -->
 <section id="home">
   <div class="home-inner">
-    <div class="home-eyebrow">Est. 2024 · Original Colony</div>
+    <div class="home-eyebrow">Est. 2026 · 999BVERS</div>
 
     <h1>Beaver Lodge<br><span>Original Colony</span></h1>
 
     <!-- EDIT: Change this tagline -->
     <p class="home-desc">
-      A growing community built on connection, collaboration, and real opportunity. We spotlight businesses, elevate people, and move together.
+      A collection of 999 Beaver NFT with 187+ Unique Traits - handrawn that represents real builders in crypto space.
     </p>
 
     <div class="home-actions">
@@ -672,10 +817,78 @@
 
 <div class="divider"></div>
 
+<div class="divider"></div>
+
+<section id="nft">
+  <div class="container">
+
+    <div class="nft-hero">
+      <p class="section-label">NFT Collection</p>
+      <h2>Beaver Lodge Original Colony NFT</h2>
+      <p class="section-sub">Own a piece of the Colony. Each NFT is your membership pass, your identity, and your stake in what we're building.</p>
+
+      <div class="mint-box">
+        <div class="mint-label">Public MINT </div>
+        <!-- EDIT: Update price and currency -->
+        <div class="mint-price">$33 SOL </div>
+      </div>
+
+<div class="mint-box">
+        <div class="mint-label">WHITELIST MINT</div>
+        <!-- EDIT: Update price and currency -->
+        <div class="mint-price">$25 SOL </div>     
+      </div>
+
+      <br>
+
+      <!-- EDIT: Replace # with your actual minting link -->
+      <a href="https://gravemint.io/mint/UaahVvu6X7V1CsfEMiq7s7Bzxcg8rsFrjM6SCViNujw" class="btn-mint" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Get Your Beaver Here
+      </a>
+    </div>
+
+    <div class="nft-frames">
+
+      <div class="nft-frame">
+        <div class="nft-image-box">
+          <!-- EDIT: Replace with <img src="your-nft-1.png" alt="NFT #001"> when ready -->
+          <div class="nft-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span>NFT Preview</span>
+          </div>
+        </div>
+        <div class="nft-info">
+          <div class="nft-collection">BLOC Collection</div>
+          <div class="nft-name">Original Beaver #001</div>
+          <div class="nft-id">Token ID: 001</div>
+        </div>
+      </div>
+
+      <div class="nft-frame">
+        <div class="nft-image-box">
+          <!-- EDIT: Replace with <img src="your-nft-2.png" alt="NFT #002"> when ready -->
+          <div class="nft-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span>NFT Preview</span>
+          </div>
+        </div>
+        <div class="nft-info">
+          <div class="nft-collection">BLOC Collection</div>
+          <div class="nft-name">Original Beaver #002</div>
+          <div class="nft-id">Token ID: 002</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════════════════════
      ABOUT
      EDIT: Update description and stats
 ═══════════════════════════ -->
+
 <section id="about">
   <div class="container">
     <div class="about-grid">
@@ -710,7 +923,7 @@
           <div class="label">Partner Organizations</div>
         </div>
         <div class="stat-card">
-          <div class="num">20</div>
+          <div class="num">2026</div>
           <div class="label">Year Founded</div>
         </div>
       </div>
@@ -927,7 +1140,7 @@
 ═══════════════════════════ -->
 <footer>
   <div class="footer-logo">Beaver Lodge Original Colony</div>
-  <div class="footer-copy">© 2025 BLOC. All rights reserved.</div>
+  <div class="footer-copy">© 2026 BLOC. All rights reserved.</div>
 </footer>
 
 <script>

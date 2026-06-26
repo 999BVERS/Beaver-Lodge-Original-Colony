@@ -25,6 +25,8 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  p { text-align: justify; }
+
   html { scroll-behavior: smooth; }
 
   body {
@@ -818,8 +820,17 @@
   .carousel-track .team-card,
   .carousel-track .article-card,
   .carousel-track .partner-card {
-    flex: 0 0 85%;
+    flex: 0 0 88%;
     min-width: unset;
+    margin: 0 auto;
+  }
+
+  .carousel-track {
+    padding: 0 6%;
+  }
+
+  .carousel-track-container {
+    overflow: hidden;
   }
 }
   
@@ -1250,7 +1261,9 @@
     <h2>Built with great people</h2>
     <p class="section-sub">These organizations believe in what we're building. We're proud to grow alongside them.</p>
 
-   <div class="partners-grid">
+<div class="carousel-wrapper" id="carousel-partners">
+  <div class="carousel-track-container">
+    <div class="carousel-track">
 
       <!-- ─── PARTNER CARD ─── EDIT: duplicate to add more partners -->
       <div class="partner-card">

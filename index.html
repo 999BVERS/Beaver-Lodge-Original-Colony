@@ -833,6 +833,49 @@
     overflow: hidden;
   }
 }
+
+  /* ── COMING SOON ── */
+.coming-soon-wrapper {
+  position: relative;
+}
+
+.coming-soon-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10,10,11,0.92);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: var(--radius-lg);
+  gap: 1rem;
+}
+
+.coming-soon-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 100px;
+  background: var(--gold-glow);
+}
+
+.coming-soon-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.coming-soon-sub {
+  font-size: 14px;
+  color: var(--text-2);
+}
   
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
@@ -1040,7 +1083,13 @@
 ═══════════════════════════ -->
 <section id="bbb">
   <div class="container">
-    <div class="bbb-intro">
+<div class="coming-soon-wrapper">
+<div class="coming-soon-overlay">
+  <div class="coming-soon-badge">Coming Soon</div>
+  <div class="coming-soon-title">Better Business Beaver</div>
+  <div class="coming-soon-sub">Our business spotlight feature is launching soon. Stay tuned.</div>
+</div>
+<div class="bbb-intro">
       <div>
         <p class="section-label">Feature</p>
         <h2>Better Business Beaver</h2>
@@ -1094,6 +1143,7 @@
     <button class="carousel-btn" id="prev-bbb">&#8592;</button>
     <button class="carousel-btn" id="next-bbb">&#8594;</button>
   </div>
+</div>
 </div>
 </section>
 
@@ -1194,7 +1244,13 @@
     <h2>Articles</h2>
     <p class="section-sub">Project updates, event highlights, member spotlights, and stories from the Colony.</p>
 
-  <div class="carousel-wrapper" id="carousel-articles">
+<div class="coming-soon-wrapper">
+<div class="coming-soon-overlay">
+  <div class="coming-soon-badge">Coming Soon</div>
+  <div class="coming-soon-title">Articles</div>
+  <div class="coming-soon-sub">Updates, highlights, and stories from the Colony — dropping soon.</div>
+</div>
+<div class="carousel-wrapper" id="carousel-articles">
   <div class="carousel-track-container">
     <div class="carousel-track">
 
@@ -1244,6 +1300,7 @@
     <button class="carousel-btn" id="next-articles">&#8594;</button>
   </div>
 </div>
+</div>
 </section>
 
 <div class="divider"></div>
@@ -1259,6 +1316,12 @@
     <h2>Built with great people</h2>
     <p class="section-sub">These organizations believe in what we're building. We're proud to grow alongside them.</p>
 
+<div class="coming-soon-wrapper">
+<div class="coming-soon-overlay">
+  <div class="coming-soon-badge">Coming Soon</div>
+  <div class="coming-soon-title">Partners</div>
+  <div class="coming-soon-sub">We're building partnerships that matter. Announcements coming soon.</div>
+</div>
 <div class="carousel-wrapper" id="carousel-partners">
   <div class="carousel-track-container">
     <div class="carousel-track">
@@ -1309,6 +1372,7 @@
     <button class="carousel-btn" id="prev-partners">&#8592;</button>
     <button class="carousel-btn" id="next-partners">&#8594;</button>
   </div>
+</div>
 </div>
 </section>
 

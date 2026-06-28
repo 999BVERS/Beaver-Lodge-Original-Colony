@@ -820,18 +820,23 @@
   .carousel-track .team-card,
   .carousel-track .article-card,
   .carousel-track .partner-card {
-    flex: 0 0 88%;
+    flex: 0 0 calc(100vw - 5rem);
     min-width: unset;
-    margin: 0 auto;
   }
 
   .carousel-track {
-    padding: 0 6%;
+    padding: 0;
+    gap: 1rem;
   }
 
   .carousel-track-container {
     overflow: hidden;
   }
+
+  .carousel-controls {
+    justify-content: center;
+  }
+}
 }
 
   /* ── COMING SOON ── */
@@ -842,7 +847,7 @@
 
 .coming-soon-overlay {
   position: absolute;
-  top: -7rem; left: -9999px; right: -9999px; bottom: -7rem;
+  top: 0; left: -2.5rem; right: -2.5rem; bottom: 0;
   background: rgba(10,10,11,0.95);
   backdrop-filter: blur(6px);
   display: flex;

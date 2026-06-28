@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<title>BLOC Games — Beaver Lodge Original Colony</title>
+<link rel="icon" type="image/webp" href="BLOC-Logo.webp">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0b;
+  --bg2: #111113;
+  --bg3: #18181c;
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.18);
+  --gold: #c9a84c;
+  --gold-dim: rgba(201,168,76,0.15);
+  --gold-glow: rgba(201,168,76,0.06);
+  --text: #f0ede8;
+  --text-2: #9a9590;
+  --text-3: #5a5753;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  height: 60px;
+  background: rgba(10,10,11,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.nav-logo img { height: 32px; width: auto; }
+
+.nav-links { display: flex; gap: 0.25rem; list-style: none; }
+
+.nav-links a {
+  display: block;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--text-2);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--bg3); }
+.nav-links a.active { color: var(--gold); }
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+.hamburger span {
+  display: block; width: 22px; height: 1.5px;
+  background: var(--text-2); transition: 0.3s;
+}
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 60px; left: 0; right: 0;
+  background: rgba(10,10,11,0.97);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 2rem;
+  z-index: 99;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mobile-menu.open { display: flex; }
+
+.mobile-menu a {
+  padding: 12px 0;
+  font-size: 15px;
+  color: var(--text-2);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s;
+}
+
+.mobile-menu a:last-child { border-bottom: none; }
+.mobile-menu a:hover { color: var(--gold); }
+
+/* ── HERO ── */
+.games-hero {
+  padding: 8rem clamp(1.25rem, 4vw, 2.5rem) 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-label::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: inline-block;
+}
+
+.games-hero h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+.games-hero h1 span { color: var(--gold); }
+
+.games-hero p {
+  font-size: 1.05rem;
+  color: var(--text-2);
+  max-width: 480px;
+  line-height: 1.75;
+  text-align: left;
+}
+
+/* ── GAMES GRID ── */
+.games-section {
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem) 6rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.game-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: border-color 0.2s, transform 0.2s;
+  position: relative;
+}
+
+.game-card:hover { border-color: var(--gold-dim); transform: translateY(-4px); }
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+
+.game-card:hover::before { transform: scaleX(1); }
+
+.game-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%);
+}
+
+.game-badge {
+  position: absolute;
+  top: 10px; right: 10px;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: var(--gold);
+  color: #0a0a0b;
+  font-weight: 700;
+}
+
+.game-badge.coming { background: var(--bg3); color: var(--text-3); border: 1px solid var(--border); }
+
+.game-info { padding: 1.5rem; }
+
+.game-tag {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.game-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.game-desc {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.game-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: 'Space Mono', monospace;
+}
+
+.play-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: var(--gold);
+  color: #0a0a0b;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: opacity 0.2s;
+  margin-top: 1rem;
+}
+
+.play-btn:hover { opacity: 0.88; }
+
+.play-btn.coming-btn {
+  background: var(--bg3);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  cursor: not-allowed;
+}
+
+/* ── COMING SOON PLACEHOLDER ── */
+.game-card.placeholder {
+  border-style: dashed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 0 clamp(1.25rem, 4vw, 2.5rem); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 3rem clamp(1.25rem, 4vw, 2.5rem);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.footer-copy { font-size: 13px; color: var(--text-3); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 0 1.25rem; }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .games-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="BLOC-Logo.webp" alt="BLOC" onerror="this.style.display='none'">
+    BLOC
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#home">Home</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#nft">NFT</a></li>
+    <li><a href="index.html#bbb">Better Business Beaver</a></li>
+    <li><a href="index.html#team">Team</a></li>
+    <li><a href="index.html#articles">Articles</a></li>
+    <li><a href="index.html#partners">Partners</a></li>
+    <li><a href="bloc-games.html" class="active">Games</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#home" onclick="closeMenu()">Home</a>
+  <a href="index.html#about" onclick="closeMenu()">About</a>
+  <a href="index.html#nft" onclick="closeMenu()">NFT</a>
+  <a href="index.html#bbb" onclick="closeMenu()">Better Business Beaver</a>
+  <a href="index.html#team" onclick="closeMenu()">Team</a>
+  <a href="index.html#articles" onclick="closeMenu()">Articles</a>
+  <a href="index.html#partners" onclick="closeMenu()">Partners</a>
+  <a href="bloc-games.html" onclick="closeMenu()">Games</a>
+</div>
+
+<!-- HERO -->
+<div class="games-hero">
+  <div class="hero-label">BLOC Games</div>
+  <h1>Play in the<br><span>Beaverse</span></h1>
+  <p>Browser-based games built for the Colony. No login, no wallet, no downloads — just play.</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- GAMES GRID -->
+<div class="games-section">
+  <div class="games-grid">
+
+    <!-- ─── GAME CARD ─── EDIT: duplicate to add more games -->
+    <div class="game-card">
+      <div class="game-thumb">
+        🦫
+        <div class="game-badge">Live</div>
+      </div>
+      <div class="game-info">
+        <div class="game-tag">Action · Survival</div>
+        <div class="game-title">Beaver Builder: Build the Beaverse</div>
+        <p class="game-desc">Chop trees, haul logs, and build your dam before the flood takes everything. Survive all 5 stages and battle endless mode for the high score.</p>
+        <div class="game-meta">
+          <span>🎮 Keyboard + Touch</span>
+          <span>6 Levels</span>
+          <span>High Score Saved</span>
+        </div>
+        <a href="beaver-builder.html" class="play-btn">▶ Play Now</a>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER — remove when you add a new game -->
+    <div class="game-card placeholder">
+      <div class="game-thumb">
+        🎮
+        <div class="game-badge coming">Coming Soon</div>
+      </div>
+      <div class="game-info">
+        <div class="game-tag">Coming Soon</div>
+        <div class="game-title">Next BLOC Game</div>
+        <p class="game-desc">Another game is being built for the Colony. Stay tuned for more Beaverse content.</p>
+        <div class="game-meta"><span>🔒 Locked</span></div>
+        <span class="play-btn coming-btn">Coming Soon</span>
+      </div>
+    </div>
+
+    <!-- ─── ADD MORE GAME CARDS HERE ─── -->
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<footer>
+  <div class="footer-logo">Beaver Lodge Original Colony</div>
+  <div class="footer-copy">© 2026 BLOC. All rights reserved.</div>
+</footer>
+
+<script>
+  function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+  function closeMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
+</script>
+</body>
+</html>

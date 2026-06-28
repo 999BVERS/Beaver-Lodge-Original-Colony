@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Beaver Builder: Build the Beaverse — BLOC Games</title>
+<link rel="icon" type="image/webp" href="BLOC-Logo.webp">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #c9a84c;
+  --gold-dim: rgba(201,168,76,0.2);
+  --bg: #0a0a0b;
+  --bg2: #111113;
+  --bg3: #18181c;
+  --border: rgba(255,255,255,0.08);
+  --text: #f0ede8;
+  --text-2: #9a9590;
+  --green: #4a9e5c;
+  --brown: #8B5E3C;
+  --blue: #3a7bd5;
+  --red: #e05555;
+  --radius: 10px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(10,10,11,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  z-index: 200;
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+  font-size: 13px; font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: monospace;
+}
+
+.nav-logo img { height: 30px; width: auto; }
+
+.nav-back {
+  display: flex; align-items: center; gap: 6px;
+  text-decoration: none;
+  font-size: 13px; color: var(--text-2);
+  transition: color 0.2s;
+}
+
+.nav-back:hover { color: var(--gold); }
+
+/* ── GAME WRAPPER ── */
+#game-wrapper {
+  padding-top: 56px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── SCREENS ── */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 56px);
+  padding: 2rem 1.5rem;
+  width: 100%;
+  text-align: center;
+}
+
+.screen.active { display: flex; }
+
+/* ── START SCREEN ── */
+#start-screen .game-logo {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
+}
+
+#start-screen .game-subtitle {
+  font-size: 14px;
+  color: var(--text-2);
+  margin-bottom: 2.5rem;
+  font-family: monospace;
+  letter-spacing: 0.1em;
+}
+
+.beaver-hero {
+  font-size: 80px;
+  margin-bottom: 1.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.level-select {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 2rem;
+}
+
+.level-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.5rem;
+  color: var(--text-2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: monospace;
+}
+
+.level-btn:hover, .level-btn.selected {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(201,168,76,0.06);
+}
+
+.level-btn .lvl-num {
+  font-size: 20px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.level-btn.locked { opacity: 0.4; cursor: not-allowed; }
+.level-btn.endless { border-color: var(--gold-dim); color: var(--gold); }
+
+.btn-start {
+  background: var(--gold);
+  color: #0a0a0b;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 40px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  width: 100%;
+  max-width: 280px;
+}
+
+.btn-start:hover { opacity: 0.88; transform: translateY(-2px); }
+
+.highscore-display {
+  margin-top: 1.5rem;
+  font-size: 13px;
+  color: var(--text-2);
+  font-family: monospace;
+}
+
+.highscore-display span { color: var(--gold); }
+
+/* ── GAME SCREEN ── */
+#game-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  min-height: calc(100vh - 56px);
+}
+
+#game-screen.active { display: flex; }
+
+/* ── HUD ── */
+.hud {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 0.5rem;
+}
+
+.hud-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+}
+
+.hud-label {
+  font-size: 9px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: monospace;
+  display: block;
+}
+
+.hud-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: monospace;
+}
+
+/* ── DAM PROGRESS ── */
+.dam-bar-wrap {
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 0.5rem;
+}
+
+.dam-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-2);
+  font-family: monospace;
+  margin-bottom: 3px;
+}
+
+.dam-bar-bg {
+  height: 10px;
+  background: var(--bg3);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.dam-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brown), var(--gold));
+  border-radius: 5px;
+  transition: width 0.3s;
+}
+
+/* ── CANVAS ── */
+#gameCanvas {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: block;
+  max-width: 100%;
+  touch-action: none;
+  background: #1a2a1a;
+}
+
+/* ── MOBILE CONTROLS ── */
+.touch-controls {
+  display: none;
+  margin-top: 0.75rem;
+  gap: 0.5rem;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .touch-controls { display: flex; }
+}
+
+.dpad {
+  display: grid;
+  grid-template-columns: 48px 48px 48px;
+  grid-template-rows: 48px 48px 48px;
+  gap: 4px;
+}
+
+.dpad-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dpad-btn:active { background: var(--bg3); border-color: var(--gold); }
+.dpad-btn.empty { background: transparent; border-color: transparent; }
+
+.action-btns {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  background: var(--gold);
+  color: #0a0a0b;
+  border: none;
+  border-radius: 50%;
+  width: 56px; height: 56px;
+  font-size: 22px;
+  cursor: pointer;
+  font-weight: 700;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn.secondary {
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 16px;
+}
+
+/* ── GAME CONTROLS ROW ── */
+.game-controls-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 0.4rem;
+  justify-content: flex-end;
+}
+
+.ctrl-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: monospace;
+}
+
+.ctrl-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── GAME OVER SCREEN ── */
+#gameover-screen .go-emoji { font-size: 64px; margin-bottom: 1rem; }
+#gameover-screen .go-quote {
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  max-width: 400px;
+}
+#gameover-screen .go-sub { font-size: 13px; color: var(--text-2); margin-bottom: 2rem; }
+
+.go-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 2rem;
+}
+
+.go-stat {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.go-stat-label { font-size: 11px; color: var(--text-2); font-family: monospace; text-transform: uppercase; }
+.go-stat-value { font-size: 22px; font-weight: 700; color: var(--gold); font-family: monospace; }
+.go-stat.new-record { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+
+.go-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+
+.btn-retry {
+  background: var(--gold);
+  color: #0a0a0b;
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-retry:hover { opacity: 0.88; }
+
+.btn-menu {
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 28px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.btn-menu:hover { border-color: var(--gold); }
+
+/* ── PAUSE OVERLAY ── */
+#pause-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 150;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#pause-overlay.active { display: flex; }
+#pause-overlay h2 { color: var(--gold); font-size: 2rem; font-family: monospace; }
+
+/* ── LEVEL UP TOAST ── */
+#level-toast {
+  position: fixed;
+  top: 70px; left: 50%; transform: translateX(-50%);
+  background: var(--gold);
+  color: #0a0a0b;
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: monospace;
+  z-index: 160;
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+#level-toast.show { opacity: 1; }
+
+/* ── COMBO POPUP ── */
+.combo-popup {
+  position: absolute;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: monospace;
+  pointer-events: none;
+  animation: popUp 1.2s ease-out forwards;
+  z-index: 10;
+}
+
+@keyframes popUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
+}
+
+/* ── KEYS HINT ── */
+.keys-hint {
+  font-size: 11px;
+  color: var(--text-2);
+  font-family: monospace;
+  margin-top: 0.4rem;
+  text-align: center;
+}
+
+kbd {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+  color: var(--text);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="BLOC-Logo.webp" alt="BLOC" onerror="this.style.display='none'">
+    BLOC
+  </a>
+  <a href="bloc-games.html" class="nav-back">← BLOC Games</a>
+</nav>
+
+<div id="game-wrapper">
+
+  <!-- ── START SCREEN ── -->
+  <div class="screen active" id="start-screen">
+    <div class="beaver-hero">🦫</div>
+    <div class="game-logo">Beaver Builder</div>
+    <div class="game-subtitle">BUILD THE BEAVERSE</div>
+    <div class="level-select" id="levelSelect"></div>
+    <button class="btn-start" id="btnStart">Start Building</button>
+    <div class="highscore-display" id="highscoreDisplay">Best Score: <span id="bestScoreDisplay">0</span></div>
+  </div>
+
+  <!-- ── GAME SCREEN ── -->
+  <div class="screen" id="game-screen">
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-item">
+        <span class="hud-label">Level</span>
+        <span class="hud-value" id="hudLevel">1</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Score</span>
+        <span class="hud-value" id="hudScore">0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Logs</span>
+        <span class="hud-value" id="hudLogs">0/3</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Time</span>
+        <span class="hud-value" id="hudTime">0:00</span>
+      </div>
+    </div>
+
+    <!-- DAM BAR -->
+    <div class="dam-bar-wrap">
+      <div class="dam-bar-label">
+        <span>🪵 Dam Progress</span>
+        <span id="damPercent">0%</span>
+      </div>
+      <div class="dam-bar-bg"><div class="dam-bar-fill" id="damBar" style="width:0%"></div></div>
+    </div>
+
+    <!-- CONTROLS ROW -->
+    <div class="game-controls-row">
+      <button class="ctrl-btn" id="btnPause">⏸ Pause</button>
+      <button class="ctrl-btn" id="btnRestart">↺ Restart</button>
+      <button class="ctrl-btn" id="btnMenu2">☰ Menu</button>
+    </div>
+
+    <!-- CANVAS -->
+    <canvas id="gameCanvas" width="680" height="380"></canvas>
+
+    <!-- KEYBOARD HINT (desktop) -->
+    <div class="keys-hint" id="keysHint">
+      Move: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> &nbsp;
+      Chop / Drop: <kbd>Space</kbd> &nbsp;
+      Pause: <kbd>P</kbd>
+    </div>
+
+    <!-- TOUCH CONTROLS -->
+    <div class="touch-controls" id="touchControls">
+      <div class="dpad">
+        <div class="dpad-btn empty"></div>
+        <button class="dpad-btn" id="tc-up">↑</button>
+        <div class="dpad-btn empty"></div>
+        <button class="dpad-btn" id="tc-left">←</button>
+        <div class="dpad-btn empty"></div>
+        <button class="dpad-btn" id="tc-right">→</button>
+        <div class="dpad-btn empty"></div>
+        <button class="dpad-btn" id="tc-down">↓</button>
+        <div class="dpad-btn empty"></div>
+      </div>
+      <div class="action-btns">
+        <button class="action-btn secondary" id="tc-pause">⏸</button>
+        <button class="action-btn" id="tc-action">🪓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GAME OVER SCREEN ── -->
+  <div class="screen" id="gameover-screen">
+    <div class="go-emoji" id="goEmoji">🦫</div>
+    <div class="go-quote">You built as much of the Beaverse as you could.</div>
+    <div class="go-sub" id="goSub">The dam lives on in our hearts.</div>
+    <div class="go-stats">
+      <div class="go-stat" id="goStatScore">
+        <div class="go-stat-label">Final Score</div>
+        <div class="go-stat-value" id="goScore">0</div>
+      </div>
+      <div class="go-stat" id="goStatTime">
+        <div class="go-stat-label">Survival Time</div>
+        <div class="go-stat-value" id="goTime">0:00</div>
+      </div>
+      <div class="go-stat" id="goStatBest">
+        <div class="go-stat-label">Best Score</div>
+        <div class="go-stat-value" id="goBest">0</div>
+      </div>
+      <div class="go-stat" id="goStatLevel">
+        <div class="go-stat-label">Level Reached</div>
+        <div class="go-stat-value" id="goLevel">1</div>
+      </div>
+    </div>
+    <div class="go-btns">
+      <button class="btn-retry" id="btnRetry">Try Again 🦫</button>
+      <button class="btn-menu" id="btnGoMenu">Main Menu</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- PAUSE OVERLAY -->
+<div id="pause-overlay">
+  <h2>⏸ Paused</h2>
+  <button class="btn-retry" id="btnResume">Resume</button>
+  <button class="btn-menu" id="btnPauseMenu">Main Menu</button>
+</div>
+
+<!-- LEVEL TOAST -->
+<div id="level-toast">Level Up! 🦫</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════
+// CONFIG
+// ═══════════════════════════
+const LEVELS = [
+  { id:1, name:'The Beginning',    damTarget:100, hazards:[],                          treeSpawn:8000, desc:'Tutorial stage. No hazards.' },
+  { id:2, name:'Faster Waters',    damTarget:150, hazards:['water'],                   treeSpawn:7000, desc:'Water slowly damages unfinished dam.' },
+  { id:3, name:'Falling Branches', damTarget:200, hazards:['water','branches'],        treeSpawn:6000, desc:'Random branches stun the player.' },
+  { id:4, name:'Heavy Logs',       damTarget:250, hazards:['water','branches','heavy'],treeSpawn:5500, desc:'Bigger logs = more progress but slower movement.' },
+  { id:5, name:'Flood Season',     damTarget:300, hazards:['water','branches','flood'],treeSpawn:5000, desc:'Rising water creates urgency.' },
+  { id:6, name:'Endless Survival', damTarget:Infinity, hazards:['water','branches','heavy','flood'], treeSpawn:4000, desc:'All hazards active. Score as high as you can!' },
+];
+
+const TILE = 32;
+const PLAYER_SPEED = 3;
+const MAX_CARRY = 3;
+const MAX_PLAYER_HP = 5;
+
+// ═══════════════════════════
+// STATE
+// ═══════════════════════════
+let G = {}; // game state
+let selectedLevel = 1;
+let paused = false;
+let gameRunning = false;
+let animFrame = null;
+let lastTime = 0;
+
+// ═══════════════════════════
+// STORAGE
+// ═══════════════════════════
+function getBestScore() { return parseInt(localStorage.getItem('bloc_bb_best') || '0'); }
+function setBestScore(s) { localStorage.setItem('bloc_bb_best', String(s)); }
+
+// ═══════════════════════════
+// CANVAS
+// ═══════════════════════════
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const maxW = Math.min(window.innerWidth - 24, 700);
+  const scale = maxW / 680;
+  canvas.style.width = Math.floor(680 * scale) + 'px';
+  canvas.style.height = Math.floor(380 * scale) + 'px';
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// ═══════════════════════════
+// LEVEL SELECT UI
+// ═══════════════════════════
+function buildLevelSelect() {
+  const el = document.getElementById('levelSelect');
+  el.innerHTML = '';
+  LEVELS.forEach(lv => {
+    const b = document.createElement('button');
+    b.className = 'level-btn' + (lv.id === 6 ? ' endless' : '') + (lv.id === selectedLevel ? ' selected' : '');
+    b.innerHTML = `<span class="lvl-num">${lv.id === 6 ? '∞' : lv.id}</span>${lv.id === 6 ? 'Endless' : 'Level ' + lv.id}`;
+    b.title = lv.desc;
+    b.addEventListener('click', () => { selectedLevel = lv.id; buildLevelSelect(); });
+    el.appendChild(b);
+  });
+  document.getElementById('bestScoreDisplay').textContent = getBestScore();
+}
+
+buildLevelSelect();
+
+// ═══════════════════════════
+// GAME OBJECTS
+// ═══════════════════════════
+function makePlayer(x, y) {
+  return { x, y, w: 28, h: 28, vx: 0, vy: 0, hp: MAX_PLAYER_HP, logs: 0, stunTimer: 0, chopCooldown: 0, chopCombo: 0, comboTimer: 0, facing: 1 };
+}
+
+function makeTree(x, y, big = false) {
+  const hp = big ? 5 : (3 + Math.floor(Math.random() * 2));
+  return { x, y, w: big ? 36 : 28, h: big ? 48 : 40, hp, maxHp: hp, big, hitTimer: 0 };
+}
+
+function makeLog(x, y, big = false) {
+  return { x, y, w: big ? 28 : 22, h: big ? 14 : 10, big };
+}
+
+function makeBranch(x) {
+  return { x, y: -20, w: 24, h: 8, speed: 3 + Math.random() * 2, warned: false };
+}
+
+// ═══════════════════════════
+// INIT GAME
+// ═══════════════════════════
+function initGame(levelId) {
+  const lv = LEVELS.find(l => l.id === levelId) || LEVELS[0];
+  const CW = canvas.width, CH = canvas.height;
+  const riverX = Math.floor(CW * 0.62);
+
+  G = {
+    level: lv,
+    levelId,
+    score: 0,
+    elapsed: 0,
+    damProgress: 0,
+    damHP: 100,
+    player: makePlayer(80, CH / 2 - 14),
+    trees: [],
+    logs: [],
+    branches: [],
+    particles: [],
+    combos: [],
+    riverX,
+    CW, CH,
+    treeSpawnTimer: 0,
+    branchSpawnTimer: 0,
+    waterDmgTimer: 0,
+    floodTimer: 0,
+    floodLevel: 0,
+    timeMult: 1,
+    endlessSpeed: 1,
+    gameOver: false,
+    gameOverReason: '',
+    newRecord: false,
+  };
+
+  // Initial trees
+  for (let i = 0; i < 5; i++) spawnTree();
+
+  showScreen('game-screen');
+  updateHUD();
+}
+
+function spawnTree() {
+  const CW = G.CW, CH = G.CH;
+  const big = G.level.hazards.includes('heavy') && Math.random() < 0.3;
+  const x = 30 + Math.random() * (G.riverX - 100);
+  const y = 30 + Math.random() * (CH - 80);
+  // avoid overlap
+  const overlap = G.trees.some(t => Math.abs(t.x - x) < 50 && Math.abs(t.y - y) < 50);
+  if (!overlap) G.trees.push(makeTree(x, y, big));
+}
+
+// ═══════════════════════════
+// GAME LOOP
+// ═══════════════════════════
+function gameLoop(ts) {
+  if (!gameRunning) return;
+  if (paused) { animFrame = requestAnimationFrame(gameLoop); return; }
+
+  const dt = Math.min((ts - lastTime) / 1000, 0.05);
+  lastTime = ts;
+
+  update(dt);
+  render();
+
+  if (!G.gameOver) animFrame = requestAnimationFrame(gameLoop);
+  else triggerGameOver();
+}
+
+function startLoop() {
+  gameRunning = true;
+  lastTime = performance.now();
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+// ═══════════════════════════
+// UPDATE
+// ═══════════════════════════
+function update(dt) {
+  G.elapsed += dt;
+  if (G.levelId === 6) {
+    G.endlessSpeed = 1 + G.elapsed / 60 * 0.3;
+    G.timeMult = 1 + G.elapsed / 30 * 0.1;
+  }
+
+  updatePlayer(dt);
+  updateTrees(dt);
+  updateLogs(dt);
+  updateBranches(dt);
+  updateParticles(dt);
+  updateHazards(dt);
+  checkLevelComplete();
+  updateHUD();
+}
+
+// ── PLAYER UPDATE ──
+const keys = {};
+function updatePlayer(dt) {
+  const p = G.player;
+  if (p.stunTimer > 0) { p.stunTimer -= dt; p.vx *= 0.8; p.vy *= 0.8; }
+  else {
+    const spd = (G.level.hazards.includes('heavy') && p.logs > 0) ? PLAYER_SPEED * 0.6 : PLAYER_SPEED;
+    p.vx = 0; p.vy = 0;
+    if (keys['ArrowLeft']  || keys['a']) { p.vx = -spd; p.facing = -1; }
+    if (keys['ArrowRight'] || keys['d']) { p.vx =  spd; p.facing =  1; }
+    if (keys['ArrowUp']    || keys['w']) p.vy = -spd;
+    if (keys['ArrowDown']  || keys['s']) p.vy =  spd;
+  }
+
+  p.x += p.vx * G.endlessSpeed;
+  p.y += p.vy * G.endlessSpeed;
+  p.x = Math.max(0, Math.min(G.CW - p.w, p.x));
+  p.y = Math.max(0, Math.min(G.CH - p.h, p.y));
+
+  if (p.chopCooldown > 0) p.chopCooldown -= dt;
+  if (p.comboTimer > 0) p.comboTimer -= dt;
+  else p.chopCombo = 0;
+}
+
+// ── TREES ──
+function updateTrees(dt) {
+  G.treeSpawnTimer += dt * 1000;
+  const spawnInterval = G.level.treeSpawn / G.endlessSpeed;
+  if (G.treeSpawnTimer >= spawnInterval && G.trees.length < 8) {
+    G.treeSpawnTimer = 0;
+    spawnTree();
+  }
+  G.trees.forEach(t => { if (t.hitTimer > 0) t.hitTimer -= dt; });
+}
+
+// ── CHOP ──
+function chopAction() {
+  const p = G.player;
+  if (p.chopCooldown > 0) return;
+
+  // Check river drop
+  if (p.logs > 0 && p.x + p.w > G.riverX - 10) {
+    deliverLogs();
+    return;
+  }
+
+  // Check tree hit
+  const range = 40;
+  let hit = false;
+  for (const t of G.trees) {
+    const dx = (t.x + t.w / 2) - (p.x + p.w / 2);
+    const dy = (t.y + t.h / 2) - (p.y + p.h / 2);
+    if (Math.abs(dx) < range && Math.abs(dy) < range) {
+      t.hp--;
+      t.hitTimer = 0.15;
+      p.chopCooldown = 0.25;
+      p.comboTimer = 1.5;
+      spawnParticle(t.x + t.w / 2, t.y + t.h / 2, '💥');
+
+      if (t.hp <= 0) {
+        // Tree broken
+        p.chopCombo++;
+        if (p.chopCombo >= 3) {
+          G.score += 25;
+          showCombo(t.x, t.y, '+25 COMBO!');
+          p.chopCombo = 0;
+        }
+        G.logs.push(makeLog(t.x, t.y + t.h - 10, t.big));
+        G.trees = G.trees.filter(tr => tr !== t);
+      }
+      hit = true;
+      break;
+    }
+  }
+
+  // Pick up log
+  if (!hit && p.logs < MAX_CARRY) {
+    for (let i = G.logs.length - 1; i >= 0; i--) {
+      const l = G.logs[i];
+      if (rectsOverlap(p, l, 20)) {
+        p.logs++;
+        G.logs.splice(i, 1);
+        p.chopCooldown = 0.1;
+        break;
+      }
+    }
+  }
+}
+
+function deliverLogs() {
+  const p = G.player;
+  const pts = p.logs * 10;
+  G.score += Math.floor(pts * G.timeMult);
+  G.damProgress += p.logs * (G.level.hazards.includes('heavy') ? 2 : 1);
+  showCombo(G.riverX - 30, G.player.y, '+' + Math.floor(pts * G.timeMult));
+  p.logs = 0;
+  p.chopCooldown = 0.3;
+
+  // Full reinforcement cycle bonus
+  if (G.damProgress % 50 === 0 && G.damProgress > 0) {
+    G.score += 50;
+    showCombo(G.riverX - 30, G.player.y - 20, '+50 REINFORCE!');
+  }
+}
+
+// ── LOGS ──
+function updateLogs(dt) {
+  // logs just sit there
+}
+
+// ── BRANCHES ──
+function updateBranches(dt) {
+  if (!G.level.hazards.includes('branches')) return;
+  G.branchSpawnTimer += dt * 1000;
+  const interval = (3000 / G.endlessSpeed);
+  if (G.branchSpawnTimer >= interval) {
+    G.branchSpawnTimer = 0;
+    G.branches.push(makeBranch(30 + Math.random() * (G.riverX - 60)));
+  }
+
+  G.branches = G.branches.filter(b => {
+    b.y += b.speed * G.endlessSpeed;
+    if (rectsOverlap(G.player, { x: b.x, y: b.y, w: b.w, h: b.h }, 0)) {
+      G.player.stunTimer = 1.2;
+      G.player.hp--;
+      spawnParticle(G.player.x, G.player.y, '⭐');
+      if (G.player.hp <= 0) G.gameOver = true;
+      return false;
+    }
+    return b.y < G.CH + 20;
+  });
+}
+
+// ── HAZARDS ──
+function updateHazards(dt) {
+  // Water damage
+  if (G.level.hazards.includes('water')) {
+    G.waterDmgTimer += dt;
+    const rate = 8 / G.endlessSpeed;
+    if (G.waterDmgTimer >= rate) {
+      G.waterDmgTimer = 0;
+      if (G.damProgress < G.level.damTarget && G.damProgress > 0) {
+        G.damProgress = Math.max(0, G.damProgress - 1);
+        if (G.damProgress === 0) { G.gameOver = true; G.gameOverReason = 'dam'; }
+      }
+    }
+  }
+
+  // Flood
+  if (G.level.hazards.includes('flood')) {
+    G.floodTimer += dt;
+    if (G.floodTimer >= 1) {
+      G.floodTimer = 0;
+      G.floodLevel = Math.min(G.CH * 0.6, G.floodLevel + 0.4 * G.endlessSpeed);
+    }
+    if (G.floodLevel > 0 && G.player.y + G.player.h > G.CH - G.floodLevel) {
+      G.player.stunTimer = 0.3;
+      G.player.hp = Math.max(0, G.player.hp - dt * 2);
+      if (G.player.hp <= 0) { G.gameOver = true; G.gameOverReason = 'flood'; }
+    }
+    // Flood drains when dam progresses
+    if (G.damProgress > 0) G.floodLevel = Math.max(0, G.floodLevel - G.damProgress / G.level.damTarget * 0.5);
+  }
+}
+
+// ── PARTICLES ──
+function spawnParticle(x, y, emoji) {
+  G.particles.push({ x, y, emoji, life: 0.8, maxLife: 0.8 });
+}
+
+function updateParticles(dt) {
+  G.particles = G.particles.filter(p => { p.life -= dt; return p.life > 0; });
+}
+
+function showCombo(x, y, text) {
+  G.combos.push({ x, y, text, life: 1.2 });
+}
+
+// ── LEVEL COMPLETE ──
+function checkLevelComplete() {
+  if (G.levelId === 6) return; // endless
+  if (G.damProgress >= G.level.damTarget) {
+    G.score += 100; // level bonus
+    if (G.levelId < 6) {
+      const toast = document.getElementById('level-toast');
+      toast.textContent = '🦫 Level ' + G.levelId + ' Complete! +100pts';
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 2200);
+      G.levelId = Math.min(6, G.levelId + 1);
+      const newLv = LEVELS.find(l => l.id === G.levelId);
+      G.level = newLv;
+      G.damProgress = 0;
+      G.floodLevel = 0;
+    }
+  }
+}
+
+// ═══════════════════════════
+// RENDER
+// ═══════════════════════════
+function render() {
+  const CW = G.CW, CH = G.CH;
+  ctx.clearRect(0, 0, CW, CH);
+
+  // Sky/ground
+  ctx.fillStyle = '#1a2e1a';
+  ctx.fillRect(0, 0, G.riverX - 8, CH);
+
+  // River
+  const riverW = CW - G.riverX;
+  ctx.fillStyle = '#1a3a6e';
+  ctx.fillRect(G.riverX - 8, 0, riverW + 8, CH);
+
+  // River shimmer
+  ctx.fillStyle = 'rgba(100,160,255,0.08)';
+  for (let i = 0; i < 5; i++) {
+    const t = (G.elapsed * 0.5 + i * 0.7) % 1;
+    ctx.fillRect(G.riverX + 4, t * CH, riverW - 8, 18);
+  }
+
+  // River label
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = '11px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('🌊 RIVER', G.riverX + riverW / 2, 18);
+
+  // Dam visual
+  const damFrac = G.levelId === 6
+    ? Math.min(1, G.score / 500)
+    : Math.min(1, G.damProgress / G.level.damTarget);
+  const damH = Math.floor(damFrac * CH * 0.85);
+  if (damH > 0) {
+    ctx.fillStyle = '#8B5E3C';
+    ctx.fillRect(G.riverX - 12, CH - damH, 16, damH);
+    ctx.fillStyle = '#a07040';
+    for (let i = 0; i < damH; i += 10) {
+      ctx.fillRect(G.riverX - 12, CH - damH + i, 16, 5);
+    }
+  }
+
+  // Flood water
+  if (G.floodLevel > 0) {
+    ctx.fillStyle = 'rgba(40,100,220,0.35)';
+    ctx.fillRect(0, CH - G.floodLevel, G.riverX - 8, G.floodLevel);
+  }
+
+  // Trees
+  G.trees.forEach(t => {
+    const alpha = t.hitTimer > 0 ? 0.6 : 1;
+    ctx.globalAlpha = alpha;
+    // Trunk
+    ctx.fillStyle = t.big ? '#6B3E26' : '#8B5E3C';
+    ctx.fillRect(t.x + t.w * 0.35, t.y + t.h * 0.55, t.w * 0.3, t.h * 0.45);
+    // Canopy
+    ctx.fillStyle = t.big ? '#2d6a2d' : '#3a7a3a';
+    ctx.beginPath();
+    ctx.arc(t.x + t.w / 2, t.y + t.h * 0.45, t.w * 0.55, 0, Math.PI * 2);
+    ctx.fill();
+    // HP bar
+    if (t.hp < t.maxHp) {
+      ctx.fillStyle = '#333';
+      ctx.fillRect(t.x, t.y - 6, t.w, 4);
+      ctx.fillStyle = '#4CAF50';
+      ctx.fillRect(t.x, t.y - 6, t.w * (t.hp / t.maxHp), 4);
+    }
+    ctx.globalAlpha = 1;
+  });
+
+  // Logs on ground
+  G.logs.forEach(l => {
+    ctx.fillStyle = '#8B5E3C';
+    ctx.beginPath();
+    ctx.roundRect(l.x, l.y, l.w, l.h, 4);
+    ctx.fill();
+    ctx.fillStyle = '#a07040';
+    ctx.fillRect(l.x + 4, l.y + 3, l.w - 8, 2);
+  });
+
+  // Branches
+  G.branches.forEach(b => {
+    ctx.fillStyle = '#6B3E26';
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+    // Shadow warning
+    ctx.fillStyle = 'rgba(255,100,0,0.18)';
+    ctx.fillRect(b.x, 0, b.w, G.CH);
+  });
+
+  // Player
+  renderPlayer();
+
+  // Particles
+  G.particles.forEach(p => {
+    ctx.globalAlpha = p.life / p.maxLife;
+    ctx.font = '16px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(p.emoji, p.x, p.y);
+    ctx.globalAlpha = 1;
+  });
+
+  // Combo popups
+  G.combos = G.combos.filter(c => { c.life -= 0.016; return c.life > 0; });
+  G.combos.forEach(c => {
+    ctx.globalAlpha = Math.min(1, c.life);
+    ctx.fillStyle = '#c9a84c';
+    ctx.font = 'bold 13px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(c.text, c.x, c.y - (1.2 - c.life) * 30);
+    ctx.globalAlpha = 1;
+  });
+
+  // HP hearts
+  ctx.font = '13px serif';
+  ctx.textAlign = 'left';
+  for (let i = 0; i < MAX_PLAYER_HP; i++) {
+    ctx.globalAlpha = i < G.player.hp ? 1 : 0.2;
+    ctx.fillText('❤️', 6 + i * 18, CH - 6);
+  }
+  ctx.globalAlpha = 1;
+
+  // Stun flash
+  if (G.player.stunTimer > 0 && Math.floor(G.elapsed * 8) % 2 === 0) {
+    ctx.fillStyle = 'rgba(255,255,0,0.12)';
+    ctx.fillRect(0, 0, CW, CH);
+  }
+}
+
+function renderPlayer() {
+  const p = G.player;
+  ctx.save();
+  ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+  if (p.facing === -1) ctx.scale(-1, 1);
+
+  // Body
+  ctx.fillStyle = p.stunTimer > 0 ? '#ffdd88' : '#c9a84c';
+  ctx.beginPath();
+  ctx.ellipse(0, 2, 13, 11, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Head
+  ctx.fillStyle = '#c9a84c';
+  ctx.beginPath();
+  ctx.arc(5, -7, 9, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = '#333';
+  ctx.beginPath(); ctx.arc(8, -9, 2, 0, Math.PI * 2); ctx.fill();
+
+  // Teeth
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(4, -3, 4, 3);
+
+  // Tail
+  ctx.fillStyle = '#8B5E3C';
+  ctx.beginPath();
+  ctx.ellipse(-14, 6, 8, 5, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Logs carried
+  if (p.logs > 0) {
+    ctx.fillStyle = '#8B5E3C';
+    for (let i = 0; i < Math.min(p.logs, 3); i++) {
+      ctx.fillRect(-6 + i * 5, -18 - i * 2, 16, 5);
+    }
+  }
+
+  ctx.restore();
+}
+
+// ═══════════════════════════
+// HUD UPDATE
+// ═══════════════════════════
+function updateHUD() {
+  document.getElementById('hudLevel').textContent = G.levelId === 6 ? '∞' : G.levelId;
+  document.getElementById('hudScore').textContent = G.score;
+  document.getElementById('hudLogs').textContent = (G.player ? G.player.logs : 0) + '/' + MAX_CARRY;
+  const s = Math.floor(G.elapsed);
+  document.getElementById('hudTime').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+
+  const frac = G.levelId === 6
+    ? (G.score % 500) / 500
+    : Math.min(1, (G.damProgress || 0) / (G.level?.damTarget || 100));
+  document.getElementById('damBar').style.width = Math.floor(frac * 100) + '%';
+  document.getElementById('damPercent').textContent = Math.floor(frac * 100) + '%';
+}
+
+// ═══════════════════════════
+// COLLISION
+// ═══════════════════════════
+function rectsOverlap(a, b, pad = 0) {
+  return a.x - pad < b.x + b.w &&
+         a.x + a.w + pad > b.x &&
+         a.y - pad < b.y + b.h &&
+         a.y + a.h + pad > b.y;
+}
+
+// ═══════════════════════════
+// GAME OVER
+// ═══════════════════════════
+function triggerGameOver() {
+  gameRunning = false;
+  cancelAnimationFrame(animFrame);
+
+  const best = getBestScore();
+  if (G.score > best) { setBestScore(G.score); G.newRecord = true; }
+
+  const s = Math.floor(G.elapsed);
+  document.getElementById('goScore').textContent = G.score;
+  document.getElementById('goTime').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  document.getElementById('goBest').textContent = Math.max(G.score, best);
+  document.getElementById('goLevel').textContent = G.levelId === 6 ? '∞' : G.levelId;
+
+  if (G.newRecord) {
+    document.getElementById('goStatBest').classList.add('new-record');
+    document.getElementById('goEmoji').textContent = '🏆';
+  }
+
+  const reason = G.gameOverReason;
+  document.getElementById('goSub').textContent =
+    reason === 'flood' ? 'The flood was too powerful.' :
+    reason === 'dam' ? 'The dam crumbled under pressure.' :
+    'The forest claimed another beaver.';
+
+  showScreen('gameover-screen');
+}
+
+// ═══════════════════════════
+// SCREENS
+// ═══════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════
+// INPUT
+// ═══════════════════════════
+window.addEventListener('keydown', e => {
+  keys[e.key] = true;
+  if ((e.key === ' ' || e.key === 'Spacebar') && gameRunning && !paused) { e.preventDefault(); chopAction(); }
+  if (e.key === 'p' || e.key === 'P') togglePause();
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
+});
+
+window.addEventListener('keyup', e => { keys[e.key] = false; });
+
+// Touch D-Pad
+['up','down','left','right'].forEach(dir => {
+  const btn = document.getElementById('tc-' + dir);
+  const keyMap = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight' };
+  btn.addEventListener('touchstart', e => { e.preventDefault(); keys[keyMap[dir]] = true; }, { passive: false });
+  btn.addEventListener('touchend',   e => { e.preventDefault(); keys[keyMap[dir]] = false; }, { passive: false });
+  btn.addEventListener('mousedown',  () => keys[keyMap[dir]] = true);
+  btn.addEventListener('mouseup',    () => keys[keyMap[dir]] = false);
+});
+
+document.getElementById('tc-action').addEventListener('click', () => { if (gameRunning && !paused) chopAction(); });
+document.getElementById('tc-pause').addEventListener('click', togglePause);
+
+// ═══════════════════════════
+// CONTROLS
+// ═══════════════════════════
+function togglePause() {
+  if (!gameRunning) return;
+  paused = !paused;
+  document.getElementById('pause-overlay').classList.toggle('active', paused);
+}
+
+document.getElementById('btnPause').addEventListener('click', togglePause);
+document.getElementById('btnResume').addEventListener('click', togglePause);
+
+document.getElementById('btnRestart').addEventListener('click', () => {
+  paused = false;
+  document.getElementById('pause-overlay').classList.remove('active');
+  cancelAnimationFrame(animFrame);
+  initGame(G.levelId || selectedLevel);
+  startLoop();
+});
+
+document.getElementById('btnMenu2').addEventListener('click', goToMenu);
+document.getElementById('btnPauseMenu').addEventListener('click', goToMenu);
+document.getElementById('btnGoMenu').addEventListener('click', goToMenu);
+
+document.getElementById('btnRetry').addEventListener('click', () => {
+  document.getElementById('goStatBest').classList.remove('new-record');
+  initGame(G.levelId || selectedLevel);
+  startLoop();
+});
+
+document.getElementById('btnStart').addEventListener('click', () => {
+  initGame(selectedLevel);
+  startLoop();
+});
+
+function goToMenu() {
+  paused = false;
+  gameRunning = false;
+  cancelAnimationFrame(animFrame);
+  document.getElementById('pause-overlay').classList.remove('active');
+  document.getElementById('goStatBest').classList.remove('new-record');
+  buildLevelSelect();
+  showScreen('start-screen');
+}
+
+// ═══════════════════════════
+// HIDE KEYS HINT ON MOBILE
+// ═══════════════════════════
+if ('ontouchstart' in window) {
+  document.getElementById('keysHint').style.display = 'none';
+}
+
+buildLevelSelect();
+</script>
+</body>
+</html>

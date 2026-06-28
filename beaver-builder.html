@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Beaver Builder: Build the Beaverse — BLOC Games</title>
+<title>Beaver Builder: Build the BVerse — BLOC Games</title>
 <link rel="icon" type="image/webp" href="BLOC-Logo.webp">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -580,7 +580,7 @@ kbd {
   <!-- ── GAME OVER SCREEN ── -->
   <div class="screen" id="gameover-screen">
     <div class="go-emoji" id="goEmoji">🦫</div>
-    <div class="go-quote">You built as much of the Beaverse as you could.</div>
+    <div class="go-quote">You built as much of the BVerse as you could.</div>
     <div class="go-sub" id="goSub">The dam lives on in our hearts.</div>
     <div class="go-stats">
       <div class="go-stat" id="goStatScore">
@@ -625,7 +625,7 @@ kbd {
 // CONFIG
 // ═══════════════════════════
 const LEVELS = [
-  { id:1, name:'The Beginning',    damTarget:100, hazards:[],                          treeSpawn:8000, desc:'Tutorial stage. No hazards.' },
+  { id:1, name:'The Beginning',    damTarget:100, hazards:[],                          treeSpawn:10000, desc:'Tutorial stage. No hazards.' },
   { id:2, name:'Faster Waters',    damTarget:150, hazards:['water'],                   treeSpawn:7000, desc:'Water slowly damages unfinished dam.' },
   { id:3, name:'Falling Branches', damTarget:200, hazards:['water','branches'],        treeSpawn:6000, desc:'Random branches stun the player.' },
   { id:4, name:'Heavy Logs',       damTarget:250, hazards:['water','branches','heavy'],treeSpawn:5500, desc:'Bigger logs = more progress but slower movement.' },

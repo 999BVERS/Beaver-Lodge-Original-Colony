@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/webp" href="BLOC-Logo.webp">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<title>Beaver Lodge Original Colony</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg2: #111113;
+    --bg3: #18181c;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,0.15);
+    --gold-glow: rgba(201,168,76,0.06);
+    --text: #f0ede8;
+    --text-2: #9a9590;
+    --text-3: #5a5753;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+
+  p { text-align: justify; word-break: break-word; overflow-wrap: break-word; }
+  .coming-soon-sub, .article-tag, .article-meta, .team-role, .partner-type, .footer-copy { text-align: center; }
+
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text-2);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+    background: var(--bg3);
+  }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--text-2);
+    transition: 0.3s;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: rgba(10,10,11,0.97);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    z-index: 99;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .mobile-menu.open { display: flex; }
+
+  .mobile-menu a {
+    padding: 12px 0;
+    font-size: 15px;
+    color: var(--text-2);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+  }
+
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--gold); }
+
+  /* ── SECTIONS ── */
+  section { padding: 7rem clamp(1.25rem, 4vw, 2.5rem); }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ── HOME ── */
+  #home {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 60px;
+    padding-left: clamp(1.25rem, 4vw, 2.5rem);
+    padding-right: clamp(1.25rem, 4vw, 2.5rem);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #home::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .home-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .home-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    padding: 6px 14px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 100px;
+    background: var(--gold-glow);
+  }
+
+  .home-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 7vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  h1 span { color: var(--gold); }
+
+  .home-desc {
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    color: var(--text-2);
+    max-width: 540px;
+    width: 100%;
+    margin-bottom: 2.5rem;
+    line-height: 1.75;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .home-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 13px 28px;
+    background: var(--gold);
+    color: #0a0a0b;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 13px 28px;
+    border: 1px solid var(--border-hover);
+    color: var(--text);
+    font-size: 14px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--gold); background: var(--gold-glow); }
+
+ .home-socials {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+.home-socials span {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+ .social-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .social-link:hover { color: var(--gold); border-color: var(--gold-dim); background: var(--gold-glow); }
+
+  .social-link svg { width: 16px; height: 16px; fill: currentColor; }
+
+  /* ── SECTION HEADERS ── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .section-sub {
+    font-size: 1.05rem;
+    color: var(--text-2);
+    max-width: 560px;
+    margin-bottom: 3.5rem;
+  }
+
+  .bbb-intro .section-sub,
+  #articles .section-sub,
+  #partners .section-sub {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .bbb-intro h2,
+  #articles h2,
+  #partners h2,
+  .bbb-intro .section-label,
+  #articles .section-label,
+  #partners .section-label {
+    text-align: center;
+  }
+
+  .bbb-intro {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .bbb-intro > div {
+    text-align: center;
+    width: 100%;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 2.5rem;
+  }
+
+  /* ── ABOUT ── */
+  #about { background: var(--bg2); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .about-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .stat-card .num {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-card .label {
+    font-size: 13px;
+    color: var(--text-2);
+  }
+
+  .about-text p { color: var(--text-2); margin-bottom: 1.2rem; line-height: 1.8; }
+
+  /* ── BBB ── */
+  #bbb { background: var(--bg); }
+
+  .bbb-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .bbb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .biz-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .biz-card:hover { border-color: var(--gold-dim); transform: translateY(-3px); }
+
+  .biz-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .biz-card:hover::before { transform: scaleX(1); }
+
+  .biz-avatar {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .biz-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .biz-type {
+    font-size: 12px;
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+  }
+
+  .biz-desc {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .biz-link {
+    font-size: 13px;
+    color: var(--gold);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: gap 0.2s;
+  }
+
+  .biz-link:hover { gap: 9px; }
+
+  /* ── TEAM ── */
+  #team { background: var(--bg2); }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .team-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem 1.75rem;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .team-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+
+ .team-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    border: 2px solid var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0 auto 1.25rem;
+    object-fit: cover;
+    overflow: hidden;
+  }
+
+  .team-name { font-size: 16px; font-weight: 600; margin-bottom: 0.25rem; }
+  .team-role { font-size: 13px; color: var(--gold); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+  .team-bio { font-size: 13px; color: var(--text-2); margin-bottom: 1.25rem; line-height: 1.6; }
+
+  .team-socials {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .team-socials a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-3);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .team-socials a:hover { color: var(--gold); border-color: var(--gold-dim); }
+
+  /* ── ARTICLES ── */
+  #articles { background: var(--bg); }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .article-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .article-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+
+  .article-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    background: var(--gold-glow);
+    border: 1px solid var(--gold-dim);
+    border-radius: 100px;
+    padding: 3px 10px;
+    margin-bottom: 1rem;
+  }
+
+  .article-title { font-size: 17px; font-weight: 600; margin-bottom: 0.6rem; line-height: 1.4; }
+  .article-excerpt { font-size: 14px; color: var(--text-2); line-height: 1.65; margin-bottom: 1.25rem; }
+  .article-meta { font-size: 12px; color: var(--text-3); font-family: 'Space Mono', monospace; }
+
+  /* ── PARTNERS ── */
+  #partners { background: var(--bg2); }
+
+  .partners-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .partner-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .partner-card:hover { border-color: var(--gold-dim); }
+
+  .partner-logo {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .partner-info { flex: 1; }
+  .partner-name { font-size: 16px; font-weight: 600; margin-bottom: 0.3rem; }
+  .partner-type { font-size: 11px; color: var(--gold); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.6rem; }
+  .partner-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 2.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .footer-copy { font-size: 13px; color: var(--text-3); }
+
+  /* ── EDIT GUIDE ── */
+  /* To edit this site, search for EDIT: comments */
+
+  /* ── NFT ── */
+#nft { background: var(--bg); }
+
+.nft-hero {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.nft-hero .section-label { justify-content: center; display: flex; }
+.nft-hero h2 { margin-bottom: 1rem; }
+.nft-hero .section-sub { margin: 0 auto 2rem; text-align: center; }
+
+.mint-box {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--gold-glow);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius-lg);
+  padding: 2rem 3rem;
+  margin-bottom: 1rem;
+}
+
+.mint-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.mint-price {
+  font-family: 'Space Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.mint-supply {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.btn-mint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 36px;
+  background: var(--gold);
+  color: #0a0a0b;
+  font-weight: 700;
+  font-size: 15px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: 0.5rem;
+}
+
+.btn-mint:hover { opacity: 0.88; transform: translateY(-2px); }
+
+.nft-frames {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.nft-frame {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.nft-frame:hover { border-color: var(--gold-dim); transform: translateY(-4px); }
+
+.nft-image-box {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.nft-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.nft-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-3);
+}
+
+.nft-placeholder svg {
+  width: 40px; height: 40px;
+  opacity: 0.3;
+}
+
+.nft-placeholder span {
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.nft-info {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.nft-collection {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+}
+
+.nft-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.nft-id {
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── CAROUSEL ── */
+.carousel-wrapper { position: relative; }
+
+.carousel-track-container {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.carousel-track .biz-card,
+.carousel-track .team-card,
+.carousel-track .article-card,
+.carousel-track .partner-card {
+  flex: 0 0 calc(33.333% - 1rem);
+  min-width: 280px;
+}
+
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.carousel-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border-hover);
+  cursor: pointer;
+  transition: background 0.2s, width 0.2s;
+  border: none;
+  padding: 0;
+}
+
+.carousel-dot.active {
+  background: var(--gold);
+  width: 18px;
+  border-radius: 3px;
+}
+
+.carousel-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border-hover);
+  background: var(--bg3);
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.carousel-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+.carousel-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── COMING SOON ── */
+.coming-soon-wrapper {
+  position: relative;
+  min-height: 400px;
+}
+
+.coming-soon-overlay {
+  position: absolute;
+  top: 0; left: -2.5rem; right: -2.5rem; bottom: 0;
+  background: rgba(10,10,11,0.97);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  gap: 1rem;
+}
+
+.coming-soon-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 100px;
+  background: var(--gold-glow);
+}
+
+.coming-soon-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.coming-soon-sub {
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+/* ── RESPONSIVE ── */
+
+/* Tablet */
+@media (max-width: 900px) {
+  .nav-links a { padding: 6px 8px; font-size: 12px; }
+  .carousel-track .biz-card,
+  .carousel-track .team-card,
+  .carousel-track .article-card,
+  .carousel-track .partner-card {
+    flex: 0 0 calc(50% - 0.75rem);
+    min-width: 240px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  section { padding: 5rem clamp(1rem, 5vw, 1.75rem); }
+  #home { padding-left: clamp(1rem, 5vw, 1.75rem); padding-right: clamp(1rem, 5vw, 1.75rem); }
+  .divider { margin: 0 clamp(1rem, 5vw, 1.75rem); }
+  nav { padding: 0 1.25rem; }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  footer { padding: 2rem clamp(1rem, 5vw, 1.75rem); flex-direction: column; text-align: center; gap: 0.5rem; }
+  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .about-stat-grid { grid-template-columns: 1fr 1fr; }
+  .nft-frames { grid-template-columns: 1fr; max-width: 100%; }
+  .nft-hero .section-sub { max-width: 100%; }
+  .mint-box { width: 100%; padding: 1.5rem; }
+  .article-wrapper { padding: 5rem clamp(1rem, 5vw, 1.75rem) 4rem; }
+  .home-actions { flex-direction: column; }
+  .btn-primary { text-align: center; width: 100%; display: block; }
+  .btn-secondary { text-align: center; width: 100%; display: block; }
+  .btn-mint { width: 100%; justify-content: center; }
+  .coming-soon-overlay { left: clamp(-1.75rem, -5vw, -1rem); right: clamp(-1.75rem, -5vw, -1rem); }
+  .home-inner { padding: 0; width: 100%; }
+  .home-desc { max-width: 100%; }
+  .section-sub { max-width: 100%; }
+  .bbb-intro { flex-direction: column; align-items: flex-start; }
+  .carousel-track .biz-card,
+  .carousel-track .team-card,
+  .carousel-track .article-card,
+  .carousel-track .partner-card {
+    flex: 0 0 calc(100vw - clamp(2rem, 10vw, 3.5rem));
+    min-width: unset;
+    box-sizing: border-box;
+  }
+  .carousel-track { padding: 0; gap: 0.75rem; }
+  .carousel-track-container { overflow: hidden; width: 100%; }
+  .carousel-controls { justify-content: center; margin-top: 1.25rem; }
+  .partner-card { flex-direction: column; }
+  .home-socials { gap: 0.75rem; }
+}
+
+/* Small phones */
+@media (max-width: 390px) {
+  section { padding: 4rem 1rem; }
+  #home { padding-left: 1rem; padding-right: 1rem; }
+  .coming-soon-overlay { left: -1rem; right: -1rem; }
+  .carousel-track .biz-card,
+  .carousel-track .team-card,
+  .carousel-track .article-card,
+  .carousel-track .partner-card {
+    flex: 0 0 calc(100vw - 2rem);
+  }
+  .about-stat-grid { grid-template-columns: 1fr; }
+  .stat-card .num { font-size: 1.5rem; }
+  .team-card { padding: 1.5rem 1rem; }
+  .biz-card { padding: 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════
+     NAVIGATION
+     EDIT: Update links if you rename sections
+═══════════════════════════ -->
+<nav>
+  <a href="#home" class="nav-logo"><img src="BLOC-Logo.webp" alt="BLOC" style="height: 32px; width: auto;"></a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#nft">Mint Here</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#bbb">Better Business Beaver</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#articles">Articles</a></li>
+    <li><a href="#partners">Partners</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="closeMenu()">Home</a>
+  <a href="#nft" onclick="closeMenu()">Mint Here</a>
+  <a href="#about" onclick="closeMenu()">About</a>
+  <a href="#bbb" onclick="closeMenu()">Better Business Beaver</a>
+  <a href="#team" onclick="closeMenu()">Team</a>
+  <a href="#articles" onclick="closeMenu()">Articles</a>
+  <a href="#partners" onclick="closeMenu()">Partners</a>
+</div>
+
+<!-- ═══════════════════════════
+     HOME
+     EDIT: Update tagline, description, social links
+═══════════════════════════ -->
+<section id="home">
+  <div class="home-inner">
+    <div class="home-eyebrow">Est. 2026 · 999BVERS</div>
+
+    <h1>Beaver Lodge<br><span>Original Colony</span></h1>
+
+    <!-- EDIT: Change this tagline -->
+    <p class="home-desc">
+      A collection of 999 Beaver NFT with 187+ Unique Traits - handrawn that represents real builders in crypto space.
+    </p>
+
+    <div class="home-actions">
+      <a href="#bbb" class="btn-primary">Explore Better Business Beaver</a>
+      <a href="#about" class="btn-secondary">Learn more</a>
+    </div>
+
+    <!-- EDIT: Replace # with your actual social URLs -->
+    <div class="home-socials">
+      <span>Follow us</span>
+
+      <a href="https://x.com/999BVERS" class="social-link" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>
+        Twitter / X
+      </a>
+
+      <a href="https://discord.com/invite/beaverlodgeoriginalcolony" class="social-link" target="_blank" rel="noopener">
+       <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Discord</title><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+      Discord
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<div class="divider"></div>
+
+<section id="nft">
+  <div class="container">
+
+    <div class="nft-hero">
+      <p class="section-label">NFT Collection</p>
+      <h2>Beaver Lodge Original Colony NFT</h2>
+      <p class="section-sub">Own a piece of the Colony. Each NFT is your membership pass, your identity, and your stake in what we're building.</p>
+
+      <div class="mint-box">
+        <div class="mint-label">Public MINT </div>
+        <!-- EDIT: Update price and currency -->
+        <div class="mint-price">$33 SOL </div>
+      </div>
+
+<div class="mint-box">
+        <div class="mint-label">WHITELIST MINT</div>
+        <!-- EDIT: Update price and currency -->
+        <div class="mint-price">$25 SOL </div>     
+      </div>
+
+      <br>
+
+      <!-- EDIT: Replace # with your actual minting link -->
+      <a href="https://gravemint.io/mint/UaahVvu6X7V1CsfEMiq7s7Bzxcg8rsFrjM6SCViNujw" class="btn-mint" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Get Your Beaver Here
+      </a>
+    </div>
+
+    <div class="nft-frames">
+
+      <div class="nft-frame">
+        <div class="nft-image-box">
+          <!-- EDIT: Replace with <img src="your-nft-1.png" alt="NFT #001"> when ready -->
+          <div class="nft-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span>NFT Preview</span>
+          </div>
+        </div>
+        <div class="nft-info">
+          <div class="nft-collection">BLOC NFT</div>
+          <div class="nft-name">Beaver Lodge Original Colony #001</div>
+          <div class="nft-id">Token ID: 001</div>
+        </div>
+      </div>
+
+      <div class="nft-frame">
+        <div class="nft-image-box">
+          <!-- EDIT: Replace with <img src="your-nft-2.png" alt="NFT #002"> when ready -->
+          <div class="nft-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span>NFT Preview</span>
+          </div>
+        </div>
+       <div class="nft-info">
+          <div class="nft-collection">BLOC NFT</div>
+          <div class="nft-name">Beaver Lodge Original Colony #002</div>
+          <div class="nft-id">Token ID: 002</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     ABOUT
+     EDIT: Update description and stats
+═══════════════════════════ -->
+
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-label">About the Colony</p>
+        <h2>More than a community</h2>
+
+        <!-- EDIT: Update these paragraphs with your real story -->
+        <p>
+          Beaver Lodge Original Colony (BLOC) was born from a simple idea: that people do better when they build together. We are a collective of doers, creators, and community builders united by a common drive to grow.
+        </p>
+        <p>
+          Our Colony exists to give members real tools, real visibility, and real connections. Whether you're launching a business, building a personal brand, or just looking for your people — this is your home base.
+        </p>
+        <p>
+          Through programs like Better Business Beaver, community articles, and partner spotlights, we turn potential into momentum.
+        </p>
+      </div>
+
+      <!-- EDIT: Update these numbers to reflect your real stats -->
+      <div class="about-stat-grid">
+        <div class="stat-card">
+          <div class="num">65</div>
+          <div class="label">NFT Holders and still growing</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">COMING SOON</div>
+          <div class="label">Businesses Featured</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">COMING</div>
+          <div class="label">Partner Organizations</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">2026</div>
+          <div class="label">Year Founded</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════
+     BETTER BUSINESS BEAVER
+     EDIT: Add/remove biz-card blocks below to list businesses.
+     Copy one full biz-card block, paste it, and update the text.
+═══════════════════════════ -->
+<section id="bbb">
+  <div class="container">
+<div class="coming-soon-wrapper">
+<div class="coming-soon-overlay">
+  <div class="coming-soon-badge">Coming Soon</div>
+  <div class="coming-soon-title">Better Business Beaver</div>
+  <div class="coming-soon-sub">Our business spotlight feature is launching soon. Stay tuned.</div>
+</div>
+<div class="bbb-intro">
+      <div>
+        <p class="section-label">Feature</p>
+        <h2>Better Business Beaver</h2>
+        <p class="section-sub">We spotlight the businesses, brands, and services our members are building. Real people, real work, real growth.</p>
+      </div>
+      <!-- EDIT: Update this link to your actual contact/apply form -->
+      <a href="mailto:hello@yoursite.com?subject=BBB Feature Request" class="btn-secondary">Apply for a feature →</a>
+    </div>
+
+   <div class="carousel-wrapper" id="carousel-bbb">
+  <div class="carousel-track-container">
+    <div class="carousel-track">
+
+      <!-- ─── BUSINESS CARD ─── EDIT: duplicate this block to add more -->
+      <div class="biz-card">
+        <div class="biz-avatar">DQ</div>  <!-- EDIT: Initials -->
+        <div class="biz-name">Kaya Design Co.</div>
+        <div class="biz-type">Graphic Design</div>
+        <p class="biz-desc">Brand identity, logo design, and visual storytelling for startups and small businesses who want to stand out from day one.</p>
+        <a href="#" class="biz-link" target="_blank">Visit →</a>
+      </div>
+
+      <div class="biz-card">
+        <div class="biz-avatar">MF</div>
+        <div class="biz-name">MindFuel Coaching</div>
+        <div class="biz-type">Personal Branding</div>
+        <p class="biz-desc">1-on-1 coaching sessions for professionals ready to own their narrative, grow their audience, and land their next big opportunity.</p>
+        <a href="#" class="biz-link" target="_blank">Visit →</a>
+      </div>
+
+      <div class="biz-card">
+        <div class="biz-avatar">PL</div>
+        <div class="biz-name">Pine & Loom</div>
+        <div class="biz-type">Handmade Goods</div>
+        <p class="biz-desc">Handcrafted home goods and gifts made with local materials. Every piece is one-of-a-kind and made to order.</p>
+        <a href="#" class="biz-link" target="_blank">Visit →</a>
+      </div>
+
+      <div class="biz-card">
+        <div class="biz-avatar">PL</div>
+        <div class="biz-name">Pine & Loom</div>
+        <div class="biz-type">Handmade Goods</div>
+        <p class="biz-desc">Handcrafted home goods and gifts made with local materials. Every piece is one-of-a-kind and made to order.</p>
+        <a href="#" class="biz-link" target="_blank">Visit →</a>
+      </div>
+      
+</div>
+  </div>
+  <div class="carousel-controls">
+    <div class="carousel-dots" id="dots-bbb"></div>
+    <button class="carousel-btn" id="prev-bbb">&#8592;</button>
+    <button class="carousel-btn" id="next-bbb">&#8594;</button>
+  </div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════
+     TEAM
+     EDIT: Update each team-card with real member info.
+     Duplicate a card block to add more members.
+═══════════════════════════ -->
+<section id="team">
+  <div class="container">
+    <p class="section-label">The Team</p>
+    <h2>Meet the Colony</h2>
+    <p class="section-sub">The people behind Beaver Lodge — building this with heart, hustle, and a whole lot of coffee.</p>
+
+    <div class="carousel-wrapper" id="carousel-team">
+  <div class="carousel-track-container">
+    <div class="carousel-track">
+
+      <!-- ─── TEAM CARD ─── EDIT: duplicate to add more members -->
+      <div class="team-card">
+        <img src="buzz.webp" alt="Buzz" class="team-avatar" style="object-fit: cover;">
+        <div class="team-name">Buzz</div>
+        <div class="team-role">Founder</div>
+        <p class="team-bio">Visionary behind the Colony. Passionate about community, commerce, and creating spaces where people thrive.</p>
+        <div class="team-socials">
+          <!-- EDIT: Replace # with actual profile URLs -->
+          <a href="https://x.com/Buzz_BVER" title="Twitter" target="_blank">𝕏</a>
+        </div>
+      </div>
+
+         <div class="team-card">
+        <img src="fabquilp.webp" alt="Fab" class="team-avatar" style="object-fit: cover;">
+        <div class="team-name">FabQuilp</div>
+        <div class="team-role">Artist</div>
+        <p class="team-bio">Visionary behind the Colony. Passionate about community, commerce, and creating spaces where people thrive.</p>
+        <div class="team-socials">
+          <!-- EDIT: Replace # with actual profile URLs -->
+          <a href="https://x.com/FabQuilp" title="Twitter" target="_blank">𝕏</a>
+        </div>
+      </div>
+
+          <div class="team-card">
+        <img src="thirty.webp" alt="Thirty" class="team-avatar" style="object-fit: cover;">
+        <div class="team-name">Thirty</div>
+        <div class="team-role">Creative Spark</div>
+        <p class="team-bio">Visionary behind the Colony. Passionate about community, commerce, and creating spaces where people thrive.</p>
+        <div class="team-socials">
+          <!-- EDIT: Replace # with actual profile URLs -->
+          <a href="https://x.com/thirty_BVER" title="Twitter" target="_blank">𝕏</a>
+        </div>
+      </div>
+
+       <div class="team-card">
+        <img src="djdave.webp" alt="DJDave" class="team-avatar" style="object-fit: cover;">
+        <div class="team-name">DJDave</div>
+        <div class="team-role">CFO</div>
+        <p class="team-bio">Visionary behind the Colony. Passionate about community, commerce, and creating spaces where people thrive.</p>
+        <div class="team-socials">
+          <!-- EDIT: Replace # with actual profile URLs -->
+          <a href="https://x.com/HooksDavid58861" title="Twitter" target="_blank">𝕏</a>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <img src="akc.webp" alt="AKC" class="team-avatar" style="object-fit: cover;">
+        <div class="team-name">AKCMetaBeast</div>
+        <div class="team-role">Lore Author</div>
+        <p class="team-bio">Visionary behind the Colony. Passionate about community, commerce, and creating spaces where people thrive.</p>
+        <div class="team-socials">
+          <!-- EDIT: Replace # with actual profile URLs -->
+          <a href="https://x.com/AKCMetaBeast" title="Twitter" target="_blank">𝕏</a>
+        </div>
+      </div>
+
+   </div>
+  </div>
+  <div class="carousel-controls">
+    <div class="carousel-dots" id="dots-team"></div>
+    <button class="carousel-btn" id="prev-team">&#8592;</button>
+    <button class="carousel-btn" id="next-team">&#8594;</button>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════
+     ARTICLES
+     EDIT: Add/remove article-card blocks below.
+     Duplicate a card block to add a new post.
+     Update article-link href to a Google Doc, external post, or subpage.
+═══════════════════════════ -->
+<section id="articles">
+  <div class="container">
+    <div class="coming-soon-wrapper">
+<div class="coming-soon-overlay">
+  <div class="coming-soon-badge">Coming Soon</div>
+  <div class="coming-soon-title">Articles</div>
+  <div class="coming-soon-sub">Updates, highlights, and stories from the Colony — dropping soon.</div>
+</div>
+<div class="carousel-wrapper" id="carousel-articles">
+  <div class="carousel-track-container">
+    <div class="carousel-track">
+
+      <!-- ─── ARTICLE CARD ─── EDIT: duplicate to add more articles -->
+      <a href="community-night.html" class="article-card">
+        <div class="article-tag">Event Highlight</div>
+        <div class="article-title">BLOC's First Community Night — What We Built Together</div>
+        <p class="article-excerpt">More than 60 members showed up for our inaugural night. Here's what happened, what we learned, and what's coming next.</p>
+        <div class="article-meta">June 2025 · 4 min read</div>
+      </a>
+
+       <a href="community-night.html" class="article-card">
+        <div class="article-tag">Event Highlight</div>
+        <div class="article-title">BLOC's First Community Night — What We Built Together</div>
+        <p class="article-excerpt">More than 60 members showed up for our inaugural night. Here's what happened, what we learned, and what's coming next.</p>
+        <div class="article-meta">June 2025 · 4 min read</div>
+      </a>
+
+  <a href="community-night.html" class="article-card">
+        <div class="article-tag">Event Highlight</div>
+        <div class="article-title">BLOC's First Community Night — What We Built Together</div>
+        <p class="article-excerpt">More than 60 members showed up for our inaugural night. Here's what happened, what we learned, and what's coming next.</p>
+        <div class="article-meta">June 2025 · 4 min read</div>
+      </a>
+
+       <a href="community-night.html" class="article-card">
+        <div class="article-tag">Event Highlight</div>
+        <div class="article-title">BLOC's First Community Night — What We Built Together</div>
+        <p class="article-excerpt">More than 60 members showed up for our inaugural night. Here's what happened, what we learned, and what's coming next.</p>
+        <div class="article-meta">June 2025 · 4 min read</div>
+      </a>
+
+       <a href="community-night.html" class="article-card">
+        <div class="article-tag">Event Highlight</div>
+        <div class="article-title">BLOC's First Community Night — What We Built Together</div>
+        <p class="article-excerpt">More than 60 members showed up for our inaugural night. Here's what happened, what we learned, and what's coming next.</p>
+        <div class="article-meta">June 2025 · 4 min read</div>
+      </a>
+
+      <!-- ─── ADD MORE ARTICLE CARDS HERE ─── -->
+
+   </div>
+  </div>
+  <div class="carousel-controls">
+    <div class="carousel-dots" id="dots-articles"></div>
+    <button class="carousel-btn" id="prev-articles">&#8592;</button>
+    <button class="carousel-btn" id="next-articles">&#8594;</button>
+  </div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════
+     PARTNERS
+     EDIT: Update each partner-card block.
+     Duplicate to add more partners.
+═══════════════════════════ -->
+<section id="partners">
+  <div class="coming-soon-wrapper">
+      <div class="coming-soon-overlay">
+        <div class="coming-soon-badge">Coming Soon</div>
+        <div class="coming-soon-title">Partners</div>
+        <div class="coming-soon-sub">We're building partnerships that matter. Announcements coming soon.</div>
+      </div>
+  <div class="container">
+      <p class="section-label">Our Partners</p>
+      <h2>Built with great people</h2>
+      <p class="section-sub">These organizations believe in what we're building. We're proud to grow alongside them.</p>
+<div class="carousel-wrapper" id="carousel-partners">
+  <div class="carousel-track-container">
+    <div class="carousel-track">
+
+      <!-- ─── PARTNER CARD ─── EDIT: duplicate to add more partners -->
+      <div class="partner-card">
+        <div class="partner-logo">NG</div>  <!-- EDIT: Initials or icon -->
+        <div class="partner-info">
+          <div class="partner-name">NestGrow</div>
+          <div class="partner-type">Incubator</div>
+          <p class="partner-desc">Supporting early-stage entrepreneurs with workspace, mentorship, and funding access across the region.</p>
+        </div>
+      </div>
+
+      <div class="partner-card">
+        <div class="partner-logo">TH</div>
+        <div class="partner-info">
+          <div class="partner-name">The Hub PH</div>
+          <div class="partner-type">Co-Working Space</div>
+          <p class="partner-desc">BLOC members get exclusive access to The Hub's facilities for events, meetings, and deep-work sessions.</p>
+        </div>
+      </div>
+
+      <div class="partner-card">
+        <div class="partner-logo">BV</div>
+        <div class="partner-info">
+          <div class="partner-name">BrandVault</div>
+          <div class="partner-type">Marketing Partner</div>
+          <p class="partner-desc">Helping our featured businesses grow their online presence through strategic content and social media support.</p>
+        </div>
+      </div>
+
+      <div class="partner-card">
+        <div class="partner-logo">BV</div>
+        <div class="partner-info">
+          <div class="partner-name">BrandVault</div>
+          <div class="partner-type">Marketing Partner</div>
+          <p class="partner-desc">Helping our featured businesses grow their online presence through strategic content and social media support.</p>
+        </div>
+      </div>
+
+      <!-- ─── ADD MORE PARTNER CARDS HERE ─── -->
+
+   </div>
+  </div>
+  <div class="carousel-controls">
+    <div class="carousel-dots" id="dots-partners"></div>
+    <button class="carousel-btn" id="prev-partners">&#8592;</button>
+    <button class="carousel-btn" id="next-partners">&#8594;</button>
+  </div>
+</div>
+  </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     FOOTER
+     EDIT: Update copyright year and name if needed
+═══════════════════════════ -->
+<footer>
+  <div class="footer-logo">Beaver Lodge Original Colony</div>
+  <div class="footer-copy">© 2026 BLOC. All rights reserved.</div>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', () => closeMenu());
+  });
+
+// ── CAROUSEL ENGINE ──
+function initCarousel(wrapperId, prevId, nextId, dotsId) {
+  const track = document.querySelector('#' + wrapperId + ' .carousel-track');
+  const container = document.querySelector('#' + wrapperId + ' .carousel-track-container');
+  const prevBtn = document.getElementById(prevId);
+  const nextBtn = document.getElementById(nextId);
+  const dotsContainer = document.getElementById(dotsId);
+  if (!track) return;
+
+  const cards = Array.from(track.children);
+  let current = 0;
+
+  function getVisible() {
+    return window.innerWidth <= 768 ? 1 : Math.min(3, cards.length);
+  }
+
+  function getCardWidth() {
+    if (cards.length === 0) return 0;
+    return cards[0].getBoundingClientRect().width + 24;
+  }
+
+  function maxIndex() {
+    return Math.max(0, cards.length - getVisible());
+  }
+
+  function buildDots() {
+    dotsContainer.innerHTML = '';
+    const total = maxIndex() + 1;
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === current ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    }
+  }
+
+  function updateDots() {
+    const dots = dotsContainer.querySelectorAll('.carousel-dot');
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  function goTo(index) {
+    current = Math.max(0, Math.min(index, maxIndex()));
+    track.style.transform = 'translateX(-' + (current * getCardWidth()) + 'px)';
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current >= maxIndex();
+    updateDots();
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // Swipe support
+  let startX = 0;
+  container.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  container.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
+  }, { passive: true });
+
+  window.addEventListener('resize', () => { buildDots(); goTo(0); });
+  buildDots();
+  goTo(0);
+}
+
+initCarousel('carousel-bbb', 'prev-bbb', 'next-bbb', 'dots-bbb');
+initCarousel('carousel-team', 'prev-team', 'next-team', 'dots-team');
+initCarousel('carousel-articles', 'prev-articles', 'next-articles', 'dots-articles');
+initCarousel('carousel-partners', 'prev-partners', 'next-partners', 'dots-partners');
+  
+</script>
+</body>
+</html>

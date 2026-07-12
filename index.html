@@ -365,12 +365,15 @@
   /* ── TRAIT STORE ── */
   #trait-store { background: var(--bg2); }
 
-  .trait-store-hero {
+ .trait-store-hero {
     text-align: center;
     margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  .trait-store-hero h2 { margin-bottom: 1rem; }
+  .trait-store-hero h2 { margin-bottom: 1rem; text-align: center; }
   .trait-store-hero .section-sub { margin: 0 auto 0; text-align: center; max-width: 560px; }
 
   .trait-panels {
@@ -1184,7 +1187,7 @@
 <section id="trait-store">
   <div class="container">
     <div class="trait-store-hero">
-      <p class="section-label">Trait Store</p>
+      <p class="section-label" style="text-align:center; justify-content:center; display:flex;">Trait Store</p>
       <h2>Muddy's Trait Store</h2>
       <p class="section-sub">Customize your Beaver with exclusive traits. Grab yours before they're gone.</p>
     </div>

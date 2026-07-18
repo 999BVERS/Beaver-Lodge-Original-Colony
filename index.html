@@ -630,7 +630,9 @@
     padding: 2rem;
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     transition: border-color 0.2s, transform 0.2s;
   }
 
@@ -648,11 +650,25 @@
     border-radius: 100px;
     padding: 3px 10px;
     margin-bottom: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    align-self: flex-start;
   }
 
   .article-title { font-size: 17px; font-weight: 600; margin-bottom: 0.6rem; line-height: 1.4; }
-  .article-excerpt { font-size: 14px; color: var(--text-2); line-height: 1.65; margin-bottom: 1.25rem; }
-  .article-meta { font-size: 12px; color: var(--text-3); font-family: 'Space Mono', monospace; }
+  .article-excerpt {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .article-meta { font-size: 12px; color: var(--text-3); font-family: 'Space Mono', monospace; margin-top: auto; }
 
   /* ── PARTNERS ── */
   #partners { background: var(--bg2); }
@@ -1309,8 +1325,8 @@
         <div class="article-meta">July 2026 · 5 min read</div>
       </a>
 
-      <a href="/competition-series/" class="article-card">
-        <div class="article-tag">Competition Series - Chapter I Recap</div>
+      <a href="/chapter-i-recap/" class="article-card">
+        <div class="article-tag">C-Series Chapter I Recap</div>
         <div class="article-title">Chapter I Recap: Kicking Off the BLOC Competition Series</div>
         <p class="article-excerpt">From inspiring entries to a historic first champion, Chapter I laid the foundation for the BLOC Competition Series Season 1.</p>
         <div class="article-meta">July 18, 2026 · 3 min read</div>
@@ -1615,14 +1631,19 @@ function initCarousel(wrapperId, prevId, nextId, dotsId) {
   const total = originalCards.length;
   if (total === 0) return;
 
-  // Clone cards for infinite loop
-  const clonesStart = originalCards.map(c => c.cloneNode(true));
-  const clonesEnd = originalCards.map(c => c.cloneNode(true));
-  clonesEnd.forEach(c => track.appendChild(c));
-  clonesStart.reverse().forEach(c => track.insertBefore(c, track.firstChild));
+  // Only clone-for-infinite-loop when there are enough real cards to fill
+  // the widest view (3 per row on desktop) without repeating one.
+  const loop = total >= 3;
+
+  if (loop) {
+    const clonesStart = originalCards.map(c => c.cloneNode(true));
+    const clonesEnd = originalCards.map(c => c.cloneNode(true));
+    clonesEnd.forEach(c => track.appendChild(c));
+    clonesStart.reverse().forEach(c => track.insertBefore(c, track.firstChild));
+  }
 
   const allCards = Array.from(track.children);
-  let current = total; // start at first real card (after clones)
+  let current = loop ? total : 0; // start at first real card (after clones) if looping
   let isAnimating = false;
 
   function isMobile() { return window.innerWidth <= 768; }
@@ -1662,8 +1683,9 @@ function initCarousel(wrapperId, prevId, nextId, dotsId) {
     dotsContainer.innerHTML = '';
     for (let i = 0; i < total; i++) {
       const dot = document.createElement('button');
-      dot.className = 'carousel-dot' + (i === (current - total) % total ? ' active' : '');
-      dot.addEventListener('click', () => goTo(total + i));
+      const activeIndex = loop ? (current - total) % total : current;
+      dot.className = 'carousel-dot' + (i === activeIndex ? ' active' : '');
+      dot.addEventListener('click', () => goTo(loop ? total + i : i));
       dotsContainer.appendChild(dot);
     }
   }
@@ -1676,11 +1698,21 @@ function initCarousel(wrapperId, prevId, nextId, dotsId) {
 
   function goTo(index, animate = true) {
     if (isAnimating) return;
+    if (!loop) {
+      // No cloned cards to wrap around to — just clamp to real bounds.
+      index = Math.max(0, Math.min(index, total - 1));
+      if (index === current) return;
+    }
     isAnimating = true;
     current = index;
     setTransition(animate);
     track.style.transform = 'translateX(-' + getOffset() + 'px)';
     updateDots();
+
+    if (!loop) {
+      isAnimating = false;
+      return;
+    }
 
     setTimeout(() => {
       // Jump without animation if at clone boundary

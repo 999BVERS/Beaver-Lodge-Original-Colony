@@ -1325,8 +1325,8 @@
         <div class="article-meta">July 2026 · 5 min read</div>
       </a>
 
-      <a href="/chapter-i-recap/" class="article-card">
-        <div class="article-tag">C-Series Chapter I Recap</div>
+      <a href="/chapter-i/" class="article-card">
+        <div class="article-tag">C-Series S1 Chapter I Recap</div>
         <div class="article-title">Chapter I Recap: Kicking Off the BLOC Competition Series</div>
         <p class="article-excerpt">From inspiring entries to a historic first champion, Chapter I laid the foundation for the BLOC Competition Series Season 1.</p>
         <div class="article-meta">July 18, 2026 · 3 min read</div>
@@ -1631,29 +1631,37 @@ function initCarousel(wrapperId, prevId, nextId, dotsId) {
   const total = originalCards.length;
   if (total === 0) return;
 
-  // Only clone-for-infinite-loop when there are enough real cards to fill
-  // the widest view (3 per row on desktop) without repeating one.
-  const loop = total >= 3;
-
-  if (loop) {
-    const clonesStart = originalCards.map(c => c.cloneNode(true));
-    const clonesEnd = originalCards.map(c => c.cloneNode(true));
-    clonesEnd.forEach(c => track.appendChild(c));
-    clonesStart.reverse().forEach(c => track.insertBefore(c, track.firstChild));
-  }
+  // Clone cards for infinite loop
+  const clonesStart = originalCards.map(c => c.cloneNode(true));
+  const clonesEnd = originalCards.map(c => c.cloneNode(true));
+  clonesEnd.forEach(c => track.appendChild(c));
+  clonesStart.reverse().forEach(c => track.insertBefore(c, track.firstChild));
 
   const allCards = Array.from(track.children);
-  let current = loop ? total : 0; // start at first real card (after clones) if looping
+  let current = total; // start at first real card (after clones)
   let isAnimating = false;
 
   function isMobile() { return window.innerWidth <= 768; }
 
-  function getCardWidth() {
-    const card = allCards[current];
-    if (!card) return 0;
-    const style = window.getComputedStyle(track);
-    const gap = parseFloat(style.gap) || 0;
-    return card.getBoundingClientRect().width + gap;
+  // Size every card (real + clones) so the number of cards actually
+  // visible at once never exceeds how many real cards exist — this is
+  // what prevents a repeated card from ever appearing on screen, while
+  // still allowing the loop to work once you have enough real cards.
+  function applyCardWidths() {
+    const gap = parseFloat(window.getComputedStyle(track).gap) || 0;
+    let maxPerView = 3;
+    if (window.innerWidth <= 768) maxPerView = 1;
+    else if (window.innerWidth <= 900) maxPerView = 2;
+    const perView = Math.max(1, Math.min(maxPerView, total));
+    const containerWidth = container.getBoundingClientRect().width;
+    const cardWidth = (containerWidth - gap * (perView - 1)) / perView;
+    allCards.forEach(c => {
+      c.style.flexGrow = '0';
+      c.style.flexShrink = '0';
+      c.style.flexBasis = cardWidth + 'px';
+      c.style.width = cardWidth + 'px';
+      c.style.minWidth = '0';
+    });
   }
 
   function getOffset() {
@@ -1661,7 +1669,7 @@ function initCarousel(wrapperId, prevId, nextId, dotsId) {
     const cardEl = allCards[current];
     if (!cardEl) return 0;
     const cardWidth = cardEl.getBoundingClientRect().width;
-    // On mobile center the card, on desktop show 3 cards aligned left
+    // On mobile center the card, on desktop show cards aligned left
     if (isMobile()) {
       const cardOffset = allCards.slice(0, current).reduce((acc, c) => {
         const style = window.getComputedStyle(track);
@@ -1683,9 +1691,8 @@ function initCarousel(wrapperId, prevId, nextId, dotsId) {
     dotsContainer.innerHTML = '';
     for (let i = 0; i < total; i++) {
       const dot = document.createElement('button');
-      const activeIndex = loop ? (current - total) % total : current;
-      dot.className = 'carousel-dot' + (i === activeIndex ? ' active' : '');
-      dot.addEventListener('click', () => goTo(loop ? total + i : i));
+      dot.className = 'carousel-dot' + (i === (current - total) % total ? ' active' : '');
+      dot.addEventListener('click', () => goTo(total + i));
       dotsContainer.appendChild(dot);
     }
   }
@@ -1698,21 +1705,11 @@ function initCarousel(wrapperId, prevId, nextId, dotsId) {
 
   function goTo(index, animate = true) {
     if (isAnimating) return;
-    if (!loop) {
-      // No cloned cards to wrap around to — just clamp to real bounds.
-      index = Math.max(0, Math.min(index, total - 1));
-      if (index === current) return;
-    }
     isAnimating = true;
     current = index;
     setTransition(animate);
     track.style.transform = 'translateX(-' + getOffset() + 'px)';
     updateDots();
-
-    if (!loop) {
-      isAnimating = false;
-      return;
-    }
 
     setTimeout(() => {
       // Jump without animation if at clone boundary
@@ -1756,12 +1753,14 @@ function initCarousel(wrapperId, prevId, nextId, dotsId) {
   }, { passive: true });
 
   window.addEventListener('resize', () => {
+    applyCardWidths();
     setTransition(false);
     track.style.transform = 'translateX(-' + getOffset() + 'px)';
     updateDots();
   });
 
   // Init
+  applyCardWidths();
   setTransition(false);
   track.style.transform = 'translateX(-' + getOffset() + 'px)';
   updateDots();

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/webp" href="/BLOC-Logo.webp">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<title>Chapter II Recap: Advertise BLOC — Beaver Lodge Original Colony</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg2: #111113;
+    --bg3: #18181c;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,0.15);
+    --gold-glow: rgba(201,168,76,0.06);
+    --text: #f0ede8;
+    --text-2: #9a9590;
+    --text-3: #5a5753;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text-2);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); background: var(--bg3); }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--text-2);
+    transition: 0.3s;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: rgba(10,10,11,0.97);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    z-index: 99;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .mobile-menu.open { display: flex; }
+
+  .mobile-menu a {
+    padding: 12px 0;
+    font-size: 15px;
+    color: var(--text-2);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+  }
+
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--gold); }
+
+  /* ── ARTICLE LAYOUT ── */
+  .article-wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 7rem 2.5rem 5rem;
+  }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+    color: var(--text-3);
+    text-decoration: none;
+    margin-bottom: 2.5rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--gold); }
+
+  /* ── ARTICLE HEADER ── */
+  .article-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    background: var(--gold-glow);
+    border: 1px solid var(--gold-dim);
+    border-radius: 100px;
+    padding: 3px 10px;
+    margin-bottom: 1.25rem;
+    text-align: left;
+  }
+
+  .article-title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .article-excerpt {
+    font-size: 1.1rem;
+    color: var(--text-2);
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+    color: var(--text-3);
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+
+  .article-meta .author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-2);
+  }
+
+  .author-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    object-fit: cover;
+    overflow: hidden;
+  }
+
+  /* ── COVER IMAGE ── */
+  .article-cover {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+    display: block;
+  }
+
+  /* ── ARTICLE BODY ── */
+  .article-body { color: var(--text-2); }
+
+  .article-body p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    margin-bottom: 1.5rem;
+    color: var(--text-2);
+    text-align: justify;
+  }
+
+  .article-body h2 {
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin: 2.5rem 0 1rem;
+  }
+
+  .article-body h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .article-body ul,
+  .article-body ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .article-body li {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-2);
+    margin-bottom: 0.4rem;
+  }
+
+  .article-body blockquote {
+    border-left: 3px solid var(--gold);
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    margin: 2rem 0;
+    font-size: 1.1rem;
+    color: var(--text);
+    font-style: italic;
+    line-height: 1.75;
+  }
+
+  .article-body a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .entry-link {
+    font-size: 0.9em;
+    font-family: 'Space Mono', monospace;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--gold);
+  }
+  .entry-link:hover { border-bottom-style: solid; }
+
+  .article-body img {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .article-body .caption {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: 'Space Mono', monospace;
+    text-align: center;
+    margin-top: -1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── DIVIDER ── */
+  .article-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  /* ── FOOTER NAV ── */
+  .article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 11px 22px;
+    border: 1px solid var(--border-hover);
+    color: var(--text);
+    font-size: 14px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--gold); background: var(--gold-glow); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .article-wrapper { padding: 5rem 1.5rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/#home" class="nav-logo"><img src="/BLOC-Logo.webp" alt="BLOC" style="height: 32px; width: auto;"></a>
+  <ul class="nav-links">
+    <li><a href="/#home">Home</a></li>
+    <li><a href="/#nft">Mint Here</a></li>
+    <li><a href="/#trait-store">Trait Store</a></li>
+    <li><a href="/#about">About</a></li>
+    <li><a href="/#lore">Lore</a></li>
+    <li><a href="/#articles">Articles</a></li>
+    <li><a href="/#bbb">Better Business Beaver</a></li>
+    <li><a href="/#partners">Partners</a></li>
+    <li><a href="/#collab">Collab Projects</a></li>
+    <li><a href="/#team">Team</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/#home" onclick="closeMenu()">Home</a>
+  <a href="/#nft" onclick="closeMenu()">Mint Here</a>
+  <a href="/#trait-store" onclick="closeMenu()">Trait Store</a>
+  <a href="/#about" onclick="closeMenu()">About</a>
+  <a href="/#lore" onclick="closeMenu()">Lore</a>
+  <a href="/#articles" onclick="closeMenu()">Articles</a>
+  <a href="/#bbb" onclick="closeMenu()">Better Business Beaver</a>
+  <a href="/#partners" onclick="closeMenu()">Partners</a>
+  <a href="/#collab" onclick="closeMenu()">Collab Projects</a>
+  <a href="/#team" onclick="closeMenu()">Team</a>
+</div>
+
+<div class="article-wrapper">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2.5rem; flex-wrap:wrap; gap:1rem;">
+    <a href="/#articles" class="back-link" style="margin-bottom:0;">← Back to Articles</a>
+  </div>
+
+  <h1 class="article-title">
+    Chapter II Recap: Advertise BLOC
+  </h1>
+
+  <p class="article-excerpt">
+    Absolutely. Chapter II should feel like the next stage after the holders-only kickoff — now opening the competition to the wider builder community.
+  </p>
+
+  <div class="article-meta">
+    <div class="author">
+      <img class="author-avatar" src="/BLOC-Logo.webp" alt="BLOC Team">
+      <span>BLOC Team</span>
+    </div>
+    <span>·</span>
+    <span>July 2026</span>
+    <span>·</span>
+    <span>3 min read</span>
+  </div>
+
+  <div class="article-body">
+
+    <p>
+      Following the holders-exclusive kickoff of Chapter I, the Beaver Lodge Original Colony Competition Series Season 1 opened its doors wider with Chapter II: Advertise BLOC.
+    </p>
+
+    <p>
+      This time, the challenge wasn't about simply introducing BLOC — it was about selling the idea of BLOC through creativity.
+    </p>
+
+    <p>
+      With the chapter open to both BLOC holders and non-holders, creators from outside the colony were invited to step in, explore what BLOC represents, and turn that understanding into an advertisement of their own.
+    </p>
+
+    <h2>A New Challenge, A Bigger Stage</h2>
+
+    <p>
+      Chapter II challenged participants to think like creative directors.
+    </p>
+
+    <p>
+      Using BLOC's identity, story, community, and vision as inspiration, participants were tasked with creating a poster that could capture attention and communicate why someone should discover BLOC.
+    </p>
+
+    <p>
+      The challenge opened the competition to a broader group of builders while maintaining the same competitive spirit established in Chapter I.
+    </p>
+
+    <p>
+      Different creators approached the brief in completely different ways — some focused on BLOC's identity, others on its community, while others took a more unconventional approach to advertising the colony.
+    </p>
+
+    <p>
+      That diversity is exactly what made Chapter II stand out.
+    </p>
+
+    <h2>Chapter II Champion</h2>
+
+    <p>
+      After the entries were reviewed by the judging panel, <a href="https://x.com/MisterMetaX" target="_blank" rel="noopener">MisterMetaX (@MisterMetaX)</a> emerged as the Chapter II Champion.
+    </p>
+
+    <p>
+      MisterMetaX's entry stood out through its creative direction, visual impact, and ability to communicate the BLOC concept within the advertising theme.
+    </p>
+
+    <p>
+      The victory earned MisterMetaX the 0.2 SOL Chapter Prize and, most importantly, a place in the Season 1 Finals.
+    </p>
+
+    <p>
+      There, MisterMetaX will join the other chapter champions in the race for the title of BLOC Competition Series Season 1 Champion.
+    </p>
+
+    <p>
+      The Season Finals will determine who takes home the season's grand prize, the exclusive customized 1-of-1 BLOC Beaver.
+    </p>
+
+    <h2>Spotlight on the Participants</h2>
+
+    <p>
+      A competition is never defined by its winner alone.
+    </p>
+
+    <p>
+      Chapter II brought together creators from both inside and outside the BLOC community, each contributing their own interpretation of what it means to advertise BLOC.
+    </p>
+
+    <p>
+      We want to recognize every builder who accepted the challenge and put their creativity on display:
+    </p>
+
+    <ul>
+      <!-- EDIT: replace each href="#" with the actual link to that participant's entry (tweet, Discord post, image, etc.) -->
+      <li><a href="https://x.com/MisterMetaX" target="_blank" rel="noopener">MisterMetaX (@MisterMetaX)</a> — Chapter II Champion · <a class="entry-link" href="https://x.com/mistermetax/status/2079968529764295049" target="_blank" rel="noopener">(see entry)</a></li>
+      <li>[Golden] (@Allmen4christ) · <a class="entry-link" href="https://x.com/Allmen4christ/status/2077289835014836468" target="_blank" rel="noopener">(see entry)</a></li>
+      <li>[Dan] (@DanMcMan77) · <a class="entry-link" href="https://x.com/DanMcMan77/status/2077570306307408226" target="_blank" rel="noopener">(see entry)</a></li>
+      <li>[Cuz] (@Tobirsama) · <a class="entry-link" href="https://x.com/Tobirsama/status/2078123940979839249" target="_blank" rel="noopener">(see entry)</a></li>
+      <li>[8] (@OCTOWEST) · <a class="entry-link" href="https://x.com/OCTOWEST/status/2078462906543280223" target="_blank" rel="noopener">(see entry)</a></li>
+      <li>[IyHODL 2.0] (@iyandahodl) · <a class="entry-link" href="https://x.com/iyandahodl/status/2079191278907220437?s=46" target="_blank" rel="noopener">(see entry)</a></li>
+      <li>[Mannie] (@0xManny4pf) · <a class="entry-link" href="https://x.com/0xManny4pf/status/2079208074603331707" target="_blank" rel="noopener">(see entry)</a></li>
+      <li>[GirthyWiFi] (@GirthyWiFi) · <a class="entry-link" href="https://x.com/girthywifi/status/2079909954928918646?s=46" target="_blank" rel="noopener">(see entry)</a></li>
+      <li>[TOMKINS] (@Tomkins_360) · <a class="entry-link" href="https://x.com/tomkins_360/status/2080290424736952741" target="_blank" rel="noopener">(see entry)</a></li>
+    </ul>
+
+    <p>
+      Every entry helped expand the creative identity of BLOC and showed how different perspectives can tell the same story in completely different ways.
+    </p>
+
+    <p>
+      To everyone who participated: thank you for building with us.
+    </p>
+
+    <h2>One Champion Closer to the Finals</h2>
+
+    <p>
+      With Chapter I and Chapter II complete, the road to the Season 1 Championship is beginning to take shape.
+    </p>
+
+    <p>
+      Viper secured the first Finals spot in Chapter I.
+    </p>
+
+    <p>
+      MisterMetaX now joins him as the second Chapter Champion to earn a place in the Finals.
+    </p>
+
+    <p>
+      But the competition isn't over.
+    </p>
+
+    <p>
+      More chapters mean more challenges, more creators, and more opportunities to earn a place at the final stage of Season 1.
+    </p>
+
+    <p>
+      The builders are coming together. The champions are being decided. And the race for the BLOC Competition Series Season 1 Championship continues.
+    </p>
+
+  </div>
+
+  <div class="article-divider"></div>
+
+  <div class="article-footer">
+    <a href="/#articles" class="btn-secondary">← All Articles</a>
+    <a href="/#home" class="btn-secondary">Home →</a>
+  </div>
+
+</div>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+  }
+</script>
+</body>
+</html>

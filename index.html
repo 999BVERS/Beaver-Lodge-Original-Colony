@@ -614,6 +614,84 @@
 
   .team-socials a:hover { color: var(--gold); border-color: var(--gold-dim); }
 
+  /* ── COLLAB CARDS ── */
+  .collab-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem 1.75rem;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .collab-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+
+  .collab-logo {
+    width: 80px; height: 80px;
+    border-radius: 16px;
+    background: var(--gold-dim);
+    border: 2px solid var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0 auto 1.25rem;
+    object-fit: cover;
+    overflow: hidden;
+  }
+
+  .collab-name {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .collab-learn {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--gold);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    border: 1px solid var(--gold-dim);
+    border-radius: 100px;
+    padding: 5px 14px;
+    margin-bottom: 1.25rem;
+    transition: background 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .collab-learn:hover { background: var(--gold-glow); border-color: var(--gold); }
+
+  .collab-socials {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
+  .collab-socials a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px; height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-3);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .collab-socials a:hover { color: var(--gold); border-color: var(--gold-dim); }
+
+  .collab-socials svg { width: 15px; height: 15px; fill: currentColor; }
+
   /* ── ARTICLES ── */
   #articles { background: var(--bg); }
 
@@ -896,6 +974,7 @@
 
 .carousel-track .biz-card,
 .carousel-track .team-card,
+  .carousel-track .collab-card,
 .carousel-track .article-card,
 .carousel-track .partner-card {
   flex: 0 0 calc(33.333% - 1rem);
@@ -1000,6 +1079,7 @@
   .nav-links a { padding: 6px 8px; font-size: 12px; }
   .carousel-track .biz-card,
   .carousel-track .team-card,
+  .carousel-track .collab-card,
   .carousel-track .article-card,
   .carousel-track .partner-card {
     flex: 0 0 calc(50% - 0.75rem);
@@ -1033,6 +1113,7 @@
   .bbb-intro { flex-direction: column; align-items: flex-start; }
   .carousel-track .biz-card,
   .carousel-track .team-card,
+  .carousel-track .collab-card,
   .carousel-track .article-card,
   .carousel-track .partner-card {
     flex: 0 0 calc(100vw - clamp(2rem, 10vw, 3.5rem));
@@ -1053,6 +1134,7 @@
   .coming-soon-overlay { left: -1rem; right: -1rem; }
   .carousel-track .biz-card,
   .carousel-track .team-card,
+  .carousel-track .collab-card,
   .carousel-track .article-card,
   .carousel-track .partner-card {
     flex: 0 0 calc(100vw - 2rem);
@@ -1519,16 +1601,109 @@
      COLLAB PROJECTS
 ═══════════════════════════ -->
 <section id="collab">
-  <div class="coming-soon-wrapper">
-    <div class="coming-soon-overlay">
-      <div class="coming-soon-badge">Coming Soon</div>
-      <div class="coming-soon-title">Collab Projects</div>
-      <div class="coming-soon-sub">Big collaborations are in the works. More details soon.</div>
-    </div>
-    <div class="container">
-      <p class="section-label">Collaborations</p>
-      <h2>Collab Projects</h2>
-      <p class="section-sub">Projects and collaborations the Colony is building with other communities and creators.</p>
+  <div class="container">
+    <p class="section-label" style="display:flex; justify-content:center; text-align:center;">Alliance</p>
+    <h2 style="text-align:center;">Collaborated Projects</h2>
+    <p class="section-sub" style="text-align:center; margin:0 auto 3.5rem;">Projects and communities the Colony is building alongside. Click to learn more about each one.</p>
+
+    <div class="carousel-wrapper" id="carousel-collab">
+      <div class="carousel-track-container">
+        <div class="carousel-track">
+
+          <!-- ─── COLLAB CARD ─── EDIT: duplicate to add more projects -->
+          <div class="collab-card">
+            <!-- EDIT: Replace div with <img src="project-logo.webp" alt="Dead Bunnies" class="collab-logo" style="object-fit:cover;"> -->
+            <div class="collab-logo">DB</div>
+            <!-- EDIT: Project name -->
+            <div class="collab-name">Dead Bunnies</div>
+            <!-- EDIT: Update href to your article page about this project -->
+            <a href="#" class="collab-learn">Learn More About Dead Bunnies</a>
+            <div class="collab-socials">
+              <!-- EDIT: Replace # with actual URLs. Remove any you don't need. -->
+              <a href="https://x.com/DeadBunniesHQ" title="Twitter / X" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a href="https://discord.com/invite/FD764cwcjf" title="Discord" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+              </a>
+              <a href="https://gravemarket.io/collection/dead-bunnies" title="Website" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="collab-card">
+            <!-- EDIT: Replace div with <img src="project-logo.webp" alt="Celestial Yokais" class="collab-logo" style="object-fit:cover;"> -->
+            <div class="collab-logo">CY</div>
+            <!-- EDIT: Project name -->
+            <div class="collab-name">Celestial Yokais</div>
+            <!-- EDIT: Update href to your article page about this project -->
+            <a href="#" class="collab-learn">Learn More About Celestial Yokai</a>
+            <div class="collab-socials">
+              <!-- EDIT: Replace # with actual URLs. Remove any you don't need. -->
+              <a href="https://x.com/CelestialYokais" title="Twitter / X" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a href="https://discord.gg/My8tJ7BvF" title="Discord" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+              </a>
+              <a href="https://gravemint.io/mint/yhrxfr" title="Website" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="collab-card">
+            <!-- EDIT: Replace div with <img src="project-logo.webp" alt="Stone Gods" class="collab-logo" style="object-fit:cover;"> -->
+            <div class="collab-logo">CY</div>
+            <!-- EDIT: Project name -->
+            <div class="collab-name">Stone Gods</div>
+            <!-- EDIT: Update href to your article page about this project -->
+            <a href="#" class="collab-learn">Learn More About Stone Gods</a>
+            <div class="collab-socials">
+              <!-- EDIT: Replace # with actual URLs. Remove any you don't need. -->
+              <a href="https://x.com/STONEGODSHQ" title="Twitter / X" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a href="https://discord.gg/efPmVTvsU" title="Discord" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+              </a>
+              <a href="https://gravemarket.io/collection/stone-gods" title="Website" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="collab-card">
+            <!-- EDIT: Replace div with <img src="project-logo.webp" alt="LeSuit Dao" class="collab-logo" style="object-fit:cover;"> -->
+            <div class="collab-logo">CY</div>
+            <!-- EDIT: Project name -->
+            <div class="collab-name">LeSuit DAO</div>
+            <!-- EDIT: Update href to your article page about this project -->
+            <a href="#" class="collab-learn">Learn More About LeSuit DAO</a>
+            <div class="collab-socials">
+              <!-- EDIT: Replace # with actual URLs. Remove any you don't need. -->
+              <a href="https://x.com/LeSuitDAO" title="Twitter / X" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a href="https://discord.gg/lesharx" title="Discord" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+              </a>
+              <a href="https://www.tensor.trade/trade/lesharx" title="Website" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- ─── ADD MORE COLLAB CARDS HERE ─── -->
+
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <div class="carousel-dots" id="dots-collab"></div>
+        <button class="carousel-btn" id="prev-collab">&#8592;</button>
+        <button class="carousel-btn" id="next-collab">&#8594;</button>
+      </div>
     </div>
   </div>
 </section>
@@ -1793,6 +1968,7 @@ initCarousel('carousel-bbb', 'prev-bbb', 'next-bbb', 'dots-bbb');
 initCarousel('carousel-team', 'prev-team', 'next-team', 'dots-team');
 initCarousel('carousel-articles', 'prev-articles', 'next-articles', 'dots-articles');
 initCarousel('carousel-partners', 'prev-partners', 'next-partners', 'dots-partners');
+initCarousel('carousel-collab', 'prev-collab', 'next-collab', 'dots-collab');
 </script>
 </body>
 </html>

@@ -5,17 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Staking — Beaver Lodge Original Colony</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* ---------- BLOC brand tokens (matches blocolony.com) ----------
-     TODO: If your live site uses slightly different hex values,
-     just swap them in here — everything below references these vars. */
   :root {
     --bg: #0a0a0a;
     --bg-card: #131110;
     --bg-card-border: #24201a;
-    --gold: #c9a84c;
-    --gold-bright: #e0c06e;
+    --gold: #d9b04a;
+    --gold-bright: #e8c162;
     --gold-dim: #8a6f2f;
     --cream: #f4efe6;
     --gray: #a8a29a;
@@ -27,17 +24,12 @@
   body {
     background: var(--bg);
     color: var(--cream);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Nunito', sans-serif;
     line-height: 1.5;
   }
 
   h1, h2, h3, .display {
-    font-family: 'Space Grotesk', sans-serif;
-  }
-
-  /* mono accents — claim codes, stats, tags — matches blocolony.com's use of Space Mono */
-  .stat-value, .quest-timer, .claim-code-box, .chest-cost, .nft-meta, .tag {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Baloo 2', sans-serif;
   }
 
   a { color: inherit; text-decoration: none; }
@@ -59,64 +51,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    border: 2px solid var(--gold);
-  }
-  .logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  /* fallback text shown only if the image fails to load */
-  .logo span {
     font-weight: 800;
     font-size: 10px;
     color: #2a1c05;
+    border: 2px solid var(--gold);
   }
 
-  .hamburger {
+  .menu-icon {
+    width: 28px;
+    height: 20px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 4px;
+    justify-content: space-between;
   }
-  .hamburger span {
-    display: block;
-    width: 22px;
+  .menu-icon span {
     height: 2px;
     background: var(--cream);
     border-radius: 2px;
-  }
-
-  .mobile-menu {
-    display: none;
-    position: fixed;
-    top: 85px; left: 0; right: 0;
-    background: rgba(10,10,10,0.98);
-    border-bottom: 1px solid #1c1a17;
-    padding: 1rem 1.5rem;
-    z-index: 99;
-    flex-direction: column;
-    gap: 0.25rem;
-    max-height: calc(100vh - 85px);
-    overflow-y: auto;
-  }
-  .mobile-menu.open { display: flex; }
-  .mobile-menu a {
-    padding: 12px 0;
-    font-size: 15px;
-    color: var(--gray);
-    text-decoration: none;
-    border-bottom: 1px solid #1c1a17;
-  }
-  .mobile-menu a:last-child { border-bottom: none; }
-  .mobile-menu a:hover, .mobile-menu a.current { color: var(--gold); }
-  .mobile-menu a.back-link {
-    color: var(--gold);
-    font-weight: 700;
   }
 
   /* ---------- Layout ---------- */
@@ -177,7 +128,7 @@
     background: linear-gradient(180deg, var(--gold-bright), var(--gold));
     color: #241a05;
     font-weight: 800;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Baloo 2', sans-serif;
     padding: 16px 28px;
     border-radius: 999px;
     border: none;
@@ -189,7 +140,7 @@
     background: transparent;
     color: var(--cream);
     font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Baloo 2', sans-serif;
     padding: 15px 28px;
     border-radius: 999px;
     border: 1px solid #3a352c;
@@ -224,7 +175,7 @@
   }
 
   .stat-value {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Baloo 2', sans-serif;
     font-size: 28px;
     font-weight: 700;
     color: var(--gold);
@@ -293,9 +244,7 @@
     font-weight: 700;
     font-size: 13px;
     cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    margin-top: auto;
-    align-self: center;
+    font-family: 'Nunito', sans-serif;
   }
   .btn-stake.staked {
     background: var(--gold);
@@ -327,7 +276,7 @@
   .quest-title { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
   .quest-desc { color: var(--gray); font-size: 14px; }
   .quest-timer {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Baloo 2', sans-serif;
     color: var(--gold);
     font-weight: 700;
     font-size: 14px;
@@ -349,9 +298,6 @@
     border-radius: 16px;
     padding: 24px 20px;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
   }
   .chest-icon {
     width: 56px;
@@ -361,7 +307,7 @@
     background: linear-gradient(160deg, #3a2f14, #17130a);
     border: 1px solid var(--gold-dim);
   }
-  .chest-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .chest-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
   .chest-cost { color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 14px; }
 
   .reward-pool {
@@ -371,10 +317,6 @@
     border-radius: 10px;
     padding: 12px 14px;
     margin-bottom: 16px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
   .reward-pool-label {
     font-size: 11px;
@@ -444,7 +386,7 @@
   }
 
   .modal-reward {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Baloo 2', sans-serif;
     font-size: 26px;
     font-weight: 700;
     color: var(--cream);
@@ -463,7 +405,7 @@
     border: 1px dashed var(--gold-dim);
     border-radius: 12px;
     padding: 14px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Baloo 2', sans-serif;
     font-size: 18px;
     letter-spacing: 2px;
     color: var(--gold-bright);
@@ -490,7 +432,7 @@
     padding: 13px;
     border-radius: 999px;
     font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Nunito', sans-serif;
     cursor: pointer;
     font-size: 14px;
   }
@@ -508,32 +450,9 @@
 <body>
 
 <nav>
-  <a href="index.html#home" class="logo">
-    <!-- TODO: point this at the same logo file your nav uses on blocolony.com,
-         e.g. "assets/logo.png" or "images/bloc-logo.png" -->
-    <img src="assets/logo.png" alt="BLOC" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-    <span style="display:none;">BLOC</span>
-  </a>
-
-  <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="logo">BLOC</div>
+  <div class="menu-icon"><span></span><span></span><span></span></div>
 </nav>
-
-<div class="mobile-menu" id="mobileMenu">
-  <a href="index.html#home">Home</a>
-  <a href="index.html#nft">Mint Here</a>
-  <a href="index.html#trait-store">Trait Store</a>
-  <a href="index.html#staking" class="current">Staking</a>
-  <a href="index.html#about">About</a>
-  <a href="index.html#lore">Lore</a>
-  <a href="index.html#articles">Articles</a>
-  <a href="index.html#bbb">Better Business Beaver</a>
-  <a href="index.html#partners">Partners</a>
-  <a href="index.html#collab">Collab Projects</a>
-  <a href="index.html#team">Team</a>
-  <a href="index.html#staking" class="back-link">&#8592; Back to Site</a>
-</div>
 
 <main>
   <div class="eyebrow">Staking</div>
@@ -541,10 +460,9 @@
   <p class="subtitle">Stake your BLOC NFTs to earn $CHEW — no locking, no risk. Your NFTs stay in your wallet the entire time.</p>
 
   <div class="wallet-bar">
-    <button class="btn-primary" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+    <button class="btn-primary" id="connectBtn">Connect Wallet</button>
     <button class="btn-secondary">How it works</button>
   </div>
-  <div id="statusMsg" style="margin-top:12px; font-size:13px; font-family:'Space Mono',monospace;"></div>
 
   <div class="stat-grid">
     <div class="card">
@@ -652,169 +570,199 @@
 </div>
 
 <script>
-  // ---------------------------------------------------------------
-  // BLOC Staking — live wiring to Netlify functions
-  // (create-session, stake-nft, unstake-nft)
-  //
-  // NOTE: verify-holdings.js (Step 7.1) hasn't been built yet, so this
-  // can't auto-list your real BLOC NFTs. Instead there's a manual
-  // "test by mint address" panel below so stake-nft/unstake-nft can be
-  // tested end-to-end right now. Once verify-holdings exists, replace
-  // renderTestPanel() with a real fetch to it and loop over the
-  // results instead of the single manual mint row.
-  // ---------------------------------------------------------------
+  let connectedWallet = null;
+  let lastWalletData = null;
+  let sessionToken = null;
 
-  const FUNCTIONS_BASE = '/.netlify/functions';
-
-  const state = {
-    wallet: null,
-    token: null,
-    expiresAt: null,
-    stakedMints: new Set(), // tracked client-side just for this test panel's UI
-  };
-
-  function showStatus(msg, isError) {
-    const el = document.getElementById('statusMsg');
-    el.textContent = msg;
-    el.style.color = isError ? '#e0796e' : 'var(--gold)';
-  }
-
-  function shortWallet(w) {
-    return w ? `${w.slice(0, 4)}…${w.slice(-4)}` : '';
-  }
-
+  // ---------- Wallet Connect + Sign-In ----------
   async function connectWallet() {
-    const provider = window.solana;
-    if (!provider || !provider.isPhantom) {
-      showStatus('No Solana wallet found — install Phantom to connect.', true);
+    const provider = window.solana || window.solflare;
+
+    if (!provider) {
+      alert('No Solana wallet found. Please install Phantom or Solflare, then try again.');
+      window.open('https://phantom.app/', '_blank');
       return;
     }
 
     try {
-      showStatus('Connecting wallet…', false);
       const resp = await provider.connect();
-      const wallet = resp.publicKey.toString();
+      connectedWallet = resp.publicKey.toString();
 
-      showStatus('Wallet connected. Requesting signature to start a session…', false);
+      const btn = document.getElementById('connectBtn');
+      btn.textContent = 'Verifying...';
+      btn.disabled = true;
 
-      // Message must embed a fresh 13-digit ms timestamp — create-session.js
-      // rejects the sign-in if it's older than 5 minutes (replay protection).
-      const message = `Sign in to BLOC Staking\n${Date.now()}`;
+      // Ask the wallet to sign a proof-of-ownership message. No gas, no
+      // transaction, no fund risk — this only proves the wallet controls
+      // the private key for the connected address.
+      const message = `Sign in to BLOC Staking\nTimestamp: ${Date.now()}`;
       const encodedMessage = new TextEncoder().encode(message);
       const signed = await provider.signMessage(encodedMessage, 'utf8');
-      const signatureArray = Array.from(signed.signature);
 
-      const sessionRes = await fetch(`${FUNCTIONS_BASE}/create-session`, {
+      const signatureArray = Array.from(
+        signed.signature instanceof Uint8Array ? signed.signature : new Uint8Array(signed.signature)
+      );
+
+      const sessionRes = await fetch('/.netlify/functions/create-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wallet, message, signature: signatureArray }),
+        body: JSON.stringify({ wallet: connectedWallet, message, signature: signatureArray }),
       });
-      const sessionData = await sessionRes.json();
 
       if (!sessionRes.ok) {
-        showStatus(`Session error: ${sessionData.error || sessionRes.status}`, true);
-        return;
+        throw new Error('Session verification failed');
       }
 
-      state.wallet = wallet;
-      state.token = sessionData.token;
-      state.expiresAt = sessionData.expiresAt;
+      const sessionData = await sessionRes.json();
+      sessionToken = sessionData.token;
+      sessionStorage.setItem('bloc_session_token', sessionToken);
+      sessionStorage.setItem('bloc_session_wallet', connectedWallet);
 
-      document.getElementById('connectBtn').textContent = shortWallet(wallet);
-      document.getElementById('connectBtn').onclick = null;
-      showStatus('Session active — you can now test stake / unstake below.', false);
+      btn.textContent = connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
 
-      renderTestPanel();
+      await loadWalletData();
     } catch (err) {
-      console.error(err);
-      showStatus(`Connect failed: ${err.message || err}`, true);
+      console.error('Wallet connect/sign-in failed:', err);
+      alert('Wallet connection or sign-in was cancelled or failed.');
+      const btn = document.getElementById('connectBtn');
+      btn.textContent = 'Connect Wallet';
+      btn.disabled = false;
+      connectedWallet = null;
+      sessionToken = null;
     }
   }
 
-  function authedFetch(path, body) {
-    return fetch(`${FUNCTIONS_BASE}/${path}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${state.token}`,
-      },
-      body: JSON.stringify(body),
-    });
-  }
+  async function loadWalletData() {
+    if (!connectedWallet) return;
 
-  async function doStake(mint) {
-    if (!state.token) { showStatus('Connect your wallet first.', true); return; }
-    if (!mint) { showStatus('Enter a mint address to stake.', true); return; }
+    document.getElementById('pointsBalance').textContent = 'Loading...';
+    document.getElementById('stakedCount').textContent = '...';
+    document.getElementById('collabBonus').textContent = '...';
+    document.getElementById('nftList').innerHTML =
+      '<div class="empty-state">Checking your wallet…</div>';
 
-    showStatus(`Staking ${shortWallet(mint)}…`, false);
     try {
-      const res = await authedFetch('stake-nft', { wallet: state.wallet, mint });
+      const res = await fetch('/.netlify/functions/verify-holdings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: connectedWallet }),
+      });
+
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
-      if (!res.ok) {
-        showStatus(`Stake failed: ${data.error || res.status}`, true);
-        return;
-      }
-      state.stakedMints.add(mint);
-      showStatus(data.message || 'Staked successfully.', false);
-      renderTestPanel(mint);
+      lastWalletData = data;
+
+      renderWalletData(data);
     } catch (err) {
-      showStatus(`Stake failed: ${err.message || err}`, true);
+      console.error('Failed to load wallet data:', err);
+      document.getElementById('nftList').innerHTML =
+        '<div class="empty-state">Could not load your NFTs. Please try again.</div>';
     }
   }
 
-  async function doUnstake(mint) {
-    if (!state.token) { showStatus('Connect your wallet first.', true); return; }
-    if (!mint) { showStatus('Enter a mint address to unstake.', true); return; }
+  function renderWalletData(data) {
+    document.getElementById('pointsBalance').textContent =
+      Math.floor(data.chewBalance).toLocaleString();
+    document.getElementById('stakedCount').textContent = data.stakedNfts.length;
+    document.getElementById('collabBonus').textContent = '+' + data.collabBonusPercent + '%';
 
-    showStatus(`Unstaking ${shortWallet(mint)}…`, false);
-    try {
-      const res = await authedFetch('unstake-nft', { wallet: state.wallet, mint });
-      const data = await res.json();
-      if (!res.ok) {
-        showStatus(`Unstake failed: ${data.error || res.status}`, true);
-        return;
-      }
-      state.stakedMints.delete(mint);
-      showStatus(data.message || 'Unstaked successfully.', false);
-      renderTestPanel(mint);
-    } catch (err) {
-      showStatus(`Unstake failed: ${err.message || err}`, true);
+    const stakedMints = new Set(data.stakedNfts.map((n) => n.mint));
+    const nftListEl = document.getElementById('nftList');
+
+    if (data.heldBlocMints.length === 0) {
+      nftListEl.innerHTML = '<div class="empty-state">No BLOC NFTs found in this wallet</div>';
+      return;
     }
-  }
 
-  function renderTestPanel(prefillMint) {
-    const list = document.getElementById('nftList');
-    const mintVal = prefillMint || (document.getElementById('mintInput')?.value ?? '');
-    const isStaked = state.stakedMints.has(mintVal);
+    const unstakedCount = data.heldBlocMints.filter((n) => !stakedMints.has(n.mint)).length;
 
-    list.innerHTML = `
-      <div class="nft-row">
-        <div class="nft-info">
-          <div class="nft-thumb"></div>
-          <div>
-            <div class="nft-name">Manual test — paste a mint you own</div>
-            <div class="nft-meta">verify-holdings.js isn't built yet, so this checks ownership via Helius directly inside stake-nft.js when you click Stake</div>
-            <input id="mintInput" type="text" placeholder="NFT mint address" value="${mintVal}"
-              style="margin-top:8px; width:100%; max-width:340px; background:var(--bg); border:1px solid var(--bg-card-border); color:var(--cream); padding:8px 10px; border-radius:8px; font-family:'Space Mono',monospace; font-size:12px;">
+    const stakeAllButton =
+      unstakedCount > 1
+        ? `<button class="btn-secondary" style="width:100%; margin-bottom: 12px;" onclick="stakeAll()">
+             Stake All (${unstakedCount})
+           </button>`
+        : '';
+
+    const rows = data.heldBlocMints
+      .map((nft) => {
+        const isStaked = stakedMints.has(nft.mint);
+        const thumb = nft.image
+          ? `<img src="${nft.image}" class="nft-thumb" style="object-fit:cover;" />`
+          : `<div class="nft-thumb"></div>`;
+        return `
+          <div class="nft-row">
+            <div class="nft-info">
+              ${thumb}
+              <div>
+                <div class="nft-name">${nft.name}</div>
+                <div class="nft-meta">${isStaked ? 'Staked · earning $CHEW' : 'Not staked'}</div>
+              </div>
+            </div>
+            <button class="btn-stake ${isStaked ? 'staked' : ''}" onclick="toggleStake('${nft.mint}', ${isStaked})">
+              ${isStaked ? 'Unstake' : 'Stake'}
+            </button>
           </div>
-        </div>
-        <button class="btn-stake${isStaked ? ' staked' : ''}"
-          onclick="${isStaked ? 'doUnstake' : 'doStake'}(document.getElementById('mintInput').value.trim())">
-          ${isStaked ? 'Unstake' : 'Stake'}
-        </button>
-      </div>
-    `;
+        `;
+      })
+      .join('');
+
+    nftListEl.innerHTML = stakeAllButton + rows;
   }
 
-  function toggleMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
+  async function stakeAll() {
+    if (!connectedWallet || !sessionToken || !lastWalletData) return;
+    const stakedMints = new Set(lastWalletData.stakedNfts.map((n) => n.mint));
+    const toStake = lastWalletData.heldBlocMints.filter((n) => !stakedMints.has(n.mint));
+
+    for (const nft of toStake) {
+      try {
+        await fetch('/.netlify/functions/stake-nft', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({ wallet: connectedWallet, mint: nft.mint }),
+        });
+      } catch (err) {
+        console.error('Failed to stake', nft.mint, err);
+      }
+    }
+
+    await loadWalletData();
   }
-  function closeMenu() {
-    document.getElementById('mobileMenu').classList.remove('open');
+
+  async function toggleStake(mint, isCurrentlyStaked) {
+    if (!connectedWallet || !sessionToken) return;
+
+    const endpoint = isCurrentlyStaked
+      ? '/.netlify/functions/unstake-nft'
+      : '/.netlify/functions/stake-nft';
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({ wallet: connectedWallet, mint }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || 'Action failed');
+        return;
+      }
+
+      await loadWalletData(); // refresh
+    } catch (err) {
+      console.error('Stake/unstake failed:', err);
+      alert('Something went wrong. Please try again.');
+    }
   }
-  document.querySelectorAll('.mobile-menu a').forEach(a => {
-    a.addEventListener('click', () => closeMenu());
-  });
+
+  document.getElementById('connectBtn').addEventListener('click', connectWallet);
 
   let currentClaimCode = '';
   let currentRewardName = '';

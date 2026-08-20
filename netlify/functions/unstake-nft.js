@@ -7,6 +7,7 @@
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const { requireValidSession } = require('./utils/auth');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -24,6 +25,10 @@ exports.handler = async (event) => {
 
   if (!wallet || !mint) {
     return { statusCode: 400, body: JSON.stringify({ error: 'wallet and mint are required' }) };
+  }
+
+  if (!requireValidSession(event, wallet)) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Invalid or expired session — please reconnect your wallet' }) };
   }
 
   try {

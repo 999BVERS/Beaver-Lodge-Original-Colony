@@ -12,6 +12,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
 const BLOC_COLLECTION_ADDRESS = process.env.BLOC_COLLECTION_ADDRESS;
+const { requireValidSession } = require('./utils/auth');
 
 async function verifyOwnership(wallet, mint) {
   const res = await fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
@@ -52,6 +53,10 @@ exports.handler = async (event) => {
 
   if (!wallet || !mint) {
     return { statusCode: 400, body: JSON.stringify({ error: 'wallet and mint are required' }) };
+  }
+
+  if (!requireValidSession(event, wallet)) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Invalid or expired session — please reconnect your wallet' }) };
   }
 
   try {

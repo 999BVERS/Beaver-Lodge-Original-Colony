@@ -56,14 +56,21 @@ exports.handler = async (event) => {
     const heliusData = await heliusRes.json();
     const assets = heliusData.result?.items || [];
 
-    // Extract mints that belong to the BLOC collection
+    // Extract mints that belong to the BLOC collection, with display name + image
     const heldBlocMints = assets
       .filter((asset) =>
         asset.grouping?.some(
           (g) => g.group_key === 'collection' && g.group_value === BLOC_COLLECTION_ADDRESS
         )
       )
-      .map((asset) => asset.id);
+      .map((asset) => ({
+        mint: asset.id,
+        name: asset.content?.metadata?.name || 'BLOC',
+        image:
+          asset.content?.links?.image ||
+          asset.content?.files?.[0]?.uri ||
+          null,
+      }));
 
     // 2. Get active collab collections from Supabase
     const collabRes = await fetch(

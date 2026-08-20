@@ -572,8 +572,9 @@
 <script>
   let connectedWallet = null;
   let lastWalletData = null;
+  let sessionToken = null;
 
-  // ---------- Wallet Connect ----------
+  // ---------- Wallet Connect + Sign-In ----------
   async function connectWallet() {
     const provider = window.solana || window.solflare;
 
@@ -588,13 +589,46 @@
       connectedWallet = resp.publicKey.toString();
 
       const btn = document.getElementById('connectBtn');
-      btn.textContent = connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
+      btn.textContent = 'Verifying...';
       btn.disabled = true;
+
+      // Ask the wallet to sign a proof-of-ownership message. No gas, no
+      // transaction, no fund risk — this only proves the wallet controls
+      // the private key for the connected address.
+      const message = `Sign in to BLOC Staking\nTimestamp: ${Date.now()}`;
+      const encodedMessage = new TextEncoder().encode(message);
+      const signed = await provider.signMessage(encodedMessage, 'utf8');
+
+      const signatureArray = Array.from(
+        signed.signature instanceof Uint8Array ? signed.signature : new Uint8Array(signed.signature)
+      );
+
+      const sessionRes = await fetch('/.netlify/functions/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: connectedWallet, message, signature: signatureArray }),
+      });
+
+      if (!sessionRes.ok) {
+        throw new Error('Session verification failed');
+      }
+
+      const sessionData = await sessionRes.json();
+      sessionToken = sessionData.token;
+      sessionStorage.setItem('bloc_session_token', sessionToken);
+      sessionStorage.setItem('bloc_session_wallet', connectedWallet);
+
+      btn.textContent = connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
 
       await loadWalletData();
     } catch (err) {
-      console.error('Wallet connect failed:', err);
-      alert('Wallet connection was cancelled or failed.');
+      console.error('Wallet connect/sign-in failed:', err);
+      alert('Wallet connection or sign-in was cancelled or failed.');
+      const btn = document.getElementById('connectBtn');
+      btn.textContent = 'Connect Wallet';
+      btn.disabled = false;
+      connectedWallet = null;
+      sessionToken = null;
     }
   }
 
@@ -676,7 +710,7 @@
   }
 
   async function stakeAll() {
-    if (!connectedWallet || !lastWalletData) return;
+    if (!connectedWallet || !sessionToken || !lastWalletData) return;
     const stakedMints = new Set(lastWalletData.stakedNfts.map((n) => n.mint));
     const toStake = lastWalletData.heldBlocMints.filter((n) => !stakedMints.has(n.mint));
 
@@ -684,7 +718,10 @@
       try {
         await fetch('/.netlify/functions/stake-nft', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sessionToken}`,
+          },
           body: JSON.stringify({ wallet: connectedWallet, mint: nft.mint }),
         });
       } catch (err) {
@@ -696,7 +733,7 @@
   }
 
   async function toggleStake(mint, isCurrentlyStaked) {
-    if (!connectedWallet) return;
+    if (!connectedWallet || !sessionToken) return;
 
     const endpoint = isCurrentlyStaked
       ? '/.netlify/functions/unstake-nft'
@@ -705,7 +742,10 @@
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionToken}`,
+        },
         body: JSON.stringify({ wallet: connectedWallet, mint }),
       });
 

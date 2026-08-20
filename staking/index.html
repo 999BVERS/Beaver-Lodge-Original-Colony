@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staking — Beaver Lodge Original Colony</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- BLOC brand tokens (matches blocolony.com) ----------
+     TODO: If your live site uses slightly different hex values,
+     just swap them in here — everything below references these vars. */
+  :root {
+    --bg: #0a0a0a;
+    --bg-card: #131110;
+    --bg-card-border: #24201a;
+    --gold: #c9a84c;
+    --gold-bright: #e0c06e;
+    --gold-dim: #8a6f2f;
+    --cream: #f4efe6;
+    --gray: #a8a29a;
+    --gray-dim: #6b665f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Space Grotesk', sans-serif;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, .display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* mono accents — claim codes, stats, tags — matches blocolony.com's use of Space Mono */
+  .stat-value, .quest-timer, .claim-code-box, .chest-cost, .nft-meta, .tag {
+    font-family: 'Space Mono', monospace;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #1c1a17;
+  }
+
+  .logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f0c869, #a67c1f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid var(--gold);
+  }
+  .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* fallback text shown only if the image fails to load */
+  .logo span {
+    font-weight: 800;
+    font-size: 10px;
+    color: #2a1c05;
+  }
+
+  .menu-icon {
+    width: 28px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .menu-icon span {
+    height: 2px;
+    background: var(--cream);
+    border-radius: 2px;
+  }
+
+  /* ---------- Layout ---------- */
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  h1.page-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.15;
+  }
+  h1.page-title span {
+    display: block;
+    color: var(--gold);
+  }
+
+  .subtitle {
+    color: var(--gray);
+    font-size: 16px;
+    margin-top: 16px;
+    max-width: 520px;
+  }
+
+  /* ---------- Wallet connect ---------- */
+  .wallet-bar {
+    margin-top: 32px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color: #241a05;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    padding: 16px 28px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--cream);
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    padding: 15px 28px;
+    border-radius: 999px;
+    border: 1px solid #3a352c;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  /* ---------- Stat cards ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 40px;
+  }
+  @media (max-width: 560px) {
+    .stat-grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-dim);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .stat-sub {
+    font-size: 13px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  /* ---------- Section header ---------- */
+  .section {
+    margin-top: 56px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .section-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .section-header .tag {
+    font-size: 12px;
+    color: var(--gray-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ---------- NFT staking list ---------- */
+  .nft-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--bg-card-border);
+    border-radius: 14px;
+    background: var(--bg-card);
+    margin-bottom: 10px;
+  }
+  .nft-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .nft-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2a2418, #171410);
+    border: 1px solid var(--bg-card-border);
+  }
+  .nft-name { font-weight: 700; font-size: 14px; }
+  .nft-meta { font-size: 12px; color: var(--gray-dim); }
+
+  .btn-stake {
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .btn-stake.staked {
+    background: var(--gold);
+    color: #241a05;
+    border: 1px solid var(--gold);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray-dim);
+    font-size: 14px;
+    border: 1px dashed var(--bg-card-border);
+    border-radius: 14px;
+  }
+
+  /* ---------- Quest card ---------- */
+  .quest-card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .quest-title { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+  .quest-desc { color: var(--gray); font-size: 14px; }
+  .quest-timer {
+    font-family: 'Space Mono', monospace;
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  /* ---------- Chest section ---------- */
+  .chest-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 560px) {
+    .chest-grid { grid-template-columns: 1fr; }
+  }
+  .chest-card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  .chest-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, #3a2f14, #17130a);
+    border: 1px solid var(--gold-dim);
+  }
+  .chest-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .chest-cost { color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 14px; }
+
+  .reward-pool {
+    text-align: left;
+    background: #17140f;
+    border: 1px solid var(--bg-card-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+  .reward-pool-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-dim);
+    margin-bottom: 8px;
+  }
+  .reward-pool ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .reward-pool li {
+    font-size: 13px;
+    color: var(--gray);
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .reward-pool li::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    flex-shrink: 0;
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray-dim);
+    font-size: 12px;
+  }
+
+  /* ---------- Win modal ---------- */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    border-radius: 20px;
+    max-width: 400px;
+    width: 100%;
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .modal-eyebrow {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .modal-reward {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 18px;
+  }
+
+  #winCanvas {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid var(--bg-card-border);
+    margin-bottom: 16px;
+  }
+
+  .claim-code-box {
+    background: #17140f;
+    border: 1px dashed var(--gold-dim);
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--gold-bright);
+    margin-bottom: 16px;
+  }
+
+  .modal-instructions {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-copy {
+    background: transparent;
+    border: 1px solid #3a352c;
+    color: var(--cream);
+    padding: 13px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .btn-close-modal {
+    background: none;
+    border: none;
+    color: var(--gray-dim);
+    font-size: 13px;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <!-- TODO: point this at the same logo file your nav uses on blocolony.com,
+         e.g. "assets/logo.png" or "images/bloc-logo.png" -->
+    <img src="assets/logo.png" alt="BLOC" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <span style="display:none;">BLOC</span>
+  </div>
+  <div class="menu-icon"><span></span><span></span><span></span></div>
+</nav>
+
+<main>
+  <div class="eyebrow">Staking</div>
+  <h1 class="page-title">Put your beavers<span>to work</span></h1>
+  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW — no locking, no risk. Your NFTs stay in your wallet the entire time.</p>
+
+  <div class="wallet-bar">
+    <button class="btn-primary" id="connectBtn">Connect Wallet</button>
+    <button class="btn-secondary">How it works</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="card">
+      <div class="stat-label">$CHEW Balance</div>
+      <div class="stat-value" id="pointsBalance">—</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">NFTs Staked</div>
+      <div class="stat-value" id="stakedCount">—</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Collab Bonus</div>
+      <div class="stat-value" id="collabBonus">—</div>
+      <div class="stat-sub">up to +5%</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Your Beavers</h2>
+      <span class="tag">200 $CHEW / day each</span>
+    </div>
+    <div id="nftList">
+      <div class="empty-state">Connect your wallet to see your BLOC NFTs</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Daily Quest</h2>
+      <span class="tag">Resets in 24h</span>
+    </div>
+    <div class="quest-card">
+      <div>
+        <div class="quest-title" id="questTitle">Loading today's quest…</div>
+        <div class="quest-desc" id="questDesc">Check back once your wallet is connected.</div>
+      </div>
+      <div class="quest-timer" id="questTimer">--:--:--</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Fell a Tree</h2>
+      <span class="tag">Bounty Rewards</span>
+    </div>
+    <div class="chest-grid">
+      <div class="chest-card">
+        <div class="chest-icon"></div>
+        <div class="chest-name">Soft Tree</div>
+        <div class="chest-cost">500 $CHEW</div>
+        <div class="reward-pool">
+          <div class="reward-pool-label">Possible Rewards</div>
+          <ul>
+            <li>$CHEW Bonus</li>
+            <li>Whitelist Spot</li>
+            <li>Bounty Slot</li>
+          </ul>
+        </div>
+        <button class="btn-stake" onclick="fellTree('Soft Tree', 'Whitelist Spot')">Fell</button>
+      </div>
+      <div class="chest-card">
+        <div class="chest-icon"></div>
+        <div class="chest-name">Hard Tree</div>
+        <div class="chest-cost">1,500 $CHEW</div>
+        <div class="reward-pool">
+          <div class="reward-pool-label">Possible Rewards</div>
+          <ul>
+            <li>$CHEW Bonus</li>
+            <li>Whitelist Spot</li>
+            <li>Bounty Slot</li>
+            <li>Rare 1-of-1</li>
+          </ul>
+        </div>
+        <button class="btn-stake" onclick="fellTree('Hard Tree', 'Bounty Slot')">Fell</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>Beaver Lodge Original Colony — Staking</footer>
+
+<!-- Win Modal -->
+<div class="modal-overlay" id="winModal">
+  <div class="modal">
+    <div class="modal-eyebrow">🌲 Tree Felled</div>
+    <div class="modal-reward" id="modalRewardName">Whitelist Spot</div>
+
+    <canvas id="winCanvas" width="600" height="340"></canvas>
+
+    <div class="claim-code-box" id="claimCodeText">BLOC-XXXXXX</div>
+
+    <div class="modal-instructions">
+      Send this code to us via <strong>X DM (@blocolony)</strong> to claim your reward. We'll verify it against our records before fulfilling.
+      <br><br>
+      <span style="color: var(--gold);">Bonus:</span> share your win, tag <strong>@blocolony</strong>, and send us the code + post link together to earn an extra <strong>+200 $CHEW</strong>. Each win needs its own new post — reused or repeated posts won't qualify.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="shareWin()">Share Your Win</button>
+      <button class="btn-copy" onclick="copyClaimCode()">Copy Claim Code</button>
+      <button class="btn-close-modal" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentClaimCode = '';
+  let currentRewardName = '';
+
+  function generateClaimCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = 'BLOC-';
+    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
+  }
+
+  function fellTree(treeType, rewardName) {
+    currentClaimCode = generateClaimCode();
+    currentRewardName = rewardName;
+
+    document.getElementById('modalRewardName').textContent = rewardName;
+    document.getElementById('claimCodeText').textContent = currentClaimCode;
+
+    drawWinCard(rewardName, currentClaimCode);
+
+    document.getElementById('winModal').classList.add('open');
+
+    // NOTE: In production, this whole result (reward, code) comes from the
+    // server after verifying $CHEW balance and picking a weighted-random
+    // reward — never generated client-side. This is a visual placeholder.
+  }
+
+  function closeModal() {
+    document.getElementById('winModal').classList.remove('open');
+  }
+
+  function drawWinCard(rewardName, code) {
+    const canvas = document.getElementById('winCanvas');
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+
+    // background
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#171410');
+    grad.addColorStop(1, '#0a0a0a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // border
+    ctx.strokeStyle = '#8a6f2f';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(8, 8, w - 16, h - 16);
+
+    // brand
+    ctx.fillStyle = '#d9b04a';
+    ctx.font = '700 20px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('BEAVER LODGE ORIGINAL COLONY', w / 2, 60);
+
+    // reward
+    ctx.fillStyle = '#f4efe6';
+    ctx.font = '700 34px sans-serif';
+    ctx.fillText(rewardName, w / 2, 140);
+
+    ctx.fillStyle = '#a8a29a';
+    ctx.font = '400 16px sans-serif';
+    ctx.fillText('felled a tree and won', w / 2, 100);
+
+    // claim code box (blurred)
+    const boxX = w / 2 - 160, boxY = 200, boxW = 320, boxH = 60;
+    ctx.fillStyle = '#17140f';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = '#8a6f2f';
+    ctx.setLineDash([6, 4]);
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+    ctx.setLineDash([]);
+
+    // draw code text then blur it visually via overlay blocks
+    ctx.fillStyle = '#e8c162';
+    ctx.font = '700 20px monospace';
+    ctx.fillText(code, w / 2, boxY + 38);
+
+    // blur simulation: draw semi-transparent noisy rectangles over the code
+    for (let i = 0; i < 40; i++) {
+      ctx.fillStyle = `rgba(23,20,15,${Math.random() * 0.5 + 0.4})`;
+      const rw = Math.random() * 20 + 5;
+      const rh = boxH - 10;
+      const rx = boxX + Math.random() * (boxW - rw);
+      ctx.fillRect(rx, boxY + 5, rw, rh);
+    }
+
+    ctx.fillStyle = '#6b665f';
+    ctx.font = '400 12px sans-serif';
+    ctx.fillText('claim code hidden — check your DMs', w / 2, boxY + boxH + 22);
+
+    // footer
+    ctx.fillStyle = '#6b665f';
+    ctx.font = '400 13px sans-serif';
+    ctx.fillText('blocolony.com/staking', w / 2, h - 24);
+  }
+
+  function copyClaimCode() {
+    navigator.clipboard.writeText(currentClaimCode).then(() => {
+      alert('Claim code copied!');
+    });
+  }
+
+  function shareWin() {
+    // 1. Download the win card image
+    const canvas = document.getElementById('winCanvas');
+    const link = document.createElement('a');
+    link.download = 'bloc-win.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    // 2. Open X post composer with pre-filled text (no code included)
+    const text = encodeURIComponent(
+      `I just felled a tree at the Beaver Lodge and won a ${currentRewardName}! 🌲🦫\n\nStake your BLOC NFTs and try your luck: blocolony.com/staking\n\n@blocolony #BLOC #BeaverLodge`
+    );
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+  }
+</script>
+
+</body>
+</html>

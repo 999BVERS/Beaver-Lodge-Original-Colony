@@ -2,6 +2,10 @@
   functions = "netlify/functions"
   publish ="."
 
+[functions."calculate-points"]
+  schedule = "@daily"
+
+
   [[headers]]
     for = "/*"
     [headers.values]

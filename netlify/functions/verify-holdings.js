@@ -137,6 +137,26 @@ exports.handler = async (event) => {
     const chewBalance = balanceData[0]?.balance ?? 0;
     const chewBalanceUpdatedAt = balanceData[0]?.updated_at ?? null;
 
+    // The frontend shows a live-ticking "today's estimate" on top of
+    // chewBalance. That estimate needs a fixed starting point in time to
+    // count up from — and for that to look the same on every device, every
+    // refresh, and every site update, the anchor has to come from the
+    // database, never from when a browser happened to load the page.
+    //
+    // If a payout has posted before, count from that moment (anything
+    // earned before it is already baked into chewBalance). If this wallet
+    // has never been paid yet, count from the earliest of its currently
+    // active stakes instead, so holders see honest progress building from
+    // day one rather than a stuck "0" until the first daily payout runs.
+    let estimateAnchorAt = chewBalanceUpdatedAt;
+    if (!estimateAnchorAt && Array.isArray(stakedNfts) && stakedNfts.length > 0) {
+      const earliestStake = stakedNfts.reduce((earliest, nft) => {
+        const t = new Date(nft.staked_at).getTime();
+        return t < earliest ? t : earliest;
+      }, Infinity);
+      estimateAnchorAt = new Date(earliestStake).toISOString();
+    }
+
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -147,6 +167,7 @@ exports.handler = async (event) => {
         collabBreakdown,     // per-project detail, useful for UI display later
         chewBalance,
         chewBalanceUpdatedAt,
+        estimateAnchorAt,
       }),
     };
   } catch (err) {

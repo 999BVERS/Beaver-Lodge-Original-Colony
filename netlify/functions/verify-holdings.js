@@ -120,9 +120,12 @@ exports.handler = async (event) => {
     );
     const stakedNfts = await stakedRes.json();
 
-    // 4. Get $CHEW balance
+    // 4. Get $CHEW balance, plus when it was last confirmed — the frontend
+    // uses that timestamp (not local device time) to anchor its live
+    // estimate ticker, so every device shows the same number instead of
+    // each one drifting based on its own browsing history.
     const balanceRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/point_balances?wallet=eq.${wallet}&select=balance`,
+      `${SUPABASE_URL}/rest/v1/point_balances?wallet=eq.${wallet}&select=balance,updated_at`,
       {
         headers: {
           apikey: SUPABASE_SERVICE_KEY,
@@ -132,6 +135,7 @@ exports.handler = async (event) => {
     );
     const balanceData = await balanceRes.json();
     const chewBalance = balanceData[0]?.balance ?? 0;
+    const chewBalanceUpdatedAt = balanceData[0]?.updated_at ?? null;
 
     return {
       statusCode: 200,
@@ -142,6 +146,7 @@ exports.handler = async (event) => {
         collabBonusPercent,  // total % bonus, capped per project, summed
         collabBreakdown,     // per-project detail, useful for UI display later
         chewBalance,
+        chewBalanceUpdatedAt,
       }),
     };
   } catch (err) {

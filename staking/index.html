@@ -36,7 +36,7 @@
   }
 
   /* mono accents — claim codes, stats, tags — matches blocolony.com's use of Space Mono */
-  .stat-value, .quest-timer, .claim-code-box, .chest-cost, .nft-meta, .tag {
+  .stat-value, .claim-code-box, .chest-cost, .nft-meta, .tag {
     font-family: 'Space Mono', monospace;
   }
 
@@ -312,27 +312,6 @@
     border-radius: 14px;
   }
 
-  /* ---------- Quest card ---------- */
-  .quest-card {
-    background: var(--bg-card);
-    border: 1px solid var(--bg-card-border);
-    border-radius: 16px;
-    padding: 22px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .quest-title { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
-  .quest-desc { color: var(--gray); font-size: 14px; }
-  .quest-timer {
-    font-family: 'Space Mono', monospace;
-    color: var(--gold);
-    font-weight: 700;
-    font-size: 14px;
-    white-space: nowrap;
-  }
 
   /* ---------- Chest section ---------- */
   .chest-grid {
@@ -568,20 +547,6 @@
     </div>
     <div id="nftList">
       <div class="empty-state">Connect your wallet to see your BLOC NFTs</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-header">
-      <h2>Daily Quest</h2>
-      <span class="tag">Resets in 24h</span>
-    </div>
-    <div class="quest-card">
-      <div>
-        <div class="quest-title" id="questTitle">Loading today's quest…</div>
-        <div class="quest-desc" id="questDesc">Check back once your wallet is connected.</div>
-      </div>
-      <div class="quest-timer" id="questTimer">--:--:--</div>
     </div>
   </div>
 

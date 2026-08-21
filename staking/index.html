@@ -815,12 +815,24 @@
   function startLiveTicker(data, stakedMints) {
     if (tickerInterval) clearInterval(tickerInterval);
 
-    const baseBalance = data.chewBalance;
+    // The real, confirmed balance from the server (updated once daily).
+    const confirmedBalance = data.chewBalance;
+
+    // Never let the display drop below whatever was last shown, even across
+    // a refresh/disconnect — this is purely visual continuity. The actual
+    // stored balance is untouched either way; this just avoids the display
+    // looking like it "lost" progress when it's really just an estimate
+    // resyncing with the last confirmed server value.
+    const storageKey = `bloc_chew_estimate_${connectedWallet}`;
+    const storedEstimate = parseFloat(localStorage.getItem(storageKey) || '0');
+    const baseBalance = Math.max(confirmedBalance, storedEstimate);
+
     const startTime = Date.now();
     const stakedCount = data.stakedNfts.length;
 
     if (stakedCount === 0) {
       document.getElementById('pointsBalance').textContent = baseBalance.toFixed(2);
+      localStorage.setItem(storageKey, baseBalance.toFixed(2));
       return;
     }
 
@@ -832,6 +844,7 @@
       const elapsedSeconds = (Date.now() - startTime) / 1000;
       const liveBalance = baseBalance + walletRatePerSecond * elapsedSeconds;
       document.getElementById('pointsBalance').textContent = liveBalance.toFixed(2);
+      localStorage.setItem(storageKey, liveBalance.toFixed(2));
 
       const perNftAccrued = perNftRatePerSecond * elapsedSeconds;
       stakedMints.forEach((mint) => {

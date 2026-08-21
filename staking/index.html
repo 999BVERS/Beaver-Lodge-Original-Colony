@@ -815,24 +815,20 @@
   function startLiveTicker(data, stakedMints) {
     if (tickerInterval) clearInterval(tickerInterval);
 
-    // The real, confirmed balance from the server (updated once daily).
+    // The real, confirmed balance from the server (updated once daily by
+    // calculate-points), and WHEN it was confirmed. Anchoring the estimate
+    // to this shared server timestamp — instead of each device's own local
+    // page-load time — is what makes every device show the same number.
+    // No localStorage needed: the formula itself is what stays in sync.
     const confirmedBalance = data.chewBalance;
+    const anchorTime = data.chewBalanceUpdatedAt
+      ? new Date(data.chewBalanceUpdatedAt).getTime()
+      : Date.now(); // no payout has ever posted yet — nothing to estimate beyond now
 
-    // Never let the display drop below whatever was last shown, even across
-    // a refresh/disconnect — this is purely visual continuity. The actual
-    // stored balance is untouched either way; this just avoids the display
-    // looking like it "lost" progress when it's really just an estimate
-    // resyncing with the last confirmed server value.
-    const storageKey = `bloc_chew_estimate_${connectedWallet}`;
-    const storedEstimate = parseFloat(localStorage.getItem(storageKey) || '0');
-    const baseBalance = Math.max(confirmedBalance, storedEstimate);
-
-    const startTime = Date.now();
     const stakedCount = data.stakedNfts.length;
 
     if (stakedCount === 0) {
-      document.getElementById('pointsBalance').textContent = baseBalance.toFixed(2);
-      localStorage.setItem(storageKey, baseBalance.toFixed(2));
+      document.getElementById('pointsBalance').textContent = confirmedBalance.toFixed(2);
       return;
     }
 
@@ -840,28 +836,17 @@
     const perNftRatePerSecond = (200 * (1 + data.collabBonusPercent / 100)) / 86400;
     const walletRatePerSecond = perNftRatePerSecond * stakedCount;
 
-    // Per-NFT "today" earnings, persisted per wallet+mint so they survive a
-    // refresh or reconnect just like the total balance. This is cleared only
-    // when that specific NFT is unstaked (see toggleStake) — restaking it
-    // later starts a fresh counter.
-    const nftEstimateKey = (mint) => `bloc_chew_nft_estimate_${connectedWallet}_${mint}`;
-    const nftBaseAccrued = {};
-    stakedMints.forEach((mint) => {
-      nftBaseAccrued[mint] = parseFloat(localStorage.getItem(nftEstimateKey(mint)) || '0');
-    });
-
     function tick() {
-      const elapsedSeconds = (Date.now() - startTime) / 1000;
-      const liveBalance = baseBalance + walletRatePerSecond * elapsedSeconds;
+      // Capped at 24h so the estimate can never run further ahead than one
+      // full day's earnings, even if calculate-points is delayed.
+      const elapsedSeconds = Math.min(86400, (Date.now() - anchorTime) / 1000);
+      const liveBalance = confirmedBalance + walletRatePerSecond * elapsedSeconds;
       document.getElementById('pointsBalance').textContent = liveBalance.toFixed(2);
-      localStorage.setItem(storageKey, liveBalance.toFixed(2));
 
       const perNftAccruedThisSession = perNftRatePerSecond * elapsedSeconds;
       stakedMints.forEach((mint) => {
-        const totalAccrued = nftBaseAccrued[mint] + perNftAccruedThisSession;
         const el = document.getElementById(`nft-earn-${mint}`);
-        if (el) el.textContent = '+' + totalAccrued.toFixed(2);
-        localStorage.setItem(nftEstimateKey(mint), totalAccrued.toFixed(2));
+        if (el) el.textContent = '+' + perNftAccruedThisSession.toFixed(2);
       });
     }
 
@@ -913,12 +898,6 @@
         const err = await res.json();
         alert(err.error || 'Action failed');
         return;
-      }
-
-      if (isCurrentlyStaked) {
-        // This NFT was just unstaked — clear its saved "today" earnings so
-        // a future restake starts counting from zero again.
-        localStorage.removeItem(`bloc_chew_nft_estimate_${connectedWallet}_${mint}`);
       }
 
       await loadWalletData();

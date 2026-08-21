@@ -503,10 +503,10 @@
     transition: border-color 0.15s;
   }
   .wallet-option:hover { border-color: var(--gold-dim); }
-  .wallet-option:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
+  .wallet-option-uninstalled {
+    opacity: 0.55;
   }
+  .wallet-option-uninstalled:hover { opacity: 0.8; }
   .wallet-option-icon {
     width: 28px;
     height: 28px;
@@ -688,7 +688,7 @@
     {
       id: 'phantom',
       name: 'Phantom',
-      icon: 'https://raw.githubusercontent.com/phantom/branding/main/logos/mark-glyph-solid.svg',
+      icon: 'https://mintcdn.com/phantom-e50e2e68/tU9g5MXFXgx4l6Em/resources/images/Phantom_SVG_Icon.svg',
       installUrl: 'https://phantom.app/',
       getProvider: () => window.phantom?.solana?.isPhantom ? window.phantom.solana : null,
     },
@@ -712,8 +712,13 @@
     const listEl = document.getElementById('walletOptionsList');
     listEl.innerHTML = WALLETS.map((w) => {
       const installed = !!w.getProvider();
+      // Note: NOT using the `disabled` attribute here even for uninstalled
+      // wallets — a disabled button silently blocks all click events in
+      // every browser, which would make "click to get it" do nothing.
+      // Dimming is handled purely via the CSS class instead, so the row
+      // stays fully clickable either way.
       return `
-        <button class="wallet-option" ${installed ? '' : 'disabled'} onclick="${installed ? `selectWallet('${w.id}')` : `window.open('${w.installUrl}', '_blank')`}">
+        <button class="wallet-option ${installed ? '' : 'wallet-option-uninstalled'}" onclick="${installed ? `selectWallet('${w.id}')` : `window.open('${w.installUrl}', '_blank')`}">
           <img src="${w.icon}" class="wallet-option-icon" onerror="this.style.display='none';" />
           <div>
             <div>${w.name}</div>

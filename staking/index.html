@@ -482,6 +482,44 @@
     margin-top: 6px;
     cursor: pointer;
   }
+
+  /* ---------- Wallet picker modal ---------- */
+  .wallet-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    background: #17140f;
+    border: 1px solid var(--bg-card-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cream);
+    text-align: left;
+    transition: border-color 0.15s;
+  }
+  .wallet-option:hover { border-color: var(--gold-dim); }
+  .wallet-option:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .wallet-option-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+  .wallet-option-meta {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--gray);
+    margin-top: 2px;
+  }
 </style>
 </head>
 <body>
@@ -591,6 +629,17 @@
 
 <footer>Beaver Lodge Original Colony — Staking</footer>
 
+<!-- Wallet Picker Modal -->
+<div class="modal-overlay" id="walletModal">
+  <div class="modal">
+    <div class="modal-eyebrow">Connect Wallet</div>
+    <div id="walletOptionsList">
+      <!-- populated by JS: detectWallets() -->
+    </div>
+    <button class="btn-close-modal" onclick="closeWalletModal()">Cancel</button>
+  </div>
+</div>
+
 <!-- Win Modal -->
 <div class="modal-overlay" id="winModal">
   <div class="modal">
@@ -630,15 +679,73 @@
   let connectedWallet = null;
   let lastWalletData = null;
   let sessionToken = null;
+  let activeProvider = null; // the specific wallet's provider object, once chosen
 
-  async function connectWallet() {
-    const provider = window.solana || window.solflare;
+  // Each wallet injects its provider differently. Phantom is checked via
+  // window.phantom.solana specifically (not the bare window.solana, which
+  // can be ambiguous or overwritten when multiple wallets are installed).
+  const WALLETS = [
+    {
+      id: 'phantom',
+      name: 'Phantom',
+      icon: 'https://raw.githubusercontent.com/phantom/branding/main/logos/mark-glyph-solid.svg',
+      installUrl: 'https://phantom.app/',
+      getProvider: () => window.phantom?.solana?.isPhantom ? window.phantom.solana : null,
+    },
+    {
+      id: 'solflare',
+      name: 'Solflare',
+      icon: 'https://solflare.com/favicon.ico',
+      installUrl: 'https://solflare.com/',
+      getProvider: () => window.solflare?.isSolflare ? window.solflare : null,
+    },
+    {
+      id: 'backpack',
+      name: 'Backpack',
+      icon: 'https://backpack.app/favicon.ico',
+      installUrl: 'https://backpack.app/',
+      getProvider: () => window.backpack?.isBackpack ? (window.backpack.solana || window.backpack) : null,
+    },
+  ];
 
+  function openWalletModal() {
+    const listEl = document.getElementById('walletOptionsList');
+    listEl.innerHTML = WALLETS.map((w) => {
+      const installed = !!w.getProvider();
+      return `
+        <button class="wallet-option" ${installed ? '' : 'disabled'} onclick="${installed ? `selectWallet('${w.id}')` : `window.open('${w.installUrl}', '_blank')`}">
+          <img src="${w.icon}" class="wallet-option-icon" onerror="this.style.display='none';" />
+          <div>
+            <div>${w.name}</div>
+            <div class="wallet-option-meta">${installed ? 'Detected' : 'Not installed — click to get it'}</div>
+          </div>
+        </button>
+      `;
+    }).join('');
+    document.getElementById('walletModal').classList.add('open');
+  }
+
+  function closeWalletModal() {
+    document.getElementById('walletModal').classList.remove('open');
+  }
+
+  async function selectWallet(walletId) {
+    const wallet = WALLETS.find((w) => w.id === walletId);
+    const provider = wallet?.getProvider();
+    if (!provider) return;
+
+    closeWalletModal();
+    localStorage.setItem('bloc_last_wallet_id', walletId);
+    await connectWallet(provider);
+  }
+
+  async function connectWallet(provider) {
     if (!provider) {
-      alert('No Solana wallet found. Please install Phantom or Solflare, then try again.');
-      window.open('https://phantom.app/', '_blank');
+      openWalletModal();
       return;
     }
+
+    activeProvider = provider;
 
     try {
       const resp = await provider.connect();
@@ -685,6 +792,7 @@
       btn.disabled = false;
       connectedWallet = null;
       sessionToken = null;
+      activeProvider = null;
     }
   }
 
@@ -781,14 +889,16 @@
     if (tickerInterval) clearInterval(tickerInterval);
 
     // The real, confirmed balance from the server (updated once daily by
-    // calculate-points), and WHEN it was confirmed. Anchoring the estimate
-    // to this shared server timestamp — instead of each device's own local
-    // page-load time — is what makes every device show the same number.
-    // No localStorage needed: the formula itself is what stays in sync.
+    // calculate-points), and a fixed anchor timestamp computed entirely by
+    // the server from real database timestamps (see verify-holdings.js).
+    // Because this anchor never depends on when this particular page load
+    // happened, the live estimate looks identical across every device,
+    // every refresh, and every site update — nothing here is stored or
+    // computed client-side.
     const confirmedBalance = data.chewBalance;
-    const anchorTime = data.chewBalanceUpdatedAt
-      ? new Date(data.chewBalanceUpdatedAt).getTime()
-      : Date.now(); // no payout has ever posted yet — nothing to estimate beyond now
+    const anchorTime = data.estimateAnchorAt
+      ? new Date(data.estimateAnchorAt).getTime()
+      : Date.now(); // no confirmed payout and nothing currently staked — nothing to estimate yet
 
     const stakedCount = data.stakedNfts.length;
 
@@ -872,7 +982,7 @@
     }
   }
 
-  document.getElementById('connectBtn').addEventListener('click', connectWallet);
+  document.getElementById('connectBtn').addEventListener('click', openWalletModal);
 
   let currentClaimCode = '';
   let currentRewardName = '';

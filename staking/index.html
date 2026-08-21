@@ -726,6 +726,7 @@
   async function loadWalletData() {
     if (!connectedWallet) return;
 
+    if (tickerInterval) clearInterval(tickerInterval);
     document.getElementById('pointsBalance').textContent = 'Loading...';
     document.getElementById('stakedCount').textContent = '...';
     document.getElementById('collabBonus').textContent = '...';
@@ -752,8 +753,6 @@
   }
 
   function renderWalletData(data) {
-    document.getElementById('pointsBalance').textContent =
-      Math.floor(data.chewBalance).toLocaleString();
     document.getElementById('stakedCount').textContent = data.stakedNfts.length;
     document.getElementById('collabBonus').textContent = '+' + data.collabBonusPercent + '%';
 
@@ -761,6 +760,7 @@
     const nftListEl = document.getElementById('nftList');
 
     if (data.heldBlocMints.length === 0) {
+      document.getElementById('pointsBalance').textContent = Math.floor(data.chewBalance).toLocaleString();
       nftListEl.innerHTML = '<div class="empty-state">No BLOC NFTs found in this wallet</div>';
       return;
     }
@@ -780,13 +780,16 @@
         const thumb = nft.image
           ? `<img src="${nft.image}" class="nft-thumb" style="object-fit:cover;" />`
           : `<div class="nft-thumb"></div>`;
+        const metaContent = isStaked
+          ? `Staked · <span id="nft-earn-${nft.mint}">+0.00</span> $CHEW today`
+          : 'Not staked';
         return `
           <div class="nft-row">
             <div class="nft-info">
               ${thumb}
               <div>
                 <div class="nft-name">${nft.name}</div>
-                <div class="nft-meta">${isStaked ? 'Staked · earning $CHEW' : 'Not staked'}</div>
+                <div class="nft-meta">${metaContent}</div>
               </div>
             </div>
             <button class="btn-stake ${isStaked ? 'staked' : ''}" onclick="toggleStake('${nft.mint}', ${isStaked})">
@@ -798,6 +801,47 @@
       .join('');
 
     nftListEl.innerHTML = stakeAllButton + rows;
+
+    startLiveTicker(data, stakedMints);
+  }
+
+  // ---------- Live earning ticker (visual estimate only) ----------
+  // The REAL balance only updates once daily via the calculate-points
+  // scheduled job. This ticks a live-looking estimate on top of the last
+  // confirmed balance, purely for engagement — it re-syncs to the actual
+  // number every time the wallet data reloads.
+  let tickerInterval = null;
+
+  function startLiveTicker(data, stakedMints) {
+    if (tickerInterval) clearInterval(tickerInterval);
+
+    const baseBalance = data.chewBalance;
+    const startTime = Date.now();
+    const stakedCount = data.stakedNfts.length;
+
+    if (stakedCount === 0) {
+      document.getElementById('pointsBalance').textContent = baseBalance.toFixed(2);
+      return;
+    }
+
+    // 200 $CHEW/day per NFT, times the collab multiplier, converted to a per-second rate
+    const perNftRatePerSecond = (200 * (1 + data.collabBonusPercent / 100)) / 86400;
+    const walletRatePerSecond = perNftRatePerSecond * stakedCount;
+
+    function tick() {
+      const elapsedSeconds = (Date.now() - startTime) / 1000;
+      const liveBalance = baseBalance + walletRatePerSecond * elapsedSeconds;
+      document.getElementById('pointsBalance').textContent = liveBalance.toFixed(2);
+
+      const perNftAccrued = perNftRatePerSecond * elapsedSeconds;
+      stakedMints.forEach((mint) => {
+        const el = document.getElementById(`nft-earn-${mint}`);
+        if (el) el.textContent = '+' + perNftAccrued.toFixed(2);
+      });
+    }
+
+    tick();
+    tickerInterval = setInterval(tick, 200);
   }
 
   async function stakeAll() {

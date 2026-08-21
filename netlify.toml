@@ -8,6 +8,9 @@
 [functions."resync-webhook-mints"]
   schedule = "@daily"
 
+[functions."daily-reconciliation"]
+  schedule = "0 20 * * *"
+
   [[headers]]
     for = "/*"
     [headers.values]

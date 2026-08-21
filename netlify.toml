@@ -11,9 +11,6 @@
 [functions."daily-reconciliation"]
   schedule = "0 20 * * *"
 
-[functions."rotate-quest"]
-  schedule = "@hourly"
-
   [[headers]]
     for = "/*"
     [headers.values]

@@ -5,14 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Staking — Beaver Lodge Original Colony</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+  /* ---------- BLOC brand tokens (matches blocolony.com) ----------
+     TODO: If your live site uses slightly different hex values,
+     just swap them in here — everything below references these vars. */
   :root {
     --bg: #0a0a0a;
     --bg-card: #131110;
     --bg-card-border: #24201a;
-    --gold: #d9b04a;
-    --gold-bright: #e8c162;
+    --gold: #c9a84c;
+    --gold-bright: #e0c06e;
     --gold-dim: #8a6f2f;
     --cream: #f4efe6;
     --gray: #a8a29a;
@@ -24,12 +27,17 @@
   body {
     background: var(--bg);
     color: var(--cream);
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     line-height: 1.5;
   }
 
   h1, h2, h3, .display {
-    font-family: 'Baloo 2', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* mono accents — claim codes, stats, tags — matches blocolony.com's use of Space Mono */
+  .stat-value, .quest-timer, .claim-code-box, .chest-cost, .nft-meta, .tag {
+    font-family: 'Space Mono', monospace;
   }
 
   a { color: inherit; text-decoration: none; }
@@ -51,23 +59,64 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    border: 2px solid var(--gold);
+  }
+  .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* fallback text shown only if the image fails to load */
+  .logo span {
     font-weight: 800;
     font-size: 10px;
     color: #2a1c05;
-    border: 2px solid var(--gold);
   }
 
-  .menu-icon {
-    width: 28px;
-    height: 20px;
+  .hamburger {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
   }
-  .menu-icon span {
+  .hamburger span {
+    display: block;
+    width: 22px;
     height: 2px;
     background: var(--cream);
     border-radius: 2px;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 85px; left: 0; right: 0;
+    background: rgba(10,10,10,0.98);
+    border-bottom: 1px solid #1c1a17;
+    padding: 1rem 1.5rem;
+    z-index: 99;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-height: calc(100vh - 85px);
+    overflow-y: auto;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    padding: 12px 0;
+    font-size: 15px;
+    color: var(--gray);
+    text-decoration: none;
+    border-bottom: 1px solid #1c1a17;
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover, .mobile-menu a.current { color: var(--gold); }
+  .mobile-menu a.back-link {
+    color: var(--gold);
+    font-weight: 700;
   }
 
   /* ---------- Layout ---------- */
@@ -128,7 +177,7 @@
     background: linear-gradient(180deg, var(--gold-bright), var(--gold));
     color: #241a05;
     font-weight: 800;
-    font-family: 'Baloo 2', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     padding: 16px 28px;
     border-radius: 999px;
     border: none;
@@ -140,7 +189,7 @@
     background: transparent;
     color: var(--cream);
     font-weight: 700;
-    font-family: 'Baloo 2', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     padding: 15px 28px;
     border-radius: 999px;
     border: 1px solid #3a352c;
@@ -175,7 +224,7 @@
   }
 
   .stat-value {
-    font-family: 'Baloo 2', sans-serif;
+    font-family: 'Space Mono', monospace;
     font-size: 28px;
     font-weight: 700;
     color: var(--gold);
@@ -244,7 +293,9 @@
     font-weight: 700;
     font-size: 13px;
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
+    margin-top: auto;
+    align-self: center;
   }
   .btn-stake.staked {
     background: var(--gold);
@@ -276,7 +327,7 @@
   .quest-title { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
   .quest-desc { color: var(--gray); font-size: 14px; }
   .quest-timer {
-    font-family: 'Baloo 2', sans-serif;
+    font-family: 'Space Mono', monospace;
     color: var(--gold);
     font-weight: 700;
     font-size: 14px;
@@ -298,6 +349,9 @@
     border-radius: 16px;
     padding: 24px 20px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
   .chest-icon {
     width: 56px;
@@ -307,7 +361,7 @@
     background: linear-gradient(160deg, #3a2f14, #17130a);
     border: 1px solid var(--gold-dim);
   }
-  .chest-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .chest-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
   .chest-cost { color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 14px; }
 
   .reward-pool {
@@ -317,6 +371,10 @@
     border-radius: 10px;
     padding: 12px 14px;
     margin-bottom: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .reward-pool-label {
     font-size: 11px;
@@ -386,7 +444,7 @@
   }
 
   .modal-reward {
-    font-family: 'Baloo 2', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 26px;
     font-weight: 700;
     color: var(--cream);
@@ -405,7 +463,7 @@
     border: 1px dashed var(--gold-dim);
     border-radius: 12px;
     padding: 14px;
-    font-family: 'Baloo 2', sans-serif;
+    font-family: 'Space Mono', monospace;
     font-size: 18px;
     letter-spacing: 2px;
     color: var(--gold-bright);
@@ -432,7 +490,7 @@
     padding: 13px;
     border-radius: 999px;
     font-weight: 700;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     cursor: pointer;
     font-size: 14px;
   }
@@ -450,9 +508,32 @@
 <body>
 
 <nav>
-  <div class="logo">BLOC</div>
-  <div class="menu-icon"><span></span><span></span><span></span></div>
+  <a href="index.html#home" class="logo">
+    <!-- TODO: point this at the same logo file your nav uses on blocolony.com,
+         e.g. "assets/logo.png" or "images/bloc-logo.png" -->
+    <img src="assets/logo.png" alt="BLOC" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <span style="display:none;">BLOC</span>
+  </a>
+
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#home">Home</a>
+  <a href="index.html#nft">Mint Here</a>
+  <a href="index.html#trait-store">Trait Store</a>
+  <a href="index.html#staking" class="current">Staking</a>
+  <a href="index.html#about">About</a>
+  <a href="index.html#lore">Lore</a>
+  <a href="index.html#articles">Articles</a>
+  <a href="index.html#bbb">Better Business Beaver</a>
+  <a href="index.html#partners">Partners</a>
+  <a href="index.html#collab">Collab Projects</a>
+  <a href="index.html#team">Team</a>
+  <a href="index.html#staking" class="back-link">&#8592; Back to Site</a>
+</div>
 
 <main>
   <div class="eyebrow">Staking</div>
@@ -570,11 +651,21 @@
 </div>
 
 <script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+  }
+  document.querySelectorAll('.mobile-menu a').forEach(a => {
+    a.addEventListener('click', () => closeMenu());
+  });
+
+  // ---------- Wallet Connect + Sign-In + Staking ----------
   let connectedWallet = null;
   let lastWalletData = null;
   let sessionToken = null;
 
-  // ---------- Wallet Connect + Sign-In ----------
   async function connectWallet() {
     const provider = window.solana || window.solflare;
 
@@ -755,7 +846,7 @@
         return;
       }
 
-      await loadWalletData(); // refresh
+      await loadWalletData();
     } catch (err) {
       console.error('Stake/unstake failed:', err);
       alert('Something went wrong. Please try again.');

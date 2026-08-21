@@ -5,6 +5,8 @@
 [functions."calculate-points"]
   schedule = "@daily"
 
+[functions."resync-webhook-mints"]
+  schedule = "@daily"
 
   [[headers]]
     for = "/*"

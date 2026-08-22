@@ -528,7 +528,7 @@
   <a href="index.html#home" class="logo">
     <!-- TODO: point this at the same logo file your nav uses on blocolony.com,
          e.g. "assets/logo.png" or "images/bloc-logo.png" -->
-    <img src="assets/logo.png" alt="BLOC" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <img src="BLOC-Logo.webp" alt="BLOC" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
     <span style="display:none;">BLOC</span>
   </a>
 
@@ -646,14 +646,14 @@
     <div class="claim-code-box" id="claimCodeText">BLOC-XXXXXX</div>
 
     <div class="modal-instructions">
-      Send this code to us via <strong>X DM (@blocolony)</strong> to claim your reward. We'll verify it against our records before fulfilling.
+      Send this code to us via <strong>X DM (@999BVERS)</strong> to claim your reward. Kindly take a screenshot or click the download button below. We'll verify it against our records before fulfilling.
       <br><br>
-      <span style="color: var(--gold);">Bonus:</span> share your win, tag <strong>@blocolony</strong>, and send us the code + post link together to earn an extra <strong>+200 $CHEW</strong>. Each win needs its own new post — reused or repeated posts won't qualify.
+      <span style="color: var(--gold);">Bonus:</span> share your win, tag <strong>@999BVERS</strong>, and send us the code + post link together to earn an extra <strong>+200 $CHEW</strong>. Each win needs its own new post. Reused or repeated posts won't qualify.
     </div>
 
     <div class="modal-actions">
       <button class="btn-primary" onclick="shareWin()">Share Your Win</button>
-      <button class="btn-copy" onclick="copyClaimCode()">Copy Claim Code</button>
+      <button class="btn-copy" onclick="downloadClaimImage()">Download</button>
       <button class="btn-close-modal" onclick="closeModal()">Close</button>
     </div>
   </div>
@@ -1101,7 +1101,11 @@
     ctx.font = '400 16px sans-serif';
     ctx.fillText('felled a tree and won', w / 2, 100);
 
-    // claim code box (blurred)
+    // claim code box — shows the constant "BLOC-" prefix (identical on
+    // every code, so revealing it leaks nothing), but the actual unique
+    // characters are never drawn as real pixels at all. A blurred/noised
+    // version of real text is technically reversible with image-sharpening
+    // tools; a plain placeholder pattern isn't.
     const boxX = w / 2 - 160, boxY = 200, boxW = 320, boxH = 60;
     ctx.fillStyle = '#17140f';
     ctx.fillRect(boxX, boxY, boxW, boxH);
@@ -1110,23 +1114,13 @@
     ctx.strokeRect(boxX, boxY, boxW, boxH);
     ctx.setLineDash([]);
 
-    // draw code text then blur it visually via overlay blocks
     ctx.fillStyle = '#e8c162';
-    ctx.font = '700 20px monospace';
-    ctx.fillText(code, w / 2, boxY + 38);
-
-    // blur simulation: draw semi-transparent noisy rectangles over the code
-    for (let i = 0; i < 40; i++) {
-      ctx.fillStyle = `rgba(23,20,15,${Math.random() * 0.5 + 0.4})`;
-      const rw = Math.random() * 20 + 5;
-      const rh = boxH - 10;
-      const rx = boxX + Math.random() * (boxW - rw);
-      ctx.fillRect(rx, boxY + 5, rw, rh);
-    }
+    ctx.font = '700 22px monospace';
+    ctx.fillText('BLOC- • • • • • •', w / 2, boxY + 38);
 
     ctx.fillStyle = '#6b665f';
     ctx.font = '400 12px sans-serif';
-    ctx.fillText('claim code hidden — check your DMs', w / 2, boxY + boxH + 22);
+    ctx.fillText('claim code hidden', w / 2, boxY + boxH + 22);
 
     // footer
     ctx.fillStyle = '#6b665f';
@@ -1134,10 +1128,12 @@
     ctx.fillText('blocolony.com/staking', w / 2, h - 24);
   }
 
-  function copyClaimCode() {
-    navigator.clipboard.writeText(currentClaimCode).then(() => {
-      alert('Claim code copied!');
-    });
+  function downloadClaimImage() {
+    const canvas = document.getElementById('winCanvas');
+    const link = document.createElement('a');
+    link.download = `${currentClaimCode}.jpg`;
+    link.href = canvas.toDataURL('image/jpeg', 0.92);
+    link.click();
   }
 
   function shareWin() {
@@ -1150,7 +1146,7 @@
 
     // 2. Open X post composer with pre-filled text (no code included)
     const text = encodeURIComponent(
-      `I just felled a tree at the Beaver Lodge and won a ${currentRewardName}! 🌲🦫\n\nStake your BLOC NFTs and try your luck: blocolony.com/staking\n\n@blocolony #BLOC #BeaverLodge`
+      `I just felled a tree at the Beaver Lodge Original Colony and won a ${currentRewardName}!🌲🦫\n\nStake your BLOC NFTs, earn $CHEW, and get your reward from your hardworking beaver.\n@999BVERS #BLOC #BeaverLodgeOriginalColony`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   }

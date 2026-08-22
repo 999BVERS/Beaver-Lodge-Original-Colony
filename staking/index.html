@@ -568,7 +568,7 @@
 <main>
   <div class="eyebrow">Staking</div>
   <h1 class="page-title">Put your beavers<span>to WORK</span></h1>
-  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW points. No locking, No risk. Your NFTs stay in your wallet the entire time.</p>
+  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW. No locking, no risk. Your NFTs stay in your wallet the entire time.</p>
 
   <div class="wallet-bar">
     <button class="btn-primary" id="connectBtn">Connect Wallet</button>
@@ -904,8 +904,8 @@
     // The real, confirmed balance from the server (updated once daily by
     // calculate-points).
     const confirmedBalance = data.chewBalance;
-    const lastPayoutTime = data.chewBalanceUpdatedAt
-      ? new Date(data.chewBalanceUpdatedAt).getTime()
+    const lastPayoutTime = data.lastDailyPayoutAt
+      ? new Date(data.lastDailyPayoutAt).getTime()
       : null;
 
     const stakedCount = data.stakedNfts.length;

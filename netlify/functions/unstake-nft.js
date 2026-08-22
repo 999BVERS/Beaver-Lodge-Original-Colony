@@ -120,12 +120,12 @@ exports.handler = async (event) => {
     // more recent — anything before that point is already inside the
     // confirmed balance and shouldn't be paid again).
     const balanceRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/point_balances?wallet=eq.${wallet}&select=updated_at`,
+      `${SUPABASE_URL}/rest/v1/point_balances?wallet=eq.${wallet}&select=last_daily_payout_at`,
       { headers: sbHeaders }
     );
     const balanceData = await balanceRes.json();
-    const lastPayoutTime = balanceData[0]?.updated_at
-      ? new Date(balanceData[0].updated_at).getTime()
+    const lastPayoutTime = balanceData[0]?.last_daily_payout_at
+      ? new Date(balanceData[0].last_daily_payout_at).getTime()
       : null;
     const stakedAtMs = new Date(stakeRow.staked_at).getTime();
     const anchor = lastPayoutTime ? Math.max(lastPayoutTime, stakedAtMs) : stakedAtMs;

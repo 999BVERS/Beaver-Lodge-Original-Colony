@@ -600,13 +600,11 @@
         <div class="chest-cost">500 $CHEW</div>
         <div class="reward-pool">
           <div class="reward-pool-label">Possible Rewards</div>
-          <ul>
-            <li>$CHEW Bonus</li>
-            <li>Whitelist Spot</li>
-            <li>Bounty Slot</li>
+          <ul id="softTreeRewards">
+            <li class="reward-loading">Loading…</li>
           </ul>
         </div>
-        <button class="btn-stake" onclick="fellTree('Soft Tree', 'Whitelist Spot')">Fell</button>
+        <button class="btn-stake" id="fellSoftBtn" onclick="fellTree('Soft Tree')">Fell</button>
       </div>
       <div class="chest-card">
         <div class="chest-icon"></div>
@@ -614,14 +612,11 @@
         <div class="chest-cost">1,500 $CHEW</div>
         <div class="reward-pool">
           <div class="reward-pool-label">Possible Rewards</div>
-          <ul>
-            <li>$CHEW Bonus</li>
-            <li>Whitelist Spot</li>
-            <li>Bounty Slot</li>
-            <li>Rare 1-of-1</li>
+          <ul id="hardTreeRewards">
+            <li class="reward-loading">Loading…</li>
           </ul>
         </div>
-        <button class="btn-stake" onclick="fellTree('Hard Tree', 'Bounty Slot')">Fell</button>
+        <button class="btn-stake" id="fellHardBtn" onclick="fellTree('Hard Tree')">Fell</button>
       </div>
     </div>
   </div>
@@ -988,31 +983,86 @@
   }
 
   document.getElementById('connectBtn').addEventListener('click', openWalletModal);
+  loadTreeRewards();
 
   let currentClaimCode = '';
   let currentRewardName = '';
 
-  function generateClaimCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = 'BLOC-';
-    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    return code;
+  async function loadTreeRewards() {
+    try {
+      const res = await fetch('/.netlify/functions/get-tree-rewards');
+      if (!res.ok) throw new Error('Failed to load rewards');
+      const data = await res.json();
+
+      const renderList = (elId, names) => {
+        const el = document.getElementById(elId);
+        el.innerHTML = names.length > 0
+          ? names.map((n) => `<li>${n}</li>`).join('')
+          : '<li>Check back soon</li>';
+      };
+
+      renderList('softTreeRewards', data.softTree || []);
+      renderList('hardTreeRewards', data.hardTree || []);
+    } catch (err) {
+      console.error('loadTreeRewards failed:', err);
+      // Leave the "Loading…" placeholder rather than showing an error to
+      // every visitor — this list is cosmetic, not blocking to Fell itself.
+    }
   }
 
-  function fellTree(treeType, rewardName) {
-    currentClaimCode = generateClaimCode();
-    currentRewardName = rewardName;
+  async function fellTree(treeType) {
+    if (!connectedWallet || !sessionToken) {
+      alert('Connect your wallet first.');
+      openWalletModal();
+      return;
+    }
 
-    document.getElementById('modalRewardName').textContent = rewardName;
-    document.getElementById('claimCodeText').textContent = currentClaimCode;
+    const btnId = treeType === 'Soft Tree' ? 'fellSoftBtn' : 'fellHardBtn';
+    const btn = document.getElementById(btnId);
+    const originalText = btn.textContent;
+    btn.textContent = 'Felling...';
+    btn.disabled = true;
 
-    drawWinCard(rewardName, currentClaimCode);
+    try {
+      const res = await fetch('/.netlify/functions/fell-tree', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({ wallet: connectedWallet, treeType }),
+      });
 
-    document.getElementById('winModal').classList.add('open');
+      const data = await res.json();
 
-    // NOTE: In production, this whole result (reward, code) comes from the
-    // server after verifying $CHEW balance and picking a weighted-random
-    // reward — never generated client-side. This is a visual placeholder.
+      if (!res.ok) {
+        if (res.status === 402) {
+          alert(`Not enough $CHEW. Your balance: ${data.balance ?? 0}`);
+        } else if (res.status === 401) {
+          alert('Your session expired — please reconnect your wallet.');
+        } else {
+          alert(data.error || 'Something went wrong. Please try again.');
+        }
+        return;
+      }
+
+      currentClaimCode = data.claimCode;
+      currentRewardName = data.rewardName;
+
+      document.getElementById('modalRewardName').textContent = data.rewardName;
+      document.getElementById('claimCodeText').textContent = data.claimCode;
+      drawWinCard(data.rewardName, data.claimCode);
+      document.getElementById('winModal').classList.add('open');
+
+      // Refresh balance/NFT display to reflect the real, just-deducted total.
+      await loadWalletData();
+    } catch (err) {
+      console.error('fellTree failed:', err);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
   }
 
   function closeModal() {

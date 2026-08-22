@@ -302,6 +302,12 @@
     color: #241a05;
     border: 1px solid var(--gold);
   }
+  .btn-stake:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--gray-dim);
+    color: var(--gray-dim);
+  }
 
   .empty-state {
     text-align: center;
@@ -562,7 +568,7 @@
 <main>
   <div class="eyebrow">Staking</div>
   <h1 class="page-title">Put your beavers<span>to WORK</span></h1>
-  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW points. No locking, no risk. Your NFTs stay in your wallet the entire time.</p>
+  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW points. No locking, No risk. Your NFTs stay in your wallet the entire time.</p>
 
   <div class="wallet-bar">
     <button class="btn-primary" id="connectBtn">Connect Wallet</button>
@@ -997,11 +1003,39 @@
         return;
       }
 
+      const result = await res.json();
+      if (isCurrentlyStaked && result.payoutAmount > 0) {
+        showToast(`+${result.payoutAmount.toFixed(2)} $CHEW banked from that stake`);
+      }
+
       await loadWalletData();
     } catch (err) {
       console.error('Stake/unstake failed:', err);
       alert('Something went wrong. Please try again.');
     }
+  }
+
+  function showToast(message) {
+    const existing = document.getElementById('bloc-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'bloc-toast';
+    toast.textContent = message;
+    toast.style.cssText = `
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #17140f; border: 1px solid var(--gold-dim); color: var(--gold);
+      padding: 12px 20px; border-radius: 10px; font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; font-size: 14px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      opacity: 0; transition: opacity 0.25s ease;
+    `;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => { toast.style.opacity = '1'; });
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
   }
 
   document.getElementById('connectBtn').addEventListener('click', openWalletModal);
@@ -1023,8 +1057,24 @@
           : '<li>Check back soon</li>';
       };
 
-      renderList('softTreeRewards', data.softTree || []);
-      renderList('hardTreeRewards', data.hardTree || []);
+      const updateFellButton = (btnId, names) => {
+        const btn = document.getElementById(btnId);
+        if (names.length === 0) {
+          btn.textContent = 'Sold Out';
+          btn.disabled = true;
+        } else {
+          btn.textContent = 'Fell';
+          btn.disabled = false;
+        }
+      };
+
+      const softRewards = data.softTree || [];
+      const hardRewards = data.hardTree || [];
+
+      renderList('softTreeRewards', softRewards);
+      renderList('hardTreeRewards', hardRewards);
+      updateFellButton('fellSoftBtn', softRewards);
+      updateFellButton('fellHardBtn', hardRewards);
     } catch (err) {
       console.error('loadTreeRewards failed:', err);
       // Leave the "Loading…" placeholder rather than showing an error to
@@ -1041,7 +1091,6 @@
 
     const btnId = treeType === 'Soft Tree' ? 'fellSoftBtn' : 'fellHardBtn';
     const btn = document.getElementById(btnId);
-    const originalText = btn.textContent;
     btn.textContent = 'Felling...';
     btn.disabled = true;
 
@@ -1082,8 +1131,9 @@
       console.error('fellTree failed:', err);
       alert('Something went wrong. Please try again.');
     } finally {
-      btn.textContent = originalText;
-      btn.disabled = false;
+      // Re-check real pool status rather than blindly resetting to 'Fell' —
+      // this fell may have just emptied the last unit of a limited reward.
+      await loadTreeRewards();
     }
   }
 

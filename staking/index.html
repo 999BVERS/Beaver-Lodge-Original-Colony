@@ -561,8 +561,8 @@
 
 <main>
   <div class="eyebrow">Staking</div>
-  <h1 class="page-title">Put your beavers<span>to work</span></h1>
-  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW — no locking, no risk. Your NFTs stay in your wallet the entire time.</p>
+  <h1 class="page-title">Put your beavers<span>to WORK</span></h1>
+  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW points. No locking, no risk. Your NFTs stay in your wallet the entire time.</p>
 
   <div class="wallet-bar">
     <button class="btn-primary" id="connectBtn">Connect Wallet</button>
@@ -579,9 +579,9 @@
       <div class="stat-value" id="stakedCount">—</div>
     </div>
     <div class="card">
-      <div class="stat-label">Collab Bonus</div>
+      <div class="stat-label">Collab Bonus (Standard)</div>
       <div class="stat-value" id="collabBonus">—</div>
-      <div class="stat-sub">up to +5%</div>
+      <div class="stat-sub">up to +5% per project</div>
     </div>
   </div>
 
@@ -591,7 +591,7 @@
       <span class="tag">200 $CHEW / day each</span>
     </div>
     <div id="nftList">
-      <div class="empty-state">Connect your wallet to see your BLOC NFTs</div>
+      <div class="empty-state">Connect your wallet to see your BLOC NFTs and work for you</div>
     </div>
   </div>
 
@@ -896,16 +896,11 @@
     if (tickerInterval) clearInterval(tickerInterval);
 
     // The real, confirmed balance from the server (updated once daily by
-    // calculate-points), and a fixed anchor timestamp computed entirely by
-    // the server from real database timestamps (see verify-holdings.js).
-    // Because this anchor never depends on when this particular page load
-    // happened, the live estimate looks identical across every device,
-    // every refresh, and every site update — nothing here is stored or
-    // computed client-side.
+    // calculate-points).
     const confirmedBalance = data.chewBalance;
-    const anchorTime = data.estimateAnchorAt
-      ? new Date(data.estimateAnchorAt).getTime()
-      : Date.now(); // no confirmed payout and nothing currently staked — nothing to estimate yet
+    const lastPayoutTime = data.chewBalanceUpdatedAt
+      ? new Date(data.chewBalanceUpdatedAt).getTime()
+      : null;
 
     const stakedCount = data.stakedNfts.length;
 
@@ -916,20 +911,40 @@
 
     // 200 $CHEW/day per NFT, times the collab multiplier, converted to a per-second rate
     const perNftRatePerSecond = (200 * (1 + data.collabBonusPercent / 100)) / 86400;
-    const walletRatePerSecond = perNftRatePerSecond * stakedCount;
+
+    // Each NFT gets its OWN anchor — never shared with any other NFT. If a
+    // payout has posted since this NFT was staked, count from the payout
+    // (its earlier earnings are already folded into confirmedBalance). If
+    // this NFT was staked more recently than the last payout — including
+    // "just now" — count from its own real staked_at, so a freshly staked
+    // NFT correctly starts at ~0 instead of inheriting another NFT's
+    // number. This also means unstaking one NFT can never affect the
+    // displayed earnings of any other — each is fully independent.
+    const nftAnchors = {};
+    data.stakedNfts.forEach((nft) => {
+      const stakedAtMs = new Date(nft.staked_at).getTime();
+      nftAnchors[nft.mint] = lastPayoutTime
+        ? Math.max(lastPayoutTime, stakedAtMs)
+        : stakedAtMs;
+    });
 
     function tick() {
-      // Capped at 24h so the estimate can never run further ahead than one
-      // full day's earnings, even if calculate-points is delayed.
-      const elapsedSeconds = Math.min(86400, (Date.now() - anchorTime) / 1000);
-      const liveBalance = confirmedBalance + walletRatePerSecond * elapsedSeconds;
-      document.getElementById('pointsBalance').textContent = liveBalance.toFixed(2);
+      let totalAccrued = 0;
 
-      const perNftAccruedThisSession = perNftRatePerSecond * elapsedSeconds;
       stakedMints.forEach((mint) => {
+        const anchor = nftAnchors[mint];
+        // Capped at 24h so no single NFT's estimate can run further ahead
+        // than one full day's earnings, even if calculate-points is delayed.
+        const elapsedSeconds = anchor ? Math.min(86400, (Date.now() - anchor) / 1000) : 0;
+        const accrued = perNftRatePerSecond * elapsedSeconds;
+        totalAccrued += accrued;
+
         const el = document.getElementById(`nft-earn-${mint}`);
-        if (el) el.textContent = '+' + perNftAccruedThisSession.toFixed(2);
+        if (el) el.textContent = '+' + accrued.toFixed(2);
       });
+
+      const liveBalance = confirmedBalance + totalAccrued;
+      document.getElementById('pointsBalance').textContent = liveBalance.toFixed(2);
     }
 
     tick();

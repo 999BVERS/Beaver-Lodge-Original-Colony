@@ -339,6 +339,13 @@
     border-radius: 14px;
     background: linear-gradient(160deg, #3a2f14, #17130a);
     border: 1px solid var(--gold-dim);
+    overflow: hidden;
+  }
+  .chest-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .chest-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
   .chest-cost { color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 14px; }
@@ -595,7 +602,7 @@
     </div>
     <div class="chest-grid">
       <div class="chest-card">
-        <div class="chest-icon"></div>
+        <div class="chest-icon"><img src="beaverchew/soft-tree.webp/" alt="Soft Tree" onerror="this.style.display='none';"></div>
         <div class="chest-name">Soft Tree</div>
         <div class="chest-cost">500 $CHEW</div>
         <div class="reward-pool">
@@ -607,7 +614,7 @@
         <button class="btn-stake" id="fellSoftBtn" onclick="fellTree('Soft Tree')">Fell</button>
       </div>
       <div class="chest-card">
-        <div class="chest-icon"></div>
+        <div class="chest-icon"><img src="beaverchew/hard-tree.webp/" alt="Hard Tree" onerror="this.style.display='none';"></div>
         <div class="chest-name">Hard Tree</div>
         <div class="chest-cost">1,500 $CHEW</div>
         <div class="reward-pool">

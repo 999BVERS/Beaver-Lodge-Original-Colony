@@ -528,7 +528,7 @@
   <a href="index.html#home" class="logo">
     <!-- TODO: point this at the same logo file your nav uses on blocolony.com,
          e.g. "assets/logo.png" or "images/bloc-logo.png" -->
-    <img src="BLOC-Logo.webp" alt="BLOC" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <img src="assets/logo.png" alt="BLOC" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
     <span style="display:none;">BLOC</span>
   </a>
 
@@ -1069,8 +1069,7 @@
     document.getElementById('winModal').classList.remove('open');
   }
 
-  function drawWinCard(rewardName, code) {
-    const canvas = document.getElementById('winCanvas');
+  function renderWinCardTo(canvas, rewardName, code, revealCode) {
     const ctx = canvas.getContext('2d');
     const w = canvas.width, h = canvas.height;
 
@@ -1101,11 +1100,13 @@
     ctx.font = '400 16px sans-serif';
     ctx.fillText('felled a tree and won', w / 2, 100);
 
-    // claim code box — shows the constant "BLOC-" prefix (identical on
-    // every code, so revealing it leaks nothing), but the actual unique
-    // characters are never drawn as real pixels at all. A blurred/noised
-    // version of real text is technically reversible with image-sharpening
-    // tools; a plain placeholder pattern isn't.
+    // claim code box. Two modes:
+    //   revealCode=false (on-screen + X share image) — never draws the real
+    //   code as pixels at all. A blurred/noised version of real text is
+    //   technically reversible with image tools; a plain placeholder isn't.
+    //   revealCode=true (the actual claim-download, never shown on screen
+    //   or posted anywhere) — draws the real code, since this copy's whole
+    //   purpose is for you to be able to read it when it's DM'd to you.
     const boxX = w / 2 - 160, boxY = 200, boxW = 320, boxH = 60;
     ctx.fillStyle = '#17140f';
     ctx.fillRect(boxX, boxY, boxW, boxH);
@@ -1116,11 +1117,11 @@
 
     ctx.fillStyle = '#e8c162';
     ctx.font = '700 22px monospace';
-    ctx.fillText('BLOC- • • • • • •', w / 2, boxY + 38);
+    ctx.fillText(revealCode ? code : 'BLOC-••••••', w / 2, boxY + 38);
 
     ctx.fillStyle = '#6b665f';
     ctx.font = '400 12px sans-serif';
-    ctx.fillText('claim code hidden', w / 2, boxY + boxH + 22);
+    ctx.fillText(revealCode ? 'your claim code' : 'claim code hidden', w / 2, boxY + boxH + 22);
 
     // footer
     ctx.fillStyle = '#6b665f';
@@ -1128,16 +1129,32 @@
     ctx.fillText('blocolony.com/staking', w / 2, h - 24);
   }
 
-  function downloadClaimImage() {
+  function drawWinCard(rewardName, code) {
+    // The on-screen modal canvas always shows the censored version — this
+    // is also what shareWin() downloads/posts, so the real code is never
+    // the thing that ends up in a public X post.
     const canvas = document.getElementById('winCanvas');
+    renderWinCardTo(canvas, rewardName, code, false);
+  }
+
+  function downloadClaimImage() {
+    // A separate, never-displayed canvas with the REAL code drawn on it —
+    // this is the one meant to be sent to you directly to claim a reward,
+    // so unlike the on-screen card, it needs to actually be readable.
+    const claimCanvas = document.createElement('canvas');
+    claimCanvas.width = 600;
+    claimCanvas.height = 340;
+    renderWinCardTo(claimCanvas, currentRewardName, currentClaimCode, true);
+
     const link = document.createElement('a');
     link.download = `${currentClaimCode}.jpg`;
-    link.href = canvas.toDataURL('image/jpeg', 0.92);
+    link.href = claimCanvas.toDataURL('image/jpeg', 0.92);
     link.click();
   }
 
   function shareWin() {
-    // 1. Download the win card image
+    // 1. Download the win card image (censored — same as what's shown on
+    // screen)
     const canvas = document.getElementById('winCanvas');
     const link = document.createElement('a');
     link.download = 'bloc-win.png';
@@ -1146,7 +1163,7 @@
 
     // 2. Open X post composer with pre-filled text (no code included)
     const text = encodeURIComponent(
-      `I just felled a tree at the Beaver Lodge Original Colony and won a ${currentRewardName}!🌲🦫\n\nStake your BLOC NFTs, earn $CHEW, and get your reward from your hardworking beaver.\n@999BVERS #BLOC #BeaverLodgeOriginalColony`
+      `I just felled a tree at the Beaver Lodge Original Colony and won a ${currentRewardName}!🌲🦫\n\nStake your BLOC NFTs, earn $CHEW points, and get your reward from your hardworking beaver.\n@999BVERS #BLOC #BeaverLodgeOriginalColony`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   }

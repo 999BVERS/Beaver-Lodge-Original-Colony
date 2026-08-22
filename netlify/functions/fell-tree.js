@@ -2,7 +2,7 @@
 //
 // Spends $CHEW to "fell a tree" — atomically deducts the cost, picks a
 // weighted-random reward from tree_rewards, generates a claim code, and
-// logs the result to chest_openings for manual fulfillment (see Step 10
+// logs the result to tree_fellings for manual fulfillment (see Step 10
 // of the execution guide).
 //
 // Unlike stake/unstake, this moves real balance, so the deduction goes
@@ -26,6 +26,13 @@ const sbHeaders = {
 const TREE_COSTS = {
   'Soft Tree': 500,
   'Hard Tree': 1500,
+};
+
+// tree_rewards.tree_type has a check constraint only allowing lowercase
+// 'soft'/'hard' — this maps the frontend's display value to that.
+const TREE_TYPE_DB_KEY = {
+  'Soft Tree': 'soft',
+  'Hard Tree': 'hard',
 };
 
 const CLAIM_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I ambiguity
@@ -119,8 +126,9 @@ exports.handler = async (event) => {
     }
 
     // 2. Load the active, in-stock reward pool for this tree.
+    const dbTreeType = TREE_TYPE_DB_KEY[treeType];
     const rewardsRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/tree_rewards?tree_type=eq.${encodeURIComponent(treeType)}&active=eq.true&or=(stock.is.null,stock.gt.0)&select=id,name,weight,stock`,
+      `${SUPABASE_URL}/rest/v1/tree_rewards?tree_type=eq.${dbTreeType}&active=eq.true&or=(stock_remaining.is.null,stock_remaining.gt.0)&select=id,name,weight,stock_remaining`,
       { headers: sbHeaders }
     );
     const rewards = await rewardsRes.json();
@@ -137,18 +145,20 @@ exports.handler = async (event) => {
     // 3. Weighted-random pick.
     const picked = weightedRandomPick(rewards);
 
-    // 4. If the reward has limited stock, decrement it. Optimistic check
-    // against the stock value we just read — in the rare case another
-    // request wins the race for the last unit, this simply no-ops and the
-    // claim is still honored (the loss is one unit of oversell on a very
-    // low-traffic path, not a lost or duplicated $CHEW spend).
-    if (picked.stock !== null && picked.stock !== undefined) {
+    // 4. If the reward has limited stock, decrement stock_remaining (never
+    // the original `stock` column, which stays as the fixed total). The
+    // optimistic check against the value we just read means that in the
+    // rare case another request wins the race for the last unit, this
+    // simply no-ops and the claim is still honored (the loss is one unit
+    // of oversell on a very low-traffic path, not a lost or duplicated
+    // $CHEW spend).
+    if (picked.stock_remaining !== null && picked.stock_remaining !== undefined) {
       await fetch(
-        `${SUPABASE_URL}/rest/v1/tree_rewards?id=eq.${picked.id}&stock=eq.${picked.stock}`,
+        `${SUPABASE_URL}/rest/v1/tree_rewards?id=eq.${picked.id}&stock_remaining=eq.${picked.stock_remaining}`,
         {
           method: 'PATCH',
           headers: sbHeaders,
-          body: JSON.stringify({ stock: picked.stock - 1 }),
+          body: JSON.stringify({ stock_remaining: picked.stock_remaining - 1 }),
         }
       );
     }
@@ -158,7 +168,7 @@ exports.handler = async (event) => {
     for (let attempt = 0; attempt < 5; attempt++) {
       const candidate = generateClaimCode();
       const existsRes = await fetch(
-        `${SUPABASE_URL}/rest/v1/chest_openings?claim_code=eq.${candidate}&select=id`,
+        `${SUPABASE_URL}/rest/v1/tree_fellings?claim_code=eq.${candidate}&select=id`,
         { headers: sbHeaders }
       );
       const existing = await existsRes.json();
@@ -176,8 +186,8 @@ exports.handler = async (event) => {
       };
     }
 
-    // 6. Record the opening for manual fulfillment (Step 10).
-    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/chest_openings`, {
+    // 6. Record the felling for manual fulfillment (Step 10).
+    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/tree_fellings`, {
       method: 'POST',
       headers: { ...sbHeaders, Prefer: 'return=representation' },
       body: JSON.stringify({
@@ -185,6 +195,7 @@ exports.handler = async (event) => {
         tree_type: treeType,
         reward_id: picked.id,
         reward_name: picked.name,
+        points_spent: cost,
         claim_code: claimCode,
         claim_status: 'unclaimed',
         share_bonus_claimed: false,
@@ -193,7 +204,7 @@ exports.handler = async (event) => {
 
     if (!insertRes.ok) {
       await refund(wallet, cost);
-      throw new Error(`Failed to log chest opening: ${insertRes.status}`);
+      throw new Error(`Failed to log tree felling: ${insertRes.status}`);
     }
 
     // 7. Audit trail for the spend.

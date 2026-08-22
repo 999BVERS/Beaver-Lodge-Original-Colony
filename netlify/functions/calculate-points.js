@@ -120,18 +120,19 @@ exports.handler = async () => {
         const balData = await balRes.json();
         const currentBalance = balData[0]?.balance ?? 0;
         const newBalance = currentBalance + totalPoints;
+        const now = new Date().toISOString();
 
         if (balData.length > 0) {
           await fetch(`${SUPABASE_URL}/rest/v1/point_balances?wallet=eq.${wallet}`, {
             method: 'PATCH',
             headers: sbHeaders,
-            body: JSON.stringify({ balance: newBalance, updated_at: new Date().toISOString() }),
+            body: JSON.stringify({ balance: newBalance, updated_at: now, last_daily_payout_at: now }),
           });
         } else {
           await fetch(`${SUPABASE_URL}/rest/v1/point_balances`, {
             method: 'POST',
             headers: sbHeaders,
-            body: JSON.stringify({ wallet, balance: newBalance }),
+            body: JSON.stringify({ wallet, balance: newBalance, last_daily_payout_at: now }),
           });
         }
 

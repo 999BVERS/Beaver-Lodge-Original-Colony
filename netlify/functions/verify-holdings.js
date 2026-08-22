@@ -121,11 +121,16 @@ exports.handler = async (event) => {
     const stakedNfts = await stakedRes.json();
 
     // 4. Get $CHEW balance, plus when it was last confirmed — the frontend
-    // uses that timestamp (not local device time) to anchor its live
-    // estimate ticker, so every device shows the same number instead of
-    // each one drifting based on its own browsing history.
+    // The frontend's per-NFT live ticker needs to know exactly when the
+    // last TRUE daily payout happened — not just "whenever this balance
+    // was last touched for any reason." Those are different things:
+    // unstaking, fell-tree refunds, etc. also touch this balance, but only
+    // calculate-points.js writes last_daily_payout_at. Using the generic
+    // updated_at here caused a real bug: unstaking one NFT would touch
+    // updated_at, which every OTHER staked NFT's ticker anchored to,
+    // incorrectly resetting their displayed earnings to ~0 too.
     const balanceRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/point_balances?wallet=eq.${wallet}&select=balance,updated_at`,
+      `${SUPABASE_URL}/rest/v1/point_balances?wallet=eq.${wallet}&select=balance,last_daily_payout_at`,
       {
         headers: {
           apikey: SUPABASE_SERVICE_KEY,
@@ -135,27 +140,7 @@ exports.handler = async (event) => {
     );
     const balanceData = await balanceRes.json();
     const chewBalance = balanceData[0]?.balance ?? 0;
-    const chewBalanceUpdatedAt = balanceData[0]?.updated_at ?? null;
-
-    // The frontend shows a live-ticking "today's estimate" on top of
-    // chewBalance. That estimate needs a fixed starting point in time to
-    // count up from — and for that to look the same on every device, every
-    // refresh, and every site update, the anchor has to come from the
-    // database, never from when a browser happened to load the page.
-    //
-    // If a payout has posted before, count from that moment (anything
-    // earned before it is already baked into chewBalance). If this wallet
-    // has never been paid yet, count from the earliest of its currently
-    // active stakes instead, so holders see honest progress building from
-    // day one rather than a stuck "0" until the first daily payout runs.
-    let estimateAnchorAt = chewBalanceUpdatedAt;
-    if (!estimateAnchorAt && Array.isArray(stakedNfts) && stakedNfts.length > 0) {
-      const earliestStake = stakedNfts.reduce((earliest, nft) => {
-        const t = new Date(nft.staked_at).getTime();
-        return t < earliest ? t : earliest;
-      }, Infinity);
-      estimateAnchorAt = new Date(earliestStake).toISOString();
-    }
+    const lastDailyPayoutAt = balanceData[0]?.last_daily_payout_at ?? null;
 
     return {
       statusCode: 200,
@@ -166,8 +151,7 @@ exports.handler = async (event) => {
         collabBonusPercent,  // total % bonus, capped per project, summed
         collabBreakdown,     // per-project detail, useful for UI display later
         chewBalance,
-        chewBalanceUpdatedAt,
-        estimateAnchorAt,
+        lastDailyPayoutAt,
       }),
     };
   } catch (err) {

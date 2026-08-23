@@ -568,7 +568,7 @@
 <main>
   <div class="eyebrow">Staking</div>
   <h1 class="page-title">Put your beavers<span>to WORK</span></h1>
-  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW. No locking, no risk. Your NFTs stay in your wallet the entire time.</p>
+  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW. No locking, no risk. Your beaver stays in your wallet the entire time.</p>
 
   <div class="wallet-bar">
     <button class="btn-primary" id="connectBtn">Connect Wallet</button>
@@ -585,9 +585,9 @@
       <div class="stat-value" id="stakedCount">—</div>
     </div>
     <div class="card">
-      <div class="stat-label">Collab Bonus (Standard)</div>
+      <div class="stat-label">Collab Bonus(Standard)</div>
       <div class="stat-value" id="collabBonus">—</div>
-      <div class="stat-sub">up to +5% per project</div>
+      <div class="stat-sub">up to +5% each collab project</div>
     </div>
   </div>
 
@@ -597,7 +597,7 @@
       <span class="tag">200 $CHEW / day each</span>
     </div>
     <div id="nftList">
-      <div class="empty-state">Connect your wallet to see your BLOC NFTs and work for you</div>
+      <div class="empty-state">Connect your wallet to see your BLOC NFTs</div>
     </div>
   </div>
 
@@ -775,8 +775,23 @@
       const encodedMessage = new TextEncoder().encode(message);
       const signed = await provider.signMessage(encodedMessage, 'utf8');
 
+      // Different wallets return signMessage's result differently — Phantom
+      // wraps it as { signature, publicKey }, but some wallets return the
+      // raw signature bytes directly with no wrapper object at all. Handle
+      // every real shape instead of assuming Phantom's specifically.
+      let rawSignature;
+      if (signed instanceof Uint8Array) {
+        rawSignature = signed;
+      } else if (Array.isArray(signed)) {
+        rawSignature = signed;
+      } else if (signed?.signature) {
+        rawSignature = signed.signature;
+      } else {
+        throw new Error('Unrecognized signature response from wallet');
+      }
+
       const signatureArray = Array.from(
-        signed.signature instanceof Uint8Array ? signed.signature : new Uint8Array(signed.signature)
+        rawSignature instanceof Uint8Array ? rawSignature : new Uint8Array(rawSignature)
       );
 
       const sessionRes = await fetch('/.netlify/functions/create-session', {

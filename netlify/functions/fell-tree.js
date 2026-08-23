@@ -101,8 +101,36 @@ exports.handler = async (event) => {
   }
 
   const cost = TREE_COSTS[treeType];
+  const dbTreeType = TREE_TYPE_DB_KEY[treeType];
+  const DAILY_FELL_LIMIT = 2; // combined total, across BOTH tree types, per wallet, per UTC calendar day
 
   try {
+    // 0. Daily limit check — BEFORE any $CHEW is touched, so a wallet at
+    // the cap can't even get charged and then rejected. This counts ALL
+    // fellings today regardless of tree type (a Soft + a Hard both count
+    // toward the same shared limit of 2), reset at UTC midnight rather
+    // than a rolling 24h window, so it's simple and predictable for both
+    // players and you when checking logs.
+    const now = new Date();
+    const startOfTodayUTC = new Date(Date.UTC(
+      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()
+    )).toISOString();
+
+    const todaysFellsRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/tree_fellings?wallet=eq.${wallet}&opened_at=gte.${startOfTodayUTC}&select=id`,
+      { headers: sbHeaders }
+    );
+    const todaysFells = await todaysFellsRes.json();
+
+    if (Array.isArray(todaysFells) && todaysFells.length >= DAILY_FELL_LIMIT) {
+      return {
+        statusCode: 429,
+        body: JSON.stringify({
+          error: `Daily limit reached — you can only fell ${DAILY_FELL_LIMIT} trees per day (combined, any type). Try again after midnight UTC.`,
+        }),
+      };
+    }
+
     // 1. Atomically deduct the cost — fails cleanly if balance is insufficient,
     // and can't be double-spent by a duplicate/rapid request.
     const spendRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/spend_chew`, {
@@ -126,7 +154,6 @@ exports.handler = async (event) => {
     }
 
     // 2. Load the active, in-stock reward pool for this tree.
-    const dbTreeType = TREE_TYPE_DB_KEY[treeType];
     const rewardsRes = await fetch(
       `${SUPABASE_URL}/rest/v1/tree_rewards?tree_type=eq.${dbTreeType}&active=eq.true&or=(stock_remaining.is.null,stock_remaining.gt.0)&select=id,name,weight,stock_remaining`,
       { headers: sbHeaders }

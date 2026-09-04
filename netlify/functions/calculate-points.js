@@ -5,7 +5,10 @@
 //   1. Re-checks current holdings live via Helius (fresh, not cached)
 //   2. Confirms each "staked" NFT is still actually owned by that wallet —
 //      if not (e.g. sold), auto-deactivates the stake as a safety net
-//   3. Recalculates the collab bonus fresh (per-project cap, summed)
+//   3. Reads collab bonus from collab_holdings cache (written by
+//      verify-holdings.js) — avoids a redundant Helius call per wallet.
+//      Falls back to 0% if no cache entry exists (wallet never connected
+//      since cache was introduced, or cache was cleared).
 //   4. Awards 200 $CHEW per still-valid staked NFT, times the multiplier
 //   5. Updates point_balances and logs the payout in point_ledger
 //
@@ -40,6 +43,30 @@ async function getAssetsByOwner(wallet) {
   return data.result?.items || [];
 }
 
+// Read collab bonus from cache table instead of calling Helius.
+// Falls back to 0 if no cached data found for this wallet.
+async function getCollabBonusFromCache(wallet, collabCollections) {
+  const holdingsRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/collab_holdings?wallet=eq.${wallet}&select=collection_address,nft_count`,
+    { headers: sbHeaders }
+  );
+  const holdings = await holdingsRes.json();
+
+  if (!Array.isArray(holdings) || holdings.length === 0) return 0;
+
+  let bonusPercent = 0;
+  for (const holding of holdings) {
+    const project = collabCollections.find(
+      (c) => c.collection_address === holding.collection_address
+    );
+    if (!project) continue;
+    const perNft = project.bonus_per_nft ?? 1;
+    const maxBonus = project.max_bonus ?? 5;
+    bonusPercent += Math.min(holding.nft_count * perNft, maxBonus);
+  }
+  return bonusPercent;
+}
+
 exports.handler = async () => {
   try {
     // 1. Get every wallet with at least one active staked NFT
@@ -54,7 +81,7 @@ exports.handler = async () => {
     }
 
     // Group by wallet
-    const walletMap = {}; // { wallet: [staked_nfts rows] }
+    const walletMap = {};
     for (const row of stakedRows) {
       if (!walletMap[row.wallet]) walletMap[row.wallet] = [];
       walletMap[row.wallet].push(row);
@@ -71,6 +98,8 @@ exports.handler = async () => {
 
     for (const [wallet, stakedForWallet] of Object.entries(walletMap)) {
       try {
+        // Still calls Helius once per wallet to verify ownership —
+        // this is the source of truth for auto-unstaking sold NFTs.
         const assets = await getAssetsByOwner(wallet);
         const heldMints = new Set(assets.map((a) => a.id));
 
@@ -88,29 +117,10 @@ exports.handler = async () => {
           }
         }
 
-        if (stillValid.length === 0) continue; // nothing left to pay out for this wallet
+        if (stillValid.length === 0) continue;
 
-        // Recalculate collab bonus fresh, per-project cap summed across projects
-        const collabCounts = {};
-        for (const asset of assets) {
-          const groupings = asset.grouping || [];
-          for (const g of groupings) {
-            if (g.group_key === 'collection') {
-              const match = collabCollections.find((c) => c.collection_address === g.group_value);
-              if (match) {
-                collabCounts[g.group_value] = (collabCounts[g.group_value] || 0) + 1;
-              }
-            }
-          }
-        }
-
-        let bonusPercent = 0;
-        for (const [address, count] of Object.entries(collabCounts)) {
-          const project = collabCollections.find((c) => c.collection_address === address);
-          const perNft = project?.bonus_per_nft ?? 1;
-          const maxBonus = project?.max_bonus ?? 5;
-          bonusPercent += Math.min(count * perNft, maxBonus);
-        }
+        // Read collab bonus from cache instead of re-processing Helius data
+        const bonusPercent = await getCollabBonusFromCache(wallet, collabCollections);
 
         const basePoints = stillValid.length * POINTS_PER_NFT_PER_DAY;
         const totalPoints = Math.round(basePoints * (1 + bonusPercent / 100));
@@ -139,13 +149,7 @@ exports.handler = async () => {
           });
         }
 
-        // NEW: credit each individual staked NFT's own lifetime total too —
-        // this is what the frontend displays per-NFT, separate from (but
-        // summing to roughly) the wallet-level totalPoints above. A tiny
-        // rounding difference between this per-NFT sum and the wallet's
-        // single rounded totalPoints is possible and harmless — the real
-        // $CHEW paid out is always the wallet-level number above; this is
-        // purely a display breakdown of where it came from.
+        // Credit each individual staked NFT's own lifetime total
         const perNftAmount = Math.round(200 * (1 + bonusPercent / 100) * 100) / 100;
         for (const staked of stillValid) {
           await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_nft_earned`, {
@@ -169,7 +173,6 @@ exports.handler = async () => {
         results.push({ wallet, staked: stillValid.length, bonusPercent, totalPoints });
       } catch (walletErr) {
         console.error(`calculate-points error for wallet ${wallet}:`, walletErr);
-        // Continue processing other wallets even if one fails
       }
     }
 

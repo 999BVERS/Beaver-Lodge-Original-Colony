@@ -102,7 +102,7 @@ exports.handler = async (event) => {
 
   const cost = TREE_COSTS[treeType];
   const dbTreeType = TREE_TYPE_DB_KEY[treeType];
-  const DAILY_FELL_LIMIT = 2; // combined total, across BOTH tree types, per wallet, per UTC calendar day
+  const DAILY_FELL_LIMIT = 4; // combined total, across BOTH tree types, per wallet, per UTC calendar day
 
   try {
     // 0. Daily limit check — BEFORE any $CHEW is touched, so a wallet at
@@ -172,6 +172,71 @@ exports.handler = async (event) => {
     // 3. Weighted-random pick.
     const picked = weightedRandomPick(rewards);
 
+    // NEW: if this reward is a $CHEW amount (e.g. "10 $CHEW Bonus", "300
+    // $CHEW Bonus"), credit it automatically instead of making the winner
+    // DM a claim code — there's nothing for you to manually fulfill for a
+    // points reward, so no reason to make them wait on you for it. Every
+    // other reward type (Whitelist Spot, Bounty Slot, Rare 1-of-1, etc.)
+    // is completely unaffected and still goes through the exact same
+    // manual claim-code flow as before.
+    const chewMatch = picked.name.match(/^(\d+(?:\.\d+)?)\s*\$CHEW\b/i);
+    const isChewReward = !!chewMatch;
+    const chewAmount = isChewReward ? parseFloat(chewMatch[1]) : 0;
+
+    // NEW: if this reward has a pool of specific NFTs behind it (see
+    // reward_nft_inventory_schema.sql), claim one automatically and reveal
+    // it to the winner. The public rewards list only ever shows the
+    // generic name ("Dead Bunny") — nobody sees which specific numbers
+    // exist or how many are left. A reward with zero inventory rows here
+    // is completely unaffected — this only activates for rewards you've
+    // actually stocked with specific NFTs.
+    let assignedNft = null;
+    const inventoryCheckRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/reward_nft_inventory?reward_id=eq.${picked.id}&select=id&limit=1`,
+      { headers: sbHeaders }
+    );
+    const inventoryExists = await inventoryCheckRes.json();
+    const usesNftInventory = Array.isArray(inventoryExists) && inventoryExists.length > 0;
+
+    if (usesNftInventory) {
+      // Try a few times in case of a race with another simultaneous winner
+      // claiming the same candidate row.
+      for (let attempt = 0; attempt < 3 && !assignedNft; attempt++) {
+        const candidateRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/reward_nft_inventory?reward_id=eq.${picked.id}&assigned_wallet=is.null&select=id,nft_identifier&limit=1`,
+          { headers: sbHeaders }
+        );
+        const candidates = await candidateRes.json();
+        if (!Array.isArray(candidates) || candidates.length === 0) break; // none left
+
+        const candidate = candidates[0];
+        const claimRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/reward_nft_inventory?id=eq.${candidate.id}&assigned_wallet=is.null`,
+          {
+            method: 'PATCH',
+            headers: { ...sbHeaders, Prefer: 'return=representation' },
+            body: JSON.stringify({ assigned_wallet: wallet, assigned_at: new Date().toISOString() }),
+          }
+        );
+        const claimed = await claimRes.json();
+        if (Array.isArray(claimed) && claimed.length > 0) {
+          assignedNft = candidate.nft_identifier;
+        }
+        // else: another request won the race for that exact row — loop and try the next candidate.
+      }
+
+      if (!assignedNft) {
+        // This reward is SUPPOSED to have inventory but none was available
+        // to claim — stock_remaining is out of sync with real inventory.
+        // Don't hand out an undeliverable promise; refund and stop clean.
+        await refund(wallet, cost);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ error: `${picked.name} is out of stock — you have not been charged` }),
+        };
+      }
+    }
+
     // 4. If the reward has limited stock, decrement stock_remaining (never
     // the original `stock` column, which stays as the fixed total). The
     // optimistic check against the value we just read means that in the
@@ -191,6 +256,10 @@ exports.handler = async (event) => {
     }
 
     // 5. Generate a unique claim code (retry on the astronomically unlikely collision).
+    // Still generated even for auto-credited $CHEW rewards, since
+    // claim_code is a required column and it's harmless to keep one on
+    // record for consistency/audit — it's just never shown to the winner
+    // as something to act on in that case.
     let claimCode;
     for (let attempt = 0; attempt < 5; attempt++) {
       const candidate = generateClaimCode();
@@ -213,7 +282,9 @@ exports.handler = async (event) => {
       };
     }
 
-    // 6. Record the felling for manual fulfillment (Step 10).
+    // 6. Record the felling. $CHEW rewards are logged as 'auto_credited'
+    // (already fulfilled, nothing pending) instead of 'unclaimed', so they
+    // never show up in your manual claim backlog.
     const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/tree_fellings`, {
       method: 'POST',
       headers: { ...sbHeaders, Prefer: 'return=representation' },
@@ -224,14 +295,43 @@ exports.handler = async (event) => {
         reward_name: picked.name,
         points_spent: cost,
         claim_code: claimCode,
-        claim_status: 'unclaimed',
+        claim_status: isChewReward ? 'auto_credited' : 'unclaimed',
         share_bonus_claimed: false,
+        assigned_nft: assignedNft,
       }),
     });
 
     if (!insertRes.ok) {
       await refund(wallet, cost);
+      // If an NFT was already claimed from inventory, release it back —
+      // otherwise it'd be stuck marked as assigned to a felling that never
+      // actually got recorded.
+      if (assignedNft) {
+        await fetch(
+          `${SUPABASE_URL}/rest/v1/reward_nft_inventory?reward_id=eq.${picked.id}&nft_identifier=eq.${encodeURIComponent(assignedNft)}&assigned_wallet=eq.${wallet}`,
+          {
+            method: 'PATCH',
+            headers: sbHeaders,
+            body: JSON.stringify({ assigned_wallet: null, assigned_at: null }),
+          }
+        );
+      }
       throw new Error(`Failed to log tree felling: ${insertRes.status}`);
+    }
+
+    // Link the inventory row back to this specific felling record, now that we have its id.
+    if (assignedNft) {
+      const insertedRow = (await insertRes.json())[0];
+      if (insertedRow?.id) {
+        await fetch(
+          `${SUPABASE_URL}/rest/v1/reward_nft_inventory?reward_id=eq.${picked.id}&nft_identifier=eq.${encodeURIComponent(assignedNft)}&assigned_wallet=eq.${wallet}`,
+          {
+            method: 'PATCH',
+            headers: sbHeaders,
+            body: JSON.stringify({ tree_felling_id: insertedRow.id }),
+          }
+        );
+      }
     }
 
     // 7. Audit trail for the spend.
@@ -245,12 +345,45 @@ exports.handler = async (event) => {
       }),
     });
 
+    // NEW: auto-credit the $CHEW reward, if that's what was won.
+    let finalBalance = new_balance;
+    if (isChewReward && chewAmount > 0) {
+      const creditRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/refund_chew`, {
+        method: 'POST',
+        headers: sbHeaders,
+        body: JSON.stringify({ p_wallet: wallet, p_amount: chewAmount }),
+      });
+
+      if (creditRes.ok) {
+        finalBalance = new_balance + chewAmount;
+
+        await fetch(`${SUPABASE_URL}/rest/v1/point_ledger`, {
+          method: 'POST',
+          headers: sbHeaders,
+          body: JSON.stringify({
+            wallet,
+            amount: chewAmount,
+            reason: `fell_tree_reward (${treeType} → ${picked.name})`,
+          }),
+        });
+      } else {
+        // Extremely unlikely, but if the credit itself fails, don't lie to
+        // the winner about their new balance — log it loudly so it can be
+        // manually corrected, but keep responding successfully since the
+        // felling itself (spend + reward selection) already succeeded.
+        console.error(`CRITICAL: failed to auto-credit ${chewAmount} $CHEW to ${wallet} for ${picked.name} (tree_felling claim_code: ${claimCode})`);
+      }
+    }
+
     return {
       statusCode: 200,
       body: JSON.stringify({
         rewardName: picked.name,
         claimCode,
-        newBalance: new_balance,
+        newBalance: finalBalance,
+        autoCredited: isChewReward,
+        chewAmount: isChewReward ? chewAmount : undefined,
+        assignedNft: assignedNft || undefined,
       }),
     };
   } catch (err) {

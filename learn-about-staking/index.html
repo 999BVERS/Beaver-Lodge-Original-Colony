@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/webp" href="/BLOC-Logo.webp">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<title>BLOC Staking: Earn $CHEW, Fell Logs, Enter Raffles, and Win Bounties - Beaver Lodge Original Colony</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b; --bg2: #111113; --bg3: #18181c;
+    --border: rgba(255,255,255,0.08); --border-hover: rgba(255,255,255,0.18);
+    --gold: #c9a84c; --gold-dim: rgba(201,168,76,0.15); --gold-glow: rgba(201,168,76,0.06);
+    --text: #f0ede8; --text-2: #9a9590; --text-3: #5a5753;
+    --radius: 10px; --radius-lg: 16px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; font-size: 16px; line-height: 1.7; overflow-x: hidden; width: 100%; min-width: 0; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 2.5rem; height: 60px; background: rgba(10,10,11,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .nav-logo { display: flex; align-items: center; text-decoration: none; }
+  .nav-links { display: flex; gap: 0.25rem; list-style: none; }
+  .nav-links a { display: block; padding: 6px 14px; font-size: 13px; color: var(--text-2); text-decoration: none; border-radius: 6px; transition: color 0.2s, background 0.2s; }
+  .nav-links a:hover { color: var(--text); background: var(--bg3); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+  .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--text-2); transition: 0.3s; }
+  .mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: rgba(10,10,11,0.97); border-bottom: 1px solid var(--border); padding: 1rem 2rem; z-index: 99; flex-direction: column; gap: 0.25rem; }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a { padding: 12px 0; font-size: 15px; color: var(--text-2); text-decoration: none; border-bottom: 1px solid var(--border); transition: color 0.2s; }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--gold); }
+  .article-wrapper { max-width: 720px; margin: 0 auto; padding: 7rem 2.5rem 5rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-family: 'Space Mono', monospace; color: var(--text-3); text-decoration: none; margin-bottom: 2.5rem; transition: color 0.2s; }
+  .back-link:hover { color: var(--gold); }
+  .article-tag { display: inline-block; font-size: 11px; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); background: var(--gold-glow); border: 1px solid var(--gold-dim); border-radius: 100px; padding: 3px 10px; margin-bottom: 1.25rem; text-align: left; }
+  .article-title { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 1rem; }
+  .article-excerpt { font-size: 1.1rem; color: var(--text-2); line-height: 1.75; margin-bottom: 1.5rem; text-align: left; }
+  .article-meta { display: flex; align-items: center; gap: 1rem; font-size: 13px; font-family: 'Space Mono', monospace; color: var(--text-3); padding-bottom: 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; flex-wrap: wrap; text-align: left; }
+  .article-meta .author { display: flex; align-items: center; gap: 8px; color: var(--text-2); }
+  .author-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--gold-dim); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--gold); object-fit: cover; overflow: hidden; }
+  .article-body { color: var(--text-2); }
+  .article-body p { font-size: 1.05rem; line-height: 1.85; margin-bottom: 1.5rem; color: var(--text-2); text-align: justify; }
+  .article-body h2 { font-size: 1.45rem; font-weight: 600; color: var(--text); letter-spacing: -0.01em; margin: 2.5rem 0 1rem; }
+  .article-body h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; }
+  .article-body ul, .article-body ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+  .article-body li { font-size: 1.05rem; line-height: 1.8; color: var(--text-2); margin-bottom: 0.4rem; }
+  .article-body blockquote { border-left: 3px solid var(--gold); padding: 0.5rem 0 0.5rem 1.5rem; margin: 2rem 0; font-size: 1.1rem; color: var(--text); font-style: italic; line-height: 1.75; }
+  .article-body a { color: var(--gold); text-decoration: none; }
+  .entry-link { font-size: 0.9em; font-family: 'Space Mono', monospace; text-decoration: none; border-bottom: 1px dotted var(--gold); }
+  .entry-link:hover { border-bottom-style: solid; }
+  .article-body img { width: 100%; border-radius: var(--radius); border: 1px solid var(--border); margin: 1.5rem 0; }
+  .article-body .caption { font-size: 12px; color: var(--text-3); font-family: 'Space Mono', monospace; text-align: center; margin-top: -1rem; margin-bottom: 1.5rem; }
+  .highlight-box { background: var(--gold-glow); border: 1px solid var(--gold-dim); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin: 1.5rem 0 2rem; }
+  .highlight-box p { margin-bottom: 0.5rem; text-align: left; }
+  .highlight-box p:last-child { margin-bottom: 0; }
+  .flow-chain { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1.5rem 0 2rem; font-family: 'Space Mono', monospace; font-size: 12px; }
+  .flow-step { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; color: var(--text); white-space: nowrap; }
+  .flow-arrow { color: var(--gold); font-size: 14px; }
+  .article-divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+  .article-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 1rem; }
+  .btn-secondary { display: inline-block; padding: 11px 22px; border: 1px solid var(--border-hover); color: var(--text); font-size: 14px; border-radius: var(--radius); text-decoration: none; transition: border-color 0.2s, background 0.2s; }
+  .btn-secondary:hover { border-color: var(--gold); background: var(--gold-glow); }
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .article-wrapper { padding: 5rem 1.5rem 4rem; }
+    .flow-chain { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/#home" class="nav-logo"><img src="/BLOC-Logo.webp" alt="BLOC" style="height: 32px; width: auto;"></a>
+  <ul class="nav-links">
+    <li><a href="/#home">Home</a></li>
+    <li><a href="/#nft">Mint Here</a></li>
+    <li><a href="/#trait-store">Trait Store</a></li>
+    <li><a href="/#staking">Staking</a></li>
+    <li><a href="/#about">About</a></li>
+    <li><a href="/#lore">Lore</a></li>
+    <li><a href="/#articles">Articles</a></li>
+    <li><a href="/#bbb">Better Business Beaver</a></li>
+    <li><a href="/#partners">Partners</a></li>
+    <li><a href="/#collab">Collab Projects</a></li>
+    <li><a href="/#team">Team</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/#home" onclick="closeMenu()">Home</a>
+  <a href="/#nft" onclick="closeMenu()">Mint Here</a>
+  <a href="/#trait-store" onclick="closeMenu()">Trait Store</a>
+  <a href="/#staking" onclick="closeMenu()">Staking</a>
+  <a href="/#about" onclick="closeMenu()">About</a>
+  <a href="/#lore" onclick="closeMenu()">Lore</a>
+  <a href="/#articles" onclick="closeMenu()">Articles</a>
+  <a href="/#bbb" onclick="closeMenu()">Better Business Beaver</a>
+  <a href="/#partners" onclick="closeMenu()">Partners</a>
+  <a href="/#collab" onclick="closeMenu()">Collab Projects</a>
+  <a href="/#team" onclick="closeMenu()">Team</a>
+</div>
+
+<div class="article-wrapper">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2.5rem; flex-wrap:wrap; gap:1rem;">
+    <a href="/#articles" class="back-link" style="margin-bottom:0;">← Back to Articles</a>
+  </div>
+
+  <div class="article-tag">BLOC Staking</div>
+
+  <h1 class="article-title">
+    BLOC Staking: Earn $CHEW, Fell Logs, and Win Bounties
+  </h1>
+
+  <p class="article-excerpt">
+    BLOC Staking introduces a simple way for NFT holders to participate in the BLOC ecosystem. Instead of simply holding an NFT, holders can make their Beaver work, earn points, earn $CHEW, and get chances to win rewards from the BLOC bounty pool.
+  </p>
+
+  <div class="article-meta">
+    <div class="author">
+      <img class="author-avatar" src="/BLOC-Logo.webp" alt="BLOC Team">
+      <span>BLOC Team</span>
+    </div>
+    <span>·</span>
+    <span>September 4, 2026</span>
+    <span>·</span>
+    <span>5 min read</span>
+  </div>
+
+  <div class="article-body">
+
+    <h2>What Is $CHEW?</h2>
+
+    <p>
+      $CHEW is the ecosystem currency of BLOC. It is not a memecoin or a shitcoin, and it is not designed to function as a standalone cryptocurrency. $CHEW exists specifically within the BLOC ecosystem and is used for different activities within the ecosystem.
+    </p>
+
+    <p>
+      Each NFT generates 200 points per day. These points can be used to fell logs, with holders able to fell any type of log up to four times per day, provided they have enough points.
+    </p>
+
+    <p>
+      Felling logs gives holders a chance to win one of the rewards available in the BLOC bounty pool. $CHEW can also be used to enter raffles within the BLOC ecosystem, with more potential uses for $CHEW possibly being introduced in the future.
+    </p>
+
+    <h2>⚡ Completely Free & Transactionless</h2>
+
+    <p>
+      BLOC Staking is designed to be transactionless and non-custodial. The platform simply reads and verifies your NFT holdings. You don't need to transfer your NFTs or connect your wallet for a blockchain transaction, meaning there are no gas fees involved.
+    </p>
+
+    <div class="highlight-box">
+      <p>Staking is completely free, and everything you do within the system is free from transaction fees. Your only cost within the ecosystem is the $CHEW required for activities that use it.</p>
+      <p><strong style="color: var(--text);">No gas. No staking fees. No NFT transfers. Just participate.</strong></p>
+    </div>
+
+    <h2>🦫 NFT Holder Boosts</h2>
+
+    <p>
+      BLOC Staking also rewards holders who collect NFTs from partnered projects. For partnered collections, holding each NFT provides a 1% boost, which can stack up to a maximum of 5% when holding five NFTs from the same collection.
+    </p>
+
+    <p>
+      This means collecting more NFTs from participating projects can give holders an additional advantage within the BLOC staking system.
+    </p>
+
+    <h2>🎁 Partner Projects and Bounty Contributions</h2>
+
+    <p>
+      Collaborated projects can contribute SOL, tokens, NFTs, or other rewards to the BLOC bounty pool. When a project contributes a bounty, its NFT collection receives an increased boost for its holders. The boost is set reasonably according to the value of the contribution and remains active until that contributed bounty runs out.
+    </p>
+
+    <p>
+      Their contribution becomes another reward that participants can potentially win, while holders of that project's NFTs receive an additional staking advantage. So when you see one of our partnered collections contributing to the bounty pool, it might be worth holding some of their NFTs.
+    </p>
+
+    <p>
+      Most of the bounty pool will still come from BLOC, with partner contributions adding even more rewards to the ecosystem.
+    </p>
+
+    <h2>🌲 How BLOC Staking Works</h2>
+
+    <div class="flow-chain">
+      <span class="flow-step">Hold NFTs</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Make Your Beaver Work</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Earn $CHEW</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Fell Logs or Enter Raffles</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Win Bounties</span>
+    </div>
+
+    <p>
+      As BLOC continues to grow, $CHEW and the staking ecosystem may gain even more uses over time.
+    </p>
+
+  </div>
+
+  <div class="article-divider"></div>
+
+  <div class="article-footer">
+    <a href="/#articles" class="btn-secondary">← All Articles</a>
+    <a href="/#home" class="btn-secondary">Home →</a>
+  </div>
+
+</div>
+
+<script>
+  function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+  function closeMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
+</script>
+</body>
+</html>

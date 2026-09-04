@@ -220,11 +220,17 @@
   }
 
   .stat-label {
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     color: var(--gray-dim);
     margin-bottom: 8px;
+    white-space: nowrap;
+  }
+  .stat-label-qualifier {
+    text-transform: none;
+    letter-spacing: 0.3px;
+    opacity: 0.7;
   }
 
   .stat-value {
@@ -287,6 +293,21 @@
   }
   .nft-name { font-weight: 700; font-size: 14px; }
   .nft-meta { font-size: 12px; color: var(--gray-dim); }
+
+  .collab-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--bg-card-border);
+    border-radius: 14px;
+    background: var(--bg-card);
+    margin-bottom: 10px;
+  }
+  .collab-row-name { font-weight: 700; font-size: 14px; }
+  .collab-row-held { font-size: 12px; color: var(--gray-dim); margin-top: 2px; }
+  .collab-row-bonus { color: var(--gold); font-weight: 700; font-size: 15px; }
 
   .btn-stake {
     background: transparent;
@@ -359,6 +380,74 @@
   }
   .chest-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
   .chest-cost { color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 14px; }
+
+  /* ---------- Raffle ---------- */
+  .raffle-card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    border-radius: 16px;
+    padding: 26px;
+    margin-top: 20px;
+  }
+  .raffle-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; margin-bottom: 6px; }
+  .raffle-desc { color: var(--gray); font-size: 14px; margin-bottom: 14px; line-height: 1.5; }
+  .raffle-links { display: flex; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+  .raffle-links a { color: var(--gold); font-size: 13px; text-decoration: none; font-weight: 700; }
+  .raffle-links a:hover { text-decoration: underline; }
+  .raffle-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: #17140f;
+    border: 1px solid var(--bg-card-border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .raffle-countdown { font-family: 'Space Mono', monospace; color: var(--gold); font-weight: 700; font-size: 16px; }
+  .raffle-cost { color: var(--gray); font-size: 13px; }
+  .raffle-enter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  .raffle-x-input {
+    flex: 1;
+    min-width: 180px;
+    background: #17140f;
+    border: 1px solid var(--bg-card-border);
+    border-radius: 999px;
+    padding: 10px 18px;
+    color: var(--cream);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+  }
+  .raffle-x-input::placeholder { color: var(--gray-dim); }
+  .raffle-entry-count { font-size: 12px; color: var(--gray-dim); margin-bottom: 18px; }
+  .raffle-entrants-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-dim);
+    margin-bottom: 10px;
+  }
+  .raffle-entrant-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--bg-card-border);
+    font-size: 13px;
+  }
+  .raffle-entrant-row:last-child { border-bottom: none; }
+  .raffle-entrant-name { color: var(--cream); }
+  .raffle-entrant-count { color: var(--gold); font-weight: 700; }
+  .raffle-winner-box {
+    text-align: center;
+    padding: 24px;
+    background: #17140f;
+    border: 1px solid var(--gold-dim);
+    border-radius: 12px;
+  }
+  .raffle-winner-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-dim); margin-bottom: 8px; }
+  .raffle-winner-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 26px; color: var(--gold); }
 
   .reward-pool {
     text-align: left;
@@ -592,10 +681,17 @@
       <div class="stat-value" id="stakedCount">—</div>
     </div>
     <div class="card">
-      <div class="stat-label">Collab Bonus (Standard)</div>
+      <div class="stat-label">Collab Bonus <span class="stat-label-qualifier">(Standard)</span></div>
       <div class="stat-value" id="collabBonus">—</div>
       <div class="stat-sub">up to +5% each project</div>
     </div>
+  </div>
+
+  <div class="section" id="collabBreakdownSection" style="display:none;">
+    <div class="section-header">
+      <h2>Boosted Projects</h2>
+    </div>
+    <div id="collabBreakdownList"></div>
   </div>
 
   <div class="section">
@@ -639,6 +735,11 @@
         <button class="btn-stake" id="fellHardBtn" onclick="fellTree('Hard Tree')">Fell</button>
       </div>
     </div>
+
+    <!-- Raffle -->
+    <div class="raffle-card" id="raffleCard">
+      <div class="empty-state">Loading raffle…</div>
+    </div>
   </div>
 </main>
 
@@ -660,6 +761,7 @@
   <div class="modal">
     <div class="modal-eyebrow">🌲 Tree Felled</div>
     <div class="modal-reward" id="modalRewardName">Whitelist Spot</div>
+    <div class="modal-reward" id="modalAssignedNft" style="display:none; font-size: 20px; color: var(--gold); margin-top: -8px;"></div>
 
     <canvas id="winCanvas" width="600" height="340"></canvas>
 
@@ -821,7 +923,11 @@
       await loadWalletData();
     } catch (err) {
       console.error('Wallet connect/sign-in failed:', err);
-      alert('Wallet connection or sign-in was cancelled or failed.');
+      // TEMP DIAGNOSTIC: showing the real error text directly, since
+      // getting to browser console on mobile is impractical. Once
+      // Solflare/Backpack are confirmed working, this can go back to a
+      // plain friendly message if preferred.
+      alert('Wallet connection or sign-in failed:\n\n' + (err?.message || err?.toString() || 'Unknown error'));
       const btn = document.getElementById('connectBtn');
       btn.textContent = 'Connect Wallet';
       btn.disabled = false;
@@ -864,6 +970,23 @@
     document.getElementById('stakedCount').textContent = data.stakedNfts.length;
     document.getElementById('collabBonus').textContent = '+' + data.collabBonusPercent + '%';
 
+    const breakdownSection = document.getElementById('collabBreakdownSection');
+    const breakdownList = document.getElementById('collabBreakdownList');
+    if (data.collabBreakdown && data.collabBreakdown.length > 0) {
+      breakdownSection.style.display = '';
+      breakdownList.innerHTML = data.collabBreakdown.map((c) => `
+        <div class="collab-row">
+          <div>
+            <div class="collab-row-name">${c.name}</div>
+            <div class="collab-row-held">${c.held} held</div>
+          </div>
+          <div class="collab-row-bonus">+${c.cappedBonus}%</div>
+        </div>
+      `).join('');
+    } else {
+      breakdownSection.style.display = 'none';
+    }
+
     const stakedMints = new Set(data.stakedNfts.map((n) => n.mint));
     const nftListEl = document.getElementById('nftList');
 
@@ -889,7 +1012,7 @@
           ? `<img src="${nft.image}" class="nft-thumb" style="object-fit:cover;" />`
           : `<div class="nft-thumb"></div>`;
         const metaContent = isStaked
-          ? `Staked · <span id="nft-earn-${nft.mint}">+0.00</span> $CHEW today`
+          ? `Staked · <span id="nft-earn-${nft.mint}">+0.00</span> $CHEW earned`
           : 'Not staked';
         return `
           <div class="nft-row">
@@ -942,18 +1065,24 @@
 
     // Each NFT gets its OWN anchor — never shared with any other NFT. If a
     // payout has posted since this NFT was staked, count from the payout
-    // (its earlier earnings are already folded into confirmedBalance). If
-    // this NFT was staked more recently than the last payout — including
-    // "just now" — count from its own real staked_at, so a freshly staked
-    // NFT correctly starts at ~0 instead of inheriting another NFT's
-    // number. This also means unstaking one NFT can never affect the
-    // displayed earnings of any other — each is fully independent.
+    // (its earlier earnings are already folded into its own total_earned
+    // below). If this NFT was staked more recently than the last payout —
+    // including "just now" — count from its own real staked_at, so a
+    // freshly staked NFT correctly starts at ~0 instead of inheriting
+    // another NFT's number. This also means unstaking one NFT can never
+    // affect the displayed earnings of any other — each is fully independent.
     const nftAnchors = {};
+    const nftBankedTotals = {};
     data.stakedNfts.forEach((nft) => {
       const stakedAtMs = new Date(nft.staked_at).getTime();
       nftAnchors[nft.mint] = lastPayoutTime
         ? Math.max(lastPayoutTime, stakedAtMs)
         : stakedAtMs;
+      // What this NFT has already earned across every PAST daily payout —
+      // this is what makes the display lifetime-while-staked instead of
+      // resetting each day. Only unstaking clears it (a restake starts a
+      // brand new row at 0).
+      nftBankedTotals[nft.mint] = nft.total_earned || 0;
     });
 
     function tick() {
@@ -964,11 +1093,12 @@
         // Capped at 24h so no single NFT's estimate can run further ahead
         // than one full day's earnings, even if calculate-points is delayed.
         const elapsedSeconds = anchor ? Math.min(86400, (Date.now() - anchor) / 1000) : 0;
-        const accrued = perNftRatePerSecond * elapsedSeconds;
-        totalAccrued += accrued;
+        const liveEstimate = perNftRatePerSecond * elapsedSeconds;
+        totalAccrued += liveEstimate;
 
+        const lifetimeDisplay = (nftBankedTotals[mint] || 0) + liveEstimate;
         const el = document.getElementById(`nft-earn-${mint}`);
-        if (el) el.textContent = '+' + accrued.toFixed(2);
+        if (el) el.textContent = '+' + lifetimeDisplay.toFixed(2);
       });
 
       const liveBalance = confirmedBalance + totalAccrued;
@@ -1062,9 +1192,11 @@
 
   document.getElementById('connectBtn').addEventListener('click', openWalletModal);
   loadTreeRewards();
+  loadRaffleStatus();
 
   let currentClaimCode = '';
   let currentRewardName = '';
+  let currentAssignedNft = '';
 
   async function loadTreeRewards() {
     try {
@@ -1101,6 +1233,178 @@
       console.error('loadTreeRewards failed:', err);
       // Leave the "Loading…" placeholder rather than showing an error to
       // every visitor — this list is cosmetic, not blocking to Fell itself.
+    }
+  }
+
+  // ---------- Raffle ----------
+  let raffleCountdownInterval = null;
+  let currentRaffle = null;
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function formatCountdown(msRemaining) {
+    if (msRemaining <= 0) return 'Drawing…';
+    const totalSeconds = Math.floor(msRemaining / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+
+  async function loadRaffleStatus() {
+    const cardEl = document.getElementById('raffleCard');
+    try {
+      const res = await fetch('/.netlify/functions/get-raffle-status');
+      if (!res.ok) throw new Error('Failed to load raffle status');
+      const data = await res.json();
+
+      if (raffleCountdownInterval) {
+        clearInterval(raffleCountdownInterval);
+        raffleCountdownInterval = null;
+      }
+
+      if (!data.raffle) {
+        currentRaffle = null;
+        cardEl.innerHTML = '<div class="empty-state">No raffle to enter yet. Stay tuned!</div>';
+        return;
+      }
+
+      currentRaffle = data.raffle;
+      renderRaffle(data.raffle, data.winners || [], data.entrants || [], data.totalEntries || 0);
+    } catch (err) {
+      console.error('loadRaffleStatus failed:', err);
+      // Leave whatever was already showing rather than replacing it with
+      // an error on every visitor's screen.
+    }
+  }
+
+  function renderRaffle(raffle, winners, entrants, totalEntries) {
+    const cardEl = document.getElementById('raffleCard');
+
+    const linksHtml = `
+      <div class="raffle-links">
+        ${raffle.projectXAccount ? `<a href="https://x.com/${escapeHtml(raffle.projectXAccount.replace(/^@/, ''))}" target="_blank">${escapeHtml(raffle.projectXAccount)}</a>` : ''}
+        ${raffle.infoPostUrl ? `<a href="${escapeHtml(raffle.infoPostUrl)}" target="_blank">View info post →</a>` : ''}
+      </div>
+    `;
+
+    if (raffle.status === 'drawn') {
+      const winnersHtml = winners.length > 0
+        ? winners.map((w) => `<div class="raffle-winner-name">@${escapeHtml(w.xUsername)}</div>`).join('')
+        : '<div class="raffle-winner-name">No entries were received</div>';
+
+      cardEl.innerHTML = `
+        <div class="raffle-title">${escapeHtml(raffle.title)}</div>
+        ${raffle.description ? `<div class="raffle-desc">${escapeHtml(raffle.description)}</div>` : ''}
+        ${linksHtml}
+        <div class="raffle-winner-box">
+          <div class="raffle-winner-label">🎉 ${winners.length > 1 ? `Winners (${winners.length})` : 'Winner'}</div>
+          ${winnersHtml}
+        </div>
+      `;
+      return;
+    }
+
+    // status === 'active'
+    const entrantsHtml = entrants.length > 0
+      ? entrants.map((e) => `
+          <div class="raffle-entrant-row">
+            <span class="raffle-entrant-name">@${escapeHtml(e.xUsername)}</span>
+            <span class="raffle-entrant-count">${e.entryCount} ${e.entryCount === 1 ? 'entry' : 'entries'}</span>
+          </div>
+        `).join('')
+      : '<div class="raffle-entrant-row"><span class="raffle-entrant-name" style="color:var(--gray-dim);">No entries yet — be the first!</span></div>';
+
+    cardEl.innerHTML = `
+      <div class="raffle-title">${escapeHtml(raffle.title)}</div>
+      ${raffle.description ? `<div class="raffle-desc">${escapeHtml(raffle.description)}</div>` : ''}
+      ${linksHtml}
+      <div class="raffle-meta-row">
+        <div class="raffle-countdown" id="raffleCountdown">--:--:--</div>
+        <div class="raffle-cost">${raffle.entryCost} $CHEW / entry · max ${raffle.maxEntriesPerWallet} per wallet · ${raffle.winnerCount || 1} winner${(raffle.winnerCount || 1) > 1 ? 's' : ''}</div>
+      </div>
+      <div class="raffle-enter-row">
+        <input type="text" id="raffleXInput" class="raffle-x-input" placeholder="Your X username (e.g. yourname)" maxlength="15" />
+        <button class="btn-stake" id="raffleEnterBtn" onclick="enterRaffle()">Enter (${raffle.entryCost} $CHEW)</button>
+      </div>
+      <div class="raffle-entry-count">${totalEntries} total ${totalEntries === 1 ? 'entry' : 'entries'} so far</div>
+      <div class="raffle-entrants-label">Entrants</div>
+      <div id="raffleEntrantsList">${entrantsHtml}</div>
+    `;
+
+    const countdownEl = document.getElementById('raffleCountdown');
+    const endsAtMs = new Date(raffle.endsAt).getTime();
+    function tickCountdown() {
+      const remaining = endsAtMs - Date.now();
+      countdownEl.textContent = formatCountdown(remaining);
+      if (remaining <= 0) {
+        clearInterval(raffleCountdownInterval);
+        // Timer hit zero — poll again shortly so the winner appears once
+        // draw-raffle.js's next scheduled run actually processes it.
+        setTimeout(loadRaffleStatus, 15000);
+      }
+    }
+    tickCountdown();
+    raffleCountdownInterval = setInterval(tickCountdown, 1000);
+  }
+
+  async function enterRaffle() {
+    if (!connectedWallet || !sessionToken) {
+      alert('Connect your wallet first.');
+      openWalletModal();
+      return;
+    }
+    if (!currentRaffle) return;
+
+    const input = document.getElementById('raffleXInput');
+    const xUsername = (input.value || '').trim();
+    if (!xUsername) {
+      alert('Enter your X username so we can contact you if you win.');
+      return;
+    }
+
+    const btn = document.getElementById('raffleEnterBtn');
+    const originalText = btn.textContent;
+    btn.textContent = 'Entering...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/.netlify/functions/enter-raffle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({ wallet: connectedWallet, raffleId: currentRaffle.id, xUsername }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 402) {
+          alert(`Not enough $CHEW. Your balance: ${data.balance ?? 0}`);
+        } else if (res.status === 401) {
+          alert('Your session expired — please reconnect your wallet.');
+        } else {
+          alert(data.error || 'Something went wrong. Please try again.');
+        }
+        return;
+      }
+
+      showToast(`Entry confirmed! (${data.newEntryCount}/${currentRaffle.maxEntriesPerWallet} used)`);
+      await loadWalletData();
+      await loadRaffleStatus();
+    } catch (err) {
+      console.error('enterRaffle failed:', err);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
     }
   }
 
@@ -1144,14 +1448,27 @@
       // toast) instead of opening the claim-code modal. Every other reward
       // type is completely unchanged below.
       if (data.autoCredited) {
-        showToast(`You won +${data.chewAmount} $CHEW! 🌲`);
+        showToast(`+${data.chewAmount} $CHEW claimed from that tree! 🌲`);
       } else {
         currentClaimCode = data.claimCode;
         currentRewardName = data.rewardName;
+        currentAssignedNft = data.assignedNft || '';
 
         document.getElementById('modalRewardName').textContent = data.rewardName;
         document.getElementById('claimCodeText').textContent = data.claimCode;
-        drawWinCard(data.rewardName, data.claimCode);
+
+        // NEW: rewards backed by a specific NFT pool (see
+        // reward_nft_inventory) reveal exactly which one was won here —
+        // never shown on the public rewards list, only to the winner.
+        const assignedEl = document.getElementById('modalAssignedNft');
+        if (data.assignedNft) {
+          assignedEl.textContent = data.assignedNft;
+          assignedEl.style.display = '';
+        } else {
+          assignedEl.style.display = 'none';
+        }
+
+        drawWinCard(data.rewardName, data.claimCode, data.assignedNft);
         document.getElementById('winModal').classList.add('open');
       }
 
@@ -1171,7 +1488,7 @@
     document.getElementById('winModal').classList.remove('open');
   }
 
-  function renderWinCardTo(canvas, rewardName, code, revealCode) {
+  function renderWinCardTo(canvas, rewardName, code, revealCode, assignedNft) {
     const ctx = canvas.getContext('2d');
     const w = canvas.width, h = canvas.height;
 
@@ -1202,6 +1519,16 @@
     ctx.font = '400 16px sans-serif';
     ctx.fillText('felled a tree and won', w / 2, 100);
 
+    // NEW: specific assigned NFT, if this reward came from an inventory
+    // pool (e.g. "Dead Bunny #452"). Safe to show even on the public share
+    // image — unlike the claim code, this isn't a secret, it's just what
+    // was won.
+    if (assignedNft) {
+      ctx.fillStyle = '#d9b04a';
+      ctx.font = '700 18px sans-serif';
+      ctx.fillText(assignedNft, w / 2, 168);
+    }
+
     // claim code box. Two modes:
     //   revealCode=false (on-screen + X share image) — never draws the real
     //   code as pixels at all. A blurred/noised version of real text is
@@ -1231,12 +1558,12 @@
     ctx.fillText('blocolony.com/staking', w / 2, h - 24);
   }
 
-  function drawWinCard(rewardName, code) {
+  function drawWinCard(rewardName, code, assignedNft) {
     // The on-screen modal canvas always shows the censored version — this
     // is also what shareWin() downloads/posts, so the real code is never
     // the thing that ends up in a public X post.
     const canvas = document.getElementById('winCanvas');
-    renderWinCardTo(canvas, rewardName, code, false);
+    renderWinCardTo(canvas, rewardName, code, false, assignedNft);
   }
 
   function downloadClaimImage() {
@@ -1246,7 +1573,7 @@
     const claimCanvas = document.createElement('canvas');
     claimCanvas.width = 600;
     claimCanvas.height = 340;
-    renderWinCardTo(claimCanvas, currentRewardName, currentClaimCode, true);
+    renderWinCardTo(claimCanvas, currentRewardName, currentClaimCode, true, currentAssignedNft);
 
     const link = document.createElement('a');
     link.download = `${currentClaimCode}.jpg`;

@@ -179,3 +179,9 @@ exports.handler = async () => {
     };
   } catch (err) {
     console.error('calculate-points error:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal server error' }),
+    };
+  }
+};

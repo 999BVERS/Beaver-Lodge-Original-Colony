@@ -24,7 +24,7 @@ exports.handler = async () => {
       // of setting weight = 0 on a reward — that only affects draw odds,
       // never touches stock, so a manually-disabled reward with normal
       // stock still stays listed as intended.
-      `${SUPABASE_URL}/rest/v1/tree_rewards?active=eq.true&or=(stock_remaining.is.null,stock_remaining.gt.0)&select=name,tree_type&order=name.asc`,
+      `${SUPABASE_URL}/rest/v1/tree_rewards?active=eq.true&or=(stock_remaining.is.null,stock_remaining.gt.0)&select=name,tree_type&order=display_order.asc,name.asc`,
       {
         headers: {
           apikey: SUPABASE_SERVICE_KEY,

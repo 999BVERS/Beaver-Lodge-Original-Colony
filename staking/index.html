@@ -756,6 +756,16 @@
   </div>
 </div>
 
+<!-- CHEW Win Modal (auto-credited rewards) -->
+<div class="modal-overlay" id="chewWinModal">
+  <div class="modal">
+    <div class="modal-eyebrow">🌲 Tree Felled</div>
+    <div class="modal-reward" id="chewWinAmount">+10 $CHEW</div>
+    <p style="color: var(--gray); font-size: 14px; margin: 4px 0 20px;">This has already been added to your balance.</p>
+    <button class="btn-stake" style="width: 100%;" onclick="claimChewWin()">Claim</button>
+  </div>
+</div>
+
 <!-- Win Modal -->
 <div class="modal-overlay" id="winModal">
   <div class="modal">
@@ -1453,12 +1463,12 @@
         return;
       }
 
-      // NEW: $CHEW rewards are auto-credited server-side — no claim code to
-      // act on, so just show a toast (same style as the unstake payout
-      // toast) instead of opening the claim-code modal. Every other reward
-      // type is completely unchanged below.
+      // $CHEW rewards are auto-credited server-side (the balance is
+      // already updated by this point) — but we still show a popup with a
+      // Claim button before confirming, rather than a silent toast, so the
+      // win feels acknowledged rather than just quietly appearing.
       if (data.autoCredited) {
-        showToast(`+${data.chewAmount} $CHEW claimed from that tree! 🌲`);
+        showChewWinModal(data.chewAmount);
       } else {
         currentClaimCode = data.claimCode;
         currentRewardName = data.rewardName;
@@ -1496,6 +1506,19 @@
 
   function closeModal() {
     document.getElementById('winModal').classList.remove('open');
+  }
+
+  let pendingChewAmount = 0;
+
+  function showChewWinModal(amount) {
+    pendingChewAmount = amount;
+    document.getElementById('chewWinAmount').textContent = `+${amount} $CHEW`;
+    document.getElementById('chewWinModal').classList.add('open');
+  }
+
+  function claimChewWin() {
+    document.getElementById('chewWinModal').classList.remove('open');
+    showToast(`You claimed the ${pendingChewAmount} $CHEW you've won!`);
   }
 
   function renderWinCardTo(canvas, rewardName, code, revealCode, assignedNft) {

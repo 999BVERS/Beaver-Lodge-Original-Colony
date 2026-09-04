@@ -162,3 +162,9 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error('verify-holdings error:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal server error' }),
+    };
+  }
+};

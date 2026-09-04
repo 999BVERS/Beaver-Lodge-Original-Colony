@@ -193,3 +193,9 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error('unstake-nft error:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal server error' }),
+    };
+  }
+};

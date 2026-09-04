@@ -870,8 +870,18 @@
     activeProvider = provider;
 
     try {
-      const resp = await provider.connect();
-      connectedWallet = resp.publicKey.toString();
+      await provider.connect();
+
+      // Read the public key from the provider itself, not from whatever
+      // connect() happened to resolve to — that varies by wallet (Phantom
+      // resolves to {publicKey}, but Solflare's extension resolves to a
+      // plain true/false), while every wallet reliably sets .publicKey on
+      // itself once connected.
+      const pubKey = provider.publicKey;
+      if (!pubKey) {
+        throw new Error('Wallet connected but did not provide a public key');
+      }
+      connectedWallet = pubKey.toString();
 
       const btn = document.getElementById('connectBtn');
       btn.textContent = 'Verifying...';

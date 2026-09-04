@@ -52,26 +52,19 @@
   }
 
   .logo {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #f0c869, #a67c1f);
     display: flex;
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    border: 2px solid var(--gold);
   }
   .logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 32px;
+    width: auto;
   }
   /* fallback text shown only if the image fails to load */
   .logo span {
     font-weight: 800;
-    font-size: 10px;
-    color: #2a1c05;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
   }
 
   .hamburger {
@@ -665,7 +658,7 @@
 <body>
 
 <nav>
-  <a href="index.html#home" class="logo">
+  <a href="/index.html#home" class="logo">
     <!-- TODO: point this at the same logo file your nav uses on blocolony.com,
          e.g. "assets/logo.png" or "images/bloc-logo.png" -->
     <img src="/BLOC-Logo.webp" alt="BLOC" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -678,18 +671,18 @@
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
-  <a href="index.html#home">Home</a>
-  <a href="index.html#nft">Mint Here</a>
-  <a href="index.html#trait-store">Trait Store</a>
-  <a href="index.html#staking" class="current">Staking</a>
-  <a href="index.html#about">About</a>
-  <a href="index.html#lore">Lore</a>
-  <a href="index.html#articles">Articles</a>
-  <a href="index.html#bbb">Better Business Beaver</a>
-  <a href="index.html#partners">Partners</a>
-  <a href="index.html#collab">Collab Projects</a>
-  <a href="index.html#team">Team</a>
-  <a href="index.html#staking" class="back-link">&#8592; Back to Site</a>
+  <a href="/index.html#home">Home</a>
+  <a href="/index.html#nft">Mint Here</a>
+  <a href="/index.html#trait-store">Trait Store</a>
+  <a href="/index.html#staking" class="current">Staking</a>
+  <a href="/index.html#about">About</a>
+  <a href="/index.html#lore">Lore</a>
+  <a href="/index.html#articles">Articles</a>
+  <a href="/index.html#bbb">Better Business Beaver</a>
+  <a href="/index.html#partners">Partners</a>
+  <a href="/index.html#collab">Collab Projects</a>
+  <a href="/index.html#team">Team</a>
+  <a href="/index.html#staking" class="back-link">&#8592; Back to Site</a>
 </div>
 
 <main>

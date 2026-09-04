@@ -11,6 +11,9 @@
 [functions."daily-reconciliation"]
   schedule = "0 20 * * *"
 
+[functions."draw-raffle"]
+  schedule = "*/5 * * * *"
+
   [[headers]]
     for = "/*"
     [headers.values]

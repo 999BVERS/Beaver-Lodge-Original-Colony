@@ -57,6 +57,13 @@
     border-bottom: 1px solid var(--border);
   }
 
+  /* Nav is fixed at 60px tall — without this, every anchor jump (nav
+     clicks, and links arriving from /staking/) lands with the target
+     section's heading hidden directly underneath the nav bar. */
+  [id] {
+    scroll-margin-top: 80px;
+  }
+
   .nav-logo {
     font-family: 'Space Mono', monospace;
     font-size: 13px;
@@ -109,13 +116,14 @@
   .mobile-menu {
     display: none;
     position: fixed;
-    top: 60px; left: 0; right: 0;
-    background: rgba(10,10,11,0.97);
+    top: 60px; left: 0; right: 0; bottom: 0;
+    background: #0a0a0b;
     border-bottom: 1px solid var(--border);
     padding: 1rem 2rem;
     z-index: 99;
     flex-direction: column;
     gap: 0.25rem;
+    overflow-y: auto;
   }
 
   .mobile-menu.open { display: flex; }
@@ -1110,7 +1118,7 @@
   .home-actions { flex-direction: column; }
   .btn-primary { text-align: center; width: 100%; display: block; }
   .btn-secondary { text-align: center; width: 100%; display: block; }
-  .btn-mint { width: 100%; justify-content: center; }
+  .btn-mint { width: 100%; justify-content: center; padding: 13px 20px; font-size: 14px; }
   .coming-soon-overlay { left: clamp(-1.75rem, -5vw, -1rem); right: clamp(-1.75rem, -5vw, -1rem); }
   .home-inner { padding: 0; width: 100%; }
   .home-desc { max-width: 100%; }
@@ -1175,17 +1183,17 @@
   </button>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#home" onclick="closeMenu()">Home</a>
-  <a href="#nft" onclick="closeMenu()">Mint Here</a>
-  <a href="#trait-store" onclick="closeMenu()">Trait Store</a>
-  <a href="#staking" onclick="closeMenu()">Staking</a>
-  <a href="#about" onclick="closeMenu()">About</a>
-  <a href="#lore" onclick="closeMenu()">Lore</a>
-  <a href="#articles" onclick="closeMenu()">Articles</a>
-  <a href="#bbb" onclick="closeMenu()">Better Business Beaver</a>
-  <a href="#partners" onclick="closeMenu()">Partners</a>
-  <a href="#collab" onclick="closeMenu()">Collab Projects</a>
-  <a href="#team" onclick="closeMenu()">Team</a>
+  <a href="#home" onclick="return navigateTo(event, 'home')">Home</a>
+  <a href="#nft" onclick="return navigateTo(event, 'nft')">Mint Here</a>
+  <a href="#trait-store" onclick="return navigateTo(event, 'trait-store')">Trait Store</a>
+  <a href="#staking" onclick="return navigateTo(event, 'staking')">Staking</a>
+  <a href="#about" onclick="return navigateTo(event, 'about')">About</a>
+  <a href="#lore" onclick="return navigateTo(event, 'lore')">Lore</a>
+  <a href="#articles" onclick="return navigateTo(event, 'articles')">Articles</a>
+  <a href="#bbb" onclick="return navigateTo(event, 'bbb')">Better Business Beaver</a>
+  <a href="#partners" onclick="return navigateTo(event, 'partners')">Partners</a>
+  <a href="#collab" onclick="return navigateTo(event, 'collab')">Collab Projects</a>
+  <a href="#team" onclick="return navigateTo(event, 'team')">Team</a>
 </div>
 
 <!-- ═══════════════════════════
@@ -1343,8 +1351,8 @@
 <!-- ═══════════════════════════
      STAKING
      EDIT: Replace placeholder image with your staking cover art.
-     The whole card links to staking.html — upload staking.html
-     to the same repo folder as this file.
+     The whole card links to /staking/ (the staking page lives at
+     staking/index.html in your repo, not a flat staking.html file).
 ═══════════════════════════ -->
 <section id="staking">
   <div class="container">
@@ -1380,7 +1388,7 @@
     </div>
 
     <div style="display:flex; justify-content:center; margin-top:1.5rem;">
-      <a href="staking.html" class="btn-mint">
+      <a href="/staking/" class="btn-mint">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         Put Your Beaver To Work - Stake Here
       </a>
@@ -1857,6 +1865,20 @@
   }
   function closeMenu() {
     document.getElementById('mobileMenu').classList.remove('open');
+  }
+  // Used by mobile menu links specifically — closing the overlay instantly
+  // changes page layout, which can race against the browser's native
+  // anchor-jump if both happen in the same instant. This makes the order
+  // explicit: close first, let layout settle, then scroll.
+  function navigateTo(e, id) {
+    e.preventDefault();
+    closeMenu();
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      history.pushState(null, '', '#' + id);
+    }, 60);
+    return false;
   }
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', () => closeMenu());

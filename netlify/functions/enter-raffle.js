@@ -70,9 +70,12 @@ exports.handler = async (event) => {
       return { statusCode: 410, body: JSON.stringify({ error: 'This raffle has ended' }) };
     }
 
-    // 2. Enforce the per-wallet entry cap.
+    // 2. Enforce the per-wallet entry cap AND username consistency — once
+    // a wallet has entered this raffle with a given X username, every
+    // additional entry for the SAME raffle must use that same username. A
+    // different username is only allowed for a different (future) raffle.
     const existingRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/raffle_entries?raffle_id=eq.${raffleId}&wallet=eq.${wallet}&select=id`,
+      `${SUPABASE_URL}/rest/v1/raffle_entries?raffle_id=eq.${raffleId}&wallet=eq.${wallet}&select=id,x_username`,
       { headers: sbHeaders }
     );
     const existing = await existingRes.json();
@@ -83,6 +86,19 @@ exports.handler = async (event) => {
         statusCode: 403,
         body: JSON.stringify({ error: `You've already used the max ${raffle.max_entries_per_wallet} entries for this raffle` }),
       };
+    }
+
+    if (currentEntryCount > 0) {
+      const lockedUsername = existing[0].x_username;
+      if (lockedUsername.toLowerCase() !== xUsername.toLowerCase()) {
+        return {
+          statusCode: 409,
+          body: JSON.stringify({
+            error: `You already entered this raffle as @${lockedUsername} — use that same username for additional entries.`,
+            lockedUsername,
+          }),
+        };
+      }
     }
 
     // 3. Atomically deduct the entry cost.

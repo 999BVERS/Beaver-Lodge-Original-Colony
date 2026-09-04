@@ -136,6 +136,22 @@ exports.handler = async () => {
           });
         }
 
+        // NEW: credit each individual staked NFT's own lifetime total too —
+        // this is what the frontend displays per-NFT, separate from (but
+        // summing to roughly) the wallet-level totalPoints above. A tiny
+        // rounding difference between this per-NFT sum and the wallet's
+        // single rounded totalPoints is possible and harmless — the real
+        // $CHEW paid out is always the wallet-level number above; this is
+        // purely a display breakdown of where it came from.
+        const perNftAmount = Math.round(200 * (1 + bonusPercent / 100) * 100) / 100;
+        for (const staked of stillValid) {
+          await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_nft_earned`, {
+            method: 'POST',
+            headers: sbHeaders,
+            body: JSON.stringify({ p_staked_nft_id: staked.id, p_amount: perNftAmount }),
+          });
+        }
+
         // Log in ledger
         await fetch(`${SUPABASE_URL}/rest/v1/point_ledger`, {
           method: 'POST',

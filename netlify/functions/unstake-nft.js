@@ -3,29 +3,15 @@
 // Unstakes an NFT — marks the staked_nfts row inactive rather than deleting
 // it, preserving history.
 //
-// IMPORTANT: calculate-points.js only pays 200 $CHEW/day to whatever is
-// ACTIVELY staked at the moment it runs (once daily) — it does not look
-// back at what was staked earlier in the day. That means, without this
-// function doing anything extra, unstaking before that daily run has fired
-// would mean genuinely earning nothing for that period, not partial credit.
-//
-// To fix that, this function calculates exactly how much this specific NFT
-// has earned since the later of (a) when it was staked, or (b) the wallet's
-// last confirmed payout — same math the live ticker on the frontend shows —
-// and credits that amount into point_balances for real, right now, before
-// deactivating the stake. This makes what the ticker was showing actually
-// true money instead of an estimate that could vanish on unstake.
-//
-// No double-payment risk: calculate-points only ever pays currently-ACTIVE
-// stakes, and this NFT's row is set inactive in the same request, so it
-// will never also be paid for this same period by the next scheduled run.
+// Collab bonus is now read from the collab_holdings cache table (written by
+// verify-holdings.js on wallet connect) instead of calling Helius directly,
+// saving an API call and improving response time.
 //
 // Env vars required: SUPABASE_URL, SUPABASE_SERVICE_KEY, HELIUS_API_KEY,
 // BLOC_COLLECTION_ADDRESS
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
 const BLOC_COLLECTION_ADDRESS = process.env.BLOC_COLLECTION_ADDRESS;
 const { requireValidSession } = require('./utils/auth');
 
@@ -35,44 +21,35 @@ const sbHeaders = {
   'Content-Type': 'application/json',
 };
 
-// Same collab bonus calculation calculate-points.js uses, kept in sync so
-// this partial payout and the daily payout never disagree on rate.
+// Reads collab bonus from the collab_holdings cache instead of calling
+// Helius — verify-holdings.js writes this on every wallet connect so
+// it's always fresh relative to when the user last loaded the staking page.
 async function getCollabBonusPercent(wallet) {
-  const heliusRes = await fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 'unstake-collab-check',
-      method: 'getAssetsByOwner',
-      params: { ownerAddress: wallet, page: 1, limit: 1000 },
-    }),
-  });
-  const heliusData = await heliusRes.json();
-  const assets = heliusData.result?.items || [];
+  // Get this wallet's cached collab holdings
+  const holdingsRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/collab_holdings?wallet=eq.${wallet}&select=collection_address,nft_count`,
+    { headers: sbHeaders }
+  );
+  const holdings = await holdingsRes.json();
 
+  if (!Array.isArray(holdings) || holdings.length === 0) return 0;
+
+  // Get active collab collection rates
   const collabRes = await fetch(
     `${SUPABASE_URL}/rest/v1/collab_collections?active=eq.true&select=collection_address,bonus_per_nft,max_bonus`,
     { headers: sbHeaders }
   );
   const collabCollections = await collabRes.json();
 
-  const collabCounts = {};
-  for (const asset of assets) {
-    for (const g of asset.grouping || []) {
-      if (g.group_key === 'collection') {
-        const match = collabCollections.find((c) => c.collection_address === g.group_value);
-        if (match) collabCounts[g.group_value] = (collabCounts[g.group_value] || 0) + 1;
-      }
-    }
-  }
-
   let bonusPercent = 0;
-  for (const [address, count] of Object.entries(collabCounts)) {
-    const project = collabCollections.find((c) => c.collection_address === address);
-    const perNft = project?.bonus_per_nft ?? 1;
-    const maxBonus = project?.max_bonus ?? 5;
-    bonusPercent += Math.min(count * perNft, maxBonus);
+  for (const holding of holdings) {
+    const project = collabCollections.find(
+      (c) => c.collection_address === holding.collection_address
+    );
+    if (!project) continue;
+    const perNft = project.bonus_per_nft ?? 1;
+    const maxBonus = project.max_bonus ?? 5;
+    bonusPercent += Math.min(holding.nft_count * perNft, maxBonus);
   }
   return bonusPercent;
 }
@@ -100,9 +77,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Only allow unstaking a mint that's actively staked BY THIS wallet —
-    // prevents one wallet from unstaking another wallet's NFT via a crafted
-    // request. Now also fetching staked_at, needed for the payout math.
+    // Only allow unstaking a mint that's actively staked BY THIS wallet
     const findRes = await fetch(
       `${SUPABASE_URL}/rest/v1/staked_nfts?mint=eq.${mint}&wallet=eq.${wallet}&active=eq.true&select=id,staked_at`,
       { headers: sbHeaders }
@@ -118,10 +93,7 @@ exports.handler = async (event) => {
 
     const stakeRow = found[0];
 
-    // 1. Figure out how much this NFT has genuinely earned since it started
-    // counting (its own staked_at, or the last confirmed payout if that's
-    // more recent — anything before that point is already inside the
-    // confirmed balance and shouldn't be paid again).
+    // Calculate how much this NFT has earned since last confirmed payout
     const balanceRes = await fetch(
       `${SUPABASE_URL}/rest/v1/point_balances?wallet=eq.${wallet}&select=last_daily_payout_at`,
       { headers: sbHeaders }
@@ -137,13 +109,13 @@ exports.handler = async (event) => {
 
     let payoutAmount = 0;
     if (elapsedSeconds > 0) {
+      // Read from cache instead of calling Helius
       const collabBonusPercent = await getCollabBonusPercent(wallet);
       const ratePerSecond = (200 * (1 + collabBonusPercent / 100)) / 86400;
-      payoutAmount = Math.round(ratePerSecond * elapsedSeconds * 100) / 100; // 2 decimal places
+      payoutAmount = Math.round(ratePerSecond * elapsedSeconds * 100) / 100;
     }
 
-    // 2. Credit it for real, right now — same atomic increment used
-    // elsewhere for adding $CHEW.
+    // Credit the earned amount
     if (payoutAmount > 0) {
       const creditRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/refund_chew`, {
         method: 'POST',
@@ -164,9 +136,6 @@ exports.handler = async (event) => {
         }),
       });
 
-      // Also fold this final amount into the NFT's own lifetime total —
-      // mostly for a clean audit trail, since the row is about to be
-      // deactivated and won't be shown on the frontend after this anyway.
       await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_nft_earned`, {
         method: 'POST',
         headers: sbHeaders,
@@ -174,9 +143,7 @@ exports.handler = async (event) => {
       });
     }
 
-    // 3. Now deactivate the stake — after the payout is safely banked, so
-    // a failure earlier in this request never leaves the NFT unstaked
-    // without having been paid for its time.
+    // Deactivate the stake
     const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/staked_nfts?id=eq.${stakeRow.id}`, {
       method: 'PATCH',
       headers: sbHeaders,

@@ -74,7 +74,7 @@ exports.handler = async (event) => {
 
     // 2. Get active collab collections from Supabase
     const collabRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/collab_collections?active=eq.true&select=collection_address,name`,
+      `${SUPABASE_URL}/rest/v1/collab_collections?active=eq.true&select=collection_address,name,bonus_per_nft,max_bonus`,
       {
         headers: {
           apikey: SUPABASE_SERVICE_KEY,
@@ -98,13 +98,19 @@ exports.handler = async (event) => {
       }
     }
 
-    // Per-project cap: min(count, 5) * 1%, summed across all projects
+    // Per-project bonus: each project has its OWN rate (bonus_per_nft) and
+    // cap (max_bonus), instead of every project sharing a fixed formula —
+    // this is what lets you boost one project for an event without
+    // touching any others.
     let collabBonusPercent = 0;
     const collabBreakdown = [];
     for (const [address, count] of Object.entries(collabCounts)) {
-      const capped = Math.min(count, 5);
+      const project = collabCollections.find((c) => c.collection_address === address);
+      const perNft = project?.bonus_per_nft ?? 1;
+      const maxBonus = project?.max_bonus ?? 5;
+      const capped = Math.min(count * perNft, maxBonus);
       collabBonusPercent += capped;
-      const name = collabCollections.find((c) => c.collection_address === address)?.name || 'Unknown';
+      const name = project?.name || 'Unknown';
       collabBreakdown.push({ name, held: count, cappedBonus: capped });
     }
 
@@ -156,9 +162,3 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error('verify-holdings error:', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to verify holdings' }),
-    };
-  }
-};

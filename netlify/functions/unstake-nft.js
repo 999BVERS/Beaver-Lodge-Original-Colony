@@ -160,6 +160,15 @@ exports.handler = async (event) => {
           reason: `unstake_payout (${mint}, ${Math.round(elapsedSeconds)}s staked since last payout)`,
         }),
       });
+
+      // Also fold this final amount into the NFT's own lifetime total —
+      // mostly for a clean audit trail, since the row is about to be
+      // deactivated and won't be shown on the frontend after this anyway.
+      await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_nft_earned`, {
+        method: 'POST',
+        headers: sbHeaders,
+        body: JSON.stringify({ p_staked_nft_id: stakeRow.id, p_amount: payoutAmount }),
+      });
     }
 
     // 3. Now deactivate the stake — after the payout is safely banked, so

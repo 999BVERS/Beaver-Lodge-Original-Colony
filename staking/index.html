@@ -1047,11 +1047,19 @@
     }
 
     const unstakedCount = data.heldBlocMints.filter((n) => !stakedMints.has(n.mint)).length;
+    const stakedCount = data.heldBlocMints.filter((n) => stakedMints.has(n.mint)).length;
 
     const stakeAllButton =
       unstakedCount > 1
-        ? `<button class="btn-secondary" style="width:100%; margin-bottom: 12px;" onclick="stakeAll()">
+        ? `<button class="btn-secondary" style="width:100%; margin-bottom: 8px;" onclick="stakeAll()">
              Stake All (${unstakedCount})
+           </button>`
+        : '';
+
+    const unstakeAllButton =
+      stakedCount > 1
+        ? `<button class="btn-secondary" style="width:100%; margin-bottom: 12px; border-color: rgba(255,255,255,0.15); color: #a8a29a;" onclick="unstakeAll()">
+             Unstake All (${stakedCount})
            </button>`
         : '';
 
@@ -1081,7 +1089,7 @@
       })
       .join('');
 
-    nftListEl.innerHTML = stakeAllButton + rows;
+    nftListEl.innerHTML = stakeAllButton + unstakeAllButton + rows;
 
     startLiveTicker(data, stakedMints);
   }
@@ -1163,6 +1171,9 @@
     if (!connectedWallet || !sessionToken || !lastWalletData) return;
     const stakedMints = new Set(lastWalletData.stakedNfts.map((n) => n.mint));
     const toStake = lastWalletData.heldBlocMints.filter((n) => !stakedMints.has(n.mint));
+    if (toStake.length === 0) return;
+    const confirmed = confirm(`This will stake all ${toStake.length} unstaked NFT${toStake.length > 1 ? 's' : ''}. Continue?`);
+    if (!confirmed) return;
 
     for (const nft of toStake) {
       try {
@@ -1176,6 +1187,38 @@
         });
       } catch (err) {
         console.error('Failed to stake', nft.mint, err);
+      }
+    }
+
+    await loadWalletData();
+  }
+
+  async function unstakeAll() {
+    if (!connectedWallet || !sessionToken || !lastWalletData) return;
+    const stakedMints = new Set(lastWalletData.stakedNfts.map((n) => n.mint));
+    const toUnstake = lastWalletData.heldBlocMints.filter((n) => stakedMints.has(n.mint));
+    if (toUnstake.length === 0) return;
+    const confirmed = confirm(`This will unstake all ${toUnstake.length} staked NFT${toUnstake.length > 1 ? 's' : ''} and bank your earned $CHEW. Continue?`);
+    if (!confirmed) return;
+
+    for (const nft of toUnstake) {
+      try {
+        const res = await fetch('/.netlify/functions/unstake-nft', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({ wallet: connectedWallet, mint: nft.mint }),
+        });
+        if (res.ok) {
+          const result = await res.json();
+          if (result.payoutAmount > 0) {
+            showToast(`+${result.payoutAmount.toFixed(2)} $CHEW banked from unstaking`);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to unstake', nft.mint, err);
       }
     }
 

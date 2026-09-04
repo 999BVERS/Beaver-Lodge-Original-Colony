@@ -18,6 +18,12 @@ const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 exports.handler = async () => {
   try {
     const res = await fetch(
+      // Shows active, in-stock rewards only — one that's genuinely sold
+      // out (stock_remaining = 0) disappears from the list automatically.
+      // This does NOT affect the separate "disable but keep visible" trick
+      // of setting weight = 0 on a reward — that only affects draw odds,
+      // never touches stock, so a manually-disabled reward with normal
+      // stock still stays listed as intended.
       `${SUPABASE_URL}/rest/v1/tree_rewards?active=eq.true&or=(stock_remaining.is.null,stock_remaining.gt.0)&select=name,tree_type&order=name.asc`,
       {
         headers: {

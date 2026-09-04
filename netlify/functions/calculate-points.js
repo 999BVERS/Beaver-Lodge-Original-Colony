@@ -62,7 +62,7 @@ exports.handler = async () => {
 
     // 2. Get active collab collections once (shared across all wallets)
     const collabRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/collab_collections?active=eq.true&select=collection_address,name`,
+      `${SUPABASE_URL}/rest/v1/collab_collections?active=eq.true&select=collection_address,name,bonus_per_nft,max_bonus`,
       { headers: sbHeaders }
     );
     const collabCollections = await collabRes.json();
@@ -105,8 +105,11 @@ exports.handler = async () => {
         }
 
         let bonusPercent = 0;
-        for (const count of Object.values(collabCounts)) {
-          bonusPercent += Math.min(count, 5);
+        for (const [address, count] of Object.entries(collabCounts)) {
+          const project = collabCollections.find((c) => c.collection_address === address);
+          const perNft = project?.bonus_per_nft ?? 1;
+          const maxBonus = project?.max_bonus ?? 5;
+          bonusPercent += Math.min(count * perNft, maxBonus);
         }
 
         const basePoints = stillValid.length * POINTS_PER_NFT_PER_DAY;
@@ -176,6 +179,3 @@ exports.handler = async () => {
     };
   } catch (err) {
     console.error('calculate-points error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Failed to calculate points' }) };
-  }
-};

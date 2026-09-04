@@ -421,6 +421,40 @@
     font-size: 14px;
   }
   .raffle-x-input::placeholder { color: var(--gray-dim); }
+  .raffle-qty-selector {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid var(--bg-card-border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .raffle-qty-btn {
+    background: #17140f;
+    border: none;
+    color: var(--gold);
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .raffle-qty-btn:hover { background: #221c12; }
+  .raffle-qty-display {
+    min-width: 32px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--cream);
+  }
+  .raffle-afford-warning {
+    color: #e0685c;
+    font-size: 13px;
+    margin-top: -8px;
+    margin-bottom: 16px;
+  }
   .raffle-entry-count { font-size: 12px; color: var(--gray-dim); margin-bottom: 18px; }
   .raffle-entrants-label {
     font-size: 11px;
@@ -986,7 +1020,10 @@
     }
   }
 
+  let currentChewBalance = 0;
+
   function renderWalletData(data) {
+    currentChewBalance = data.chewBalance;
     document.getElementById('stakedCount').textContent = data.stakedNfts.length;
     document.getElementById('collabBonus').textContent = '+' + data.collabBonusPercent + '%';
 
@@ -1259,6 +1296,8 @@
   // ---------- Raffle ----------
   let raffleCountdownInterval = null;
   let currentRaffle = null;
+  let raffleQuantity = 1;
+  let raffleMaxQty = 1;
 
   function escapeHtml(str) {
     const div = document.createElement('div');
@@ -1341,6 +1380,34 @@
         `).join('')
       : '<div class="raffle-entrant-row"><span class="raffle-entrant-name" style="color:var(--gray-dim);">No entries yet — be the first!</span></div>';
 
+    // How many entries has the connected wallet already bought, and how
+    // many can they still buy this raffle. If they've already entered,
+    // find their locked-in username too — additional entries must reuse
+    // it, enforced both here (pre-filled + locked input) and server-side.
+    const myEntrant = connectedWallet ? entrants.find((e) => e.wallet === connectedWallet) : null;
+    const myEntries = myEntrant?.entryCount || 0;
+    const lockedUsername = myEntrant?.xUsername || '';
+    raffleMaxQty = Math.max(0, raffle.maxEntriesPerWallet - myEntries);
+    raffleQuantity = 1; // reset selector on every render
+
+    const entryControlsHtml = raffleMaxQty > 0
+      ? `
+        <div class="raffle-enter-row">
+          <input type="text" id="raffleXInput" class="raffle-x-input" placeholder="Your X username (e.g. yourname)" maxlength="15"
+            value="${escapeHtml(lockedUsername)}" ${lockedUsername ? 'readonly title="Already entered this raffle with this username — additional entries must match it"' : ''} />
+        </div>
+        <div class="raffle-enter-row">
+          <div class="raffle-qty-selector">
+            <button type="button" class="raffle-qty-btn" onclick="adjustRaffleQty(-1)">-</button>
+            <span class="raffle-qty-display" id="raffleQtyDisplay">1</span>
+            <button type="button" class="raffle-qty-btn" onclick="adjustRaffleQty(1)">+</button>
+          </div>
+          <button class="btn-stake" id="raffleEnterBtn" onclick="enterRaffle()">Enter (${raffle.entryCost} $CHEW)</button>
+        </div>
+        <div class="raffle-afford-warning" id="raffleAffordWarning" style="display:none;"></div>
+      `
+      : `<div class="raffle-afford-warning" style="display:block; color: var(--gray-dim);">You've used all ${raffle.maxEntriesPerWallet} entries for this raffle.</div>`;
+
     cardEl.innerHTML = `
       <div class="raffle-title">${escapeHtml(raffle.title)}</div>
       ${raffle.description ? `<div class="raffle-desc">${escapeHtml(raffle.description)}</div>` : ''}
@@ -1349,14 +1416,13 @@
         <div class="raffle-countdown" id="raffleCountdown">--:--:--</div>
         <div class="raffle-cost">${raffle.entryCost} $CHEW / entry · max ${raffle.maxEntriesPerWallet} per wallet · ${raffle.winnerCount || 1} winner${(raffle.winnerCount || 1) > 1 ? 's' : ''}</div>
       </div>
-      <div class="raffle-enter-row">
-        <input type="text" id="raffleXInput" class="raffle-x-input" placeholder="Your X username (e.g. yourname)" maxlength="15" />
-        <button class="btn-stake" id="raffleEnterBtn" onclick="enterRaffle()">Enter (${raffle.entryCost} $CHEW)</button>
-      </div>
+      ${entryControlsHtml}
       <div class="raffle-entry-count">${totalEntries} total ${totalEntries === 1 ? 'entry' : 'entries'} so far</div>
       <div class="raffle-entrants-label">Entrants</div>
       <div id="raffleEntrantsList">${entrantsHtml}</div>
     `;
+
+    if (raffleMaxQty > 0) checkRaffleAffordability();
 
     const countdownEl = document.getElementById('raffleCountdown');
     const endsAtMs = new Date(raffle.endsAt).getTime();
@@ -1374,6 +1440,31 @@
     raffleCountdownInterval = setInterval(tickCountdown, 1000);
   }
 
+  function adjustRaffleQty(delta) {
+    raffleQuantity = Math.min(raffleMaxQty, Math.max(1, raffleQuantity + delta));
+    document.getElementById('raffleQtyDisplay').textContent = raffleQuantity;
+    checkRaffleAffordability();
+  }
+
+  function checkRaffleAffordability() {
+    if (!currentRaffle) return;
+    const totalCost = raffleQuantity * currentRaffle.entryCost;
+    const warningEl = document.getElementById('raffleAffordWarning');
+    const btn = document.getElementById('raffleEnterBtn');
+    if (!warningEl || !btn) return;
+
+    btn.textContent = `Enter (${totalCost} $CHEW)`;
+
+    if (totalCost > currentChewBalance) {
+      warningEl.textContent = `Not enough $CHEW to enter ${raffleQuantity} time${raffleQuantity > 1 ? 's' : ''}`;
+      warningEl.style.display = '';
+      btn.disabled = true;
+    } else {
+      warningEl.style.display = 'none';
+      btn.disabled = false;
+    }
+  }
+
   async function enterRaffle() {
     if (!connectedWallet || !sessionToken) {
       alert('Connect your wallet first.');
@@ -1389,41 +1480,55 @@
       return;
     }
 
+    const quantity = raffleQuantity;
     const btn = document.getElementById('raffleEnterBtn');
-    const originalText = btn.textContent;
-    btn.textContent = 'Entering...';
     btn.disabled = true;
 
-    try {
-      const res = await fetch('/.netlify/functions/enter-raffle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${sessionToken}`,
-        },
-        body: JSON.stringify({ wallet: connectedWallet, raffleId: currentRaffle.id, xUsername }),
-      });
-      const data = await res.json();
+    let boughtCount = 0;
+    let lastEntryCount = 0;
 
-      if (!res.ok) {
-        if (res.status === 402) {
-          alert(`Not enough $CHEW. Your balance: ${data.balance ?? 0}`);
-        } else if (res.status === 401) {
-          alert('Your session expired — please reconnect your wallet.');
-        } else {
-          alert(data.error || 'Something went wrong. Please try again.');
+    try {
+      for (let i = 0; i < quantity; i++) {
+        btn.textContent = quantity > 1 ? `Entering... (${i + 1}/${quantity})` : 'Entering...';
+
+        const res = await fetch('/.netlify/functions/enter-raffle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({ wallet: connectedWallet, raffleId: currentRaffle.id, xUsername }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 402) {
+            alert(`Not enough $CHEW. Your balance: ${data.balance ?? 0}${boughtCount > 0 ? ` (${boughtCount} entries were bought before this happened)` : ''}`);
+          } else if (res.status === 401) {
+            alert('Your session expired — please reconnect your wallet.');
+          } else {
+            alert(data.error || 'Something went wrong. Please try again.');
+          }
+          break; // stop buying further entries, but keep whatever succeeded so far
         }
-        return;
+
+        boughtCount++;
+        lastEntryCount = data.newEntryCount;
       }
 
-      showToast(`Entry confirmed! (${data.newEntryCount}/${currentRaffle.maxEntriesPerWallet} used)`);
+      if (boughtCount > 0) {
+        showToast(
+          boughtCount === 1
+            ? `Entry confirmed! (${lastEntryCount}/${currentRaffle.maxEntriesPerWallet} used)`
+            : `${boughtCount} entries confirmed! (${lastEntryCount}/${currentRaffle.maxEntriesPerWallet} used)`
+        );
+      }
+
       await loadWalletData();
       await loadRaffleStatus();
     } catch (err) {
       console.error('enterRaffle failed:', err);
       alert('Something went wrong. Please try again.');
-    } finally {
-      btn.textContent = originalText;
       btn.disabled = false;
     }
   }

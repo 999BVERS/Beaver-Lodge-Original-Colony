@@ -32,6 +32,17 @@ exports.handler = async () => {
 
     const raffle = raffles[0];
 
+    // A drawn raffle's winner stays visible for 24 hours after the draw,
+    // then the section reverts to "No raffle to enter yet" — same as if
+    // nothing had ever been created — until a new raffle is started.
+    const WINNER_VISIBLE_MS = 24 * 60 * 60 * 1000;
+    if (raffle.status === 'drawn' && raffle.drawn_at) {
+      const drawnAtMs = new Date(raffle.drawn_at).getTime();
+      if (Date.now() - drawnAtMs > WINNER_VISIBLE_MS) {
+        return { statusCode: 200, body: JSON.stringify({ raffle: null }) };
+      }
+    }
+
     let winners = [];
     if (raffle.status === 'drawn') {
       const winnersRes = await fetch(

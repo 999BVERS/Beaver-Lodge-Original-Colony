@@ -110,7 +110,7 @@ exports.handler = async (event) => {
 
     // 3. Get this wallet's currently staked NFTs from Supabase
     const stakedRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/staked_nfts?wallet=eq.${wallet}&active=eq.true&select=mint,staked_at`,
+      `${SUPABASE_URL}/rest/v1/staked_nfts?wallet=eq.${wallet}&active=eq.true&select=mint,staked_at,total_earned`,
       {
         headers: {
           apikey: SUPABASE_SERVICE_KEY,

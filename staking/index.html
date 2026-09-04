@@ -186,6 +186,7 @@
   }
 
   .btn-secondary {
+    display: inline-block;
     background: transparent;
     color: var(--cream);
     font-weight: 700;
@@ -195,7 +196,10 @@
     border: 1px solid #3a352c;
     cursor: pointer;
     font-size: 15px;
+    text-decoration: none;
+    text-align: center;
   }
+  .btn-secondary:hover { border-color: var(--gold-dim); color: var(--gold); }
 
   /* ---------- Stat cards ---------- */
   .stat-grid {
@@ -568,11 +572,14 @@
 <main>
   <div class="eyebrow">Staking</div>
   <h1 class="page-title">Put your beavers<span>to WORK</span></h1>
-  <p class="subtitle">Stake your BLOC NFTs to earn $CHEW. No locking, no risk. Your beaver stays in your wallet the entire time.</p>
+  <p class="subtitle">Stake your Beaver to earn $CHEW. No locking, no risk. Your NFTs stay in your wallet the entire time.</p>
 
   <div class="wallet-bar">
     <button class="btn-primary" id="connectBtn">Connect Wallet</button>
-    <button class="btn-secondary">How it works</button>
+    <!-- EDIT: Once you publish the "how staking works" article on the main
+         site, update this href to match (same pattern as your other
+         articles, e.g. "/how-staking-works/"). -->
+    <a href="/how-staking-works/" class="btn-secondary">How it works</a>
   </div>
 
   <div class="stat-grid">
@@ -581,13 +588,13 @@
       <div class="stat-value" id="pointsBalance">—</div>
     </div>
     <div class="card">
-      <div class="stat-label">NFTs Staked</div>
+      <div class="stat-label">Beaver Staked</div>
       <div class="stat-value" id="stakedCount">—</div>
     </div>
     <div class="card">
-      <div class="stat-label">Collab Bonus(Standard)</div>
+      <div class="stat-label">Collab Bonus (Standard)</div>
       <div class="stat-value" id="collabBonus">—</div>
-      <div class="stat-sub">up to +5% each collab project</div>
+      <div class="stat-sub">up to +5% each project</div>
     </div>
   </div>
 
@@ -1132,13 +1139,21 @@
         return;
       }
 
-      currentClaimCode = data.claimCode;
-      currentRewardName = data.rewardName;
+      // NEW: $CHEW rewards are auto-credited server-side — no claim code to
+      // act on, so just show a toast (same style as the unstake payout
+      // toast) instead of opening the claim-code modal. Every other reward
+      // type is completely unchanged below.
+      if (data.autoCredited) {
+        showToast(`You won +${data.chewAmount} $CHEW! 🌲`);
+      } else {
+        currentClaimCode = data.claimCode;
+        currentRewardName = data.rewardName;
 
-      document.getElementById('modalRewardName').textContent = data.rewardName;
-      document.getElementById('claimCodeText').textContent = data.claimCode;
-      drawWinCard(data.rewardName, data.claimCode);
-      document.getElementById('winModal').classList.add('open');
+        document.getElementById('modalRewardName').textContent = data.rewardName;
+        document.getElementById('claimCodeText').textContent = data.claimCode;
+        drawWinCard(data.rewardName, data.claimCode);
+        document.getElementById('winModal').classList.add('open');
+      }
 
       // Refresh balance/NFT display to reflect the real, just-deducted total.
       await loadWalletData();

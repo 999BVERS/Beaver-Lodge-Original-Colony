@@ -18,6 +18,11 @@
   // (words/phrases a visitor might type) and the exact `answer` to show.
   // Matching is simple keyword overlap, not real language understanding
   // — so list a few natural variations of how someone might phrase it.
+  //
+  // NOTE: if a keyword phrase contains an apostrophe (can't, it's, etc.)
+  // and the list uses single quotes, the apostrophe MUST be escaped with
+  // a backslash (e.g. 'i can\'t stake') or it breaks the whole file —
+  // every entry after the mistake silently stops working too.
   var BLOC_FAQ = [
     {
       id: 'about',
@@ -31,7 +36,7 @@
     },
     {
       id: 'apply-whitelist',
-      keywords: ['how to get whitelist', 'whitelist spot', 'discount', 'secure whitelist', 'i want whitelist',],
+      keywords: ['how to get whitelist', 'whitelist spot', 'discount', 'secure whitelist', 'i want whitelist'],
       answer: "You can currently get whitelisted if you hold one of our partner projects, check them out on our collab project section. If not, we offer spots for those interested to secure a number of beavers. Just dm us on our x account @999BVERS."
     },
     {
@@ -46,7 +51,7 @@
     },
     {
       id: 'how-to-stake',
-      keywords: ['how to stake', 'i can't stake', 'staking site can't read my wallet', 'staking site not working', 'staking site issue', 'staking site bug', 'phantom wallet not working when i stake', 'solflare wallet not working when i stake', 'backpack wallet not working when i stake'],
+      keywords: ['how to stake', 'i can\'t stake', 'staking site can\'t read my wallet', 'staking site not working', 'staking site issue', 'staking site bug', 'phantom wallet not working when i stake', 'solflare wallet not working when i stake', 'backpack wallet not working when i stake'],
       answer: "When using a computer, check if you downloaded a wallet extension that you want to use. If you're using mobile phone, kindly use the built in browser inside your wallet. If problem is still present, please let us know by sending a dm on our official x account @999BVERS. Thank you."
     },
      {

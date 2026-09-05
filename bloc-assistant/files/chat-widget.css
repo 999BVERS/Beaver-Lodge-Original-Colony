@@ -1,0 +1,143 @@
+/* chat-widget.css
+   Styling for the "Ask BLOC" chat widget. Uses the same brand variables
+   defined in index.html's :root (--bg, --gold, --border, etc.), so it
+   must be loaded on a page that already defines those (currently just
+   index.html). To reuse the widget on another page, that page needs the
+   same :root variables, this stylesheet, chat-widget.html (the
+   button/panel markup), and chat-widget.js.
+*/
+
+  #bloc-chat-btn {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 200;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--bg);
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+  }
+  #bloc-chat-btn:hover { transform: scale(1.06); }
+
+  #bloc-chat-panel {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 5.5rem;
+    z-index: 200;
+    width: min(340px, calc(100vw - 2.5rem));
+    height: min(480px, calc(100vh - 8rem));
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  #bloc-chat-panel.open { display: flex; }
+
+  #bloc-chat-header {
+    padding: 0.9rem 1rem;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  #bloc-chat-header span {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+  #bloc-chat-header small {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-2);
+    margin-top: 2px;
+  }
+  #bloc-chat-close {
+    background: none;
+    border: none;
+    color: var(--text-2);
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.25rem;
+  }
+  #bloc-chat-close:hover { color: var(--text); }
+
+  #bloc-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .bloc-msg {
+    max-width: 85%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.87rem;
+    line-height: 1.5;
+    text-align: left;
+    word-break: break-word;
+  }
+  .bloc-msg.bot {
+    align-self: flex-start;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .bloc-msg.user {
+    align-self: flex-end;
+    background: var(--gold-dim);
+    border: 1px solid var(--gold-dim);
+    color: var(--text);
+  }
+
+  #bloc-chat-form {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg3);
+  }
+  #bloc-chat-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.55rem 0.7rem;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+  }
+  #bloc-chat-input:focus { border-color: var(--border-hover); }
+  #bloc-chat-send {
+    background: var(--gold);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  #bloc-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  @media (max-width: 480px) {
+    #bloc-chat-btn { right: 1rem; bottom: 1rem; }
+    #bloc-chat-panel { right: 0.75rem; bottom: 4.75rem; }
+  }

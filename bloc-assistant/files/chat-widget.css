@@ -12,12 +12,12 @@
     right: 1.5rem;
     bottom: 1.5rem;
     z-index: 200;
-    width: 56px;
-    height: 56px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: var(--gold);
+    background: transparent;
     color: var(--bg);
-    border: none;
+    border: 2px solid var(--gold);
     font-size: 1.5rem;
     cursor: pointer;
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
@@ -105,6 +105,7 @@
     border: 1px solid var(--gold-dim);
     color: var(--text);
   }
+  .bloc-msg.typing { color: var(--text-2); font-style: italic; }
 
   #bloc-chat-form {
     display: flex;

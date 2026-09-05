@@ -30,6 +30,11 @@
       answer: "Public Mint is 18 SOL, and Whitelist Mint is 12.50 SOL."
     },
     {
+      id: 'apply-whitelist',
+      keywords: ['how to get whitelist', 'whitelist spot', 'discount', 'secure whitelist', 'i want whitelist',],
+      answer: "You can currently get whitelisted if you hold one of our partner projects, check them out on our collab project section. If not, we offer spots for those interested to secure a number of beavers. Just dm us on our x account @999BVERS."
+    },
+    {
       id: 'supply',
       keywords: ['how many beavers', 'total supply', 'total nfts', 'collection size', 'how many traits', 'unique traits', 'traits'],
       answer: "There are 999 Beaver NFTs total, with 187+ unique hand-drawn traits."
@@ -37,7 +42,17 @@
     {
       id: 'trait-store',
       keywords: ['trait store', 'muddy', 'customize my beaver', 'angel wings', 'lil devil', 'buy a trait', 'extra traits'],
-      answer: "Muddy's Trait Store lets holders buy extra traits — like Angel Wings or Lil Devil — to customize their Beaver."
+      answer: "Muddy's Trait Store lets holders buy extra traits, like Angel Wings or Lil Devil and many more to customize their Beaver."
+    },
+    {
+      id: 'how-to-stake',
+      keywords: ['how to stake', 'i can't stake', 'staking site can't read my wallet', 'staking site not working', 'staking site issue', 'staking site bug', 'phantom wallet not working when i stake', 'solflare wallet not working when i stake', 'backpack wallet not working when i stake'],
+      answer: "When using a computer, check if you downloaded a wallet extension that you want to use. If you're using mobile phone, kindly use the built in browser inside your wallet. If problem is still present, please let us know by sending a dm on our official x account @999BVERS. Thank you."
+    },
+     {
+      id: 'wallet-supported',
+      keywords: ['what wallet can i use', 'wallet should i use', 'wallet to use for staking'],
+      answer: "Currently, the supported wallet for our staking site are the following; phantom, solflare, and backpack. But if you want to request other wallets, we are hear to listen. Just send your suggestion on our x official account @999BVERS."
     },
     {
       id: 'staking-basics',
@@ -47,12 +62,12 @@
     {
       id: 'chew-token',
       keywords: ['chew', '$chew', 'what is chew', 'chew token', 'chew coin'],
-      answer: "$CHEW is BLOC's ecosystem currency — it's not a memecoin and isn't meant to trade as a standalone crypto. It's used inside the BLOC ecosystem, mainly for entering raffles, with more uses planned."
+      answer: "$CHEW is BLOC's ecosystem currency — it's not a memecoin nor a shitcoin and isn't meant to trade as a standalone crypto. It's used inside the BLOC ecosystem, mainly for felling trees and entering raffles, with more uses planned in the future."
     },
     {
       id: 'staking-mechanics',
       keywords: ['points', 'fell a log', 'fell logs', 'soft tree', 'hard tree', 'how many times', 'per day'],
-      answer: "Each staked NFT earns 200 points a day, and you can fell logs (Soft or Hard Tree) up to 4 times a day if you have enough points. Felling a log gives you a chance to win a reward from the BLOC bounty pool."
+      answer: "Each staked NFT earns 200 points a day, and you can fell logs (Soft or Hard Tree) up to 4 times a day if you have enough points. Felling a log gives you a chance to win a reward from the BLOC bounty pool. You can also use it to enter a raffle up to 5 times if there's an open one."
     },
     {
       id: 'staking-fees',
@@ -61,13 +76,13 @@
     },
     {
       id: 'staking-boosts',
-      keywords: ['holder boost', 'boost', 'partnered collection', 'stack boost'],
-      answer: "Holding NFTs from BLOC's partnered collections gives you a boost in staking — 1% per NFT, stacking up to 5% if you hold five from the same collection."
+      keywords: ['holder boost', 'boost', 'collaborated collection', 'stack boost', 'collab collection'],
+      answer: "Holding NFTs from BLOC's collaborated collections gives you a boost in staking — 1% per NFT, stacking up to 5% if you hold five from the same collection. The boost can increase if the collaborating project contributed to the bounty poll."
     },
     {
       id: 'bounty-pool',
       keywords: ['bounty pool', 'bounty', 'where do rewards come from'],
-      answer: "The bounty pool is funded by BLOC and by collaborated projects, who can contribute SOL, tokens, NFTs, or other rewards for holders to win by felling logs."
+      answer: "The bounty pool is mainly funded by BLOC but is open to accept contributions from collaborated projects, it can be SOL, tokens, NFTs, or other rewards for holders to win by felling logs."
     },
     {
       id: 'competition-series',
@@ -75,14 +90,9 @@
       answer: "The BLOC Competition Series is a seasonal creative competition open to holders and non-holders alike — each season focuses on one creative discipline (Season 1 was poster design)."
     },
     {
-      id: 'competition-season1',
-      keywords: ['season 1', 'chapter i', 'chapter ii', 'chapter iii', 'chapter 1', 'chapter 2', 'chapter 3', 'who won', 'champion', 'winner', 'competition winner', 'competition champion', 'finals'],
-      answer: "Season 1 had three chapters — Welcome to BLOC, Advertise BLOC, and Lights. Camera. BLOC. Their champions (Viper, MisterMetaX, and 8) each won 0.2 SOL and a spot in the Season 1 Finals, competing for the grand prize: a custom 1-of-1 BLOC Beaver."
-    },
-    {
       id: 'team',
       keywords: ['team', 'who made bloc', 'founder', 'artist', 'cfo', 'lore author', 'who is behind bloc', 'who runs bloc'],
-      answer: "The founding team: Buzz (Founder), FabQuilp (Artist), Thirty (Creative Spark), DJDave (CFO), and AKCMetaBeast (Lore Author)."
+      answer: "The founding team: Buzz (Founder), FabQuilp (Artist), Thirty (Creative Spark), DJDave (CFO), and AKCMetaBeast (Lore Author). For more information about them, navigate the team section."
     },
     {
       id: 'lore',
@@ -98,11 +108,6 @@
       id: 'partners',
       keywords: ['partners', 'partnership', 'who do you partner with', 'nestgrow', 'the hub', 'brandvault'],
       answer: "Our formal Partners section is still Coming Soon, but BLOC already works with collab projects like Dead Bunnies, Celestial Yokais, Stone Gods, and LeSuit DAO."
-    },
-    {
-      id: 'celestial-yokais',
-      keywords: ['celestial yokais', 'yokai', '$yc', 'yokai coin', 'kitsari'],
-      answer: "Celestial Yokais is one of our collab partners — a community-driven Web3 ecosystem built around eight unique Yokai species (starting with Kitsari), with its own token ($YC), staking, and community events. More at CelestialYokais.xyz."
     },
     {
       id: 'community',
@@ -171,11 +176,11 @@
     var q = normalize(rawText);
 
     if (includesAny(q, FINANCIAL_KEYWORDS)) return FINANCIAL_ANSWER;
-    if (includesAny(q, IDENTITY_KEYWORDS)) return "I'm BLOC's site assistant, not a real person — just here to help you find what you need about the Colony.";
+    if (includesAny(q, IDENTITY_KEYWORDS)) return "I'm BLOC's site assistant, not a real person. Just here to help you find what you need about the Colony.";
     if (includesAny(q, THANKS_KEYWORDS)) return "You're welcome! Let me know if there's anything else you'd like to know about BLOC.";
-    if (includesAny(q, FAREWELL_KEYWORDS)) return "See you around the Colony! 🦫";
+    if (includesAny(q, FAREWELL_KEYWORDS)) return "See you around the Colony!🦫";
     if (includesAny(q, GREETING_KEYWORDS) && rawText.trim().split(/\s+/).length <= 4) {
-      return "Hey! What would you like to know about BLOC — minting, staking, the Competition Series, anything?";
+      return "Hey! What would you like to know about BLOC?";
     }
 
     return findFaqAnswer(q) || FALLBACK_ANSWER;
@@ -202,7 +207,7 @@
     panel.classList.add('open');
     if (!greeted) {
       greeted = true;
-      addMessage('bot', "Hey! I'm the BLOC assistant. Take your time and ask me anything about minting, staking, the Competition Series, or the Colony in general.");
+      addMessage('bot', "Hey! I'm Quil, the BLOC's site assistant. Take your time and ask me anything about Beaver Lodge Original Colony.");
     }
     input.focus();
   }

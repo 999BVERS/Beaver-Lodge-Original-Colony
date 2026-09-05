@@ -1,23 +1,34 @@
 // chat-widget.js
-// Logic + knowledge base for the "Ask BLOC" chat widget. Fully self-contained
-// FAQ bot — no API, no backend. Everything it can answer lives in the
-// BLOC_FAQ array below, sourced from index.html's sections and the
-// published articles. To add or change what it knows, edit BLOC_FAQ (see
-// the comment above it). Needs chat-widget.css (styling) and the markup
-// in chat-widget.html to be present on the page for the buttons/panel to
-// exist before this runs.
+// Logic + knowledge base for the "Ask BLOC" chat widget. HYBRID design:
+// - Clear, confident matches are answered INSTANTLY from the hardcoded
+//   BLOC_FAQ below — free, no network call, can never be "shut down".
+// - Anything unclear, ambiguous, or phrased in a way BLOC_FAQ doesn't
+//   recognize is sent to a small serverless function (netlify/functions/
+//   chatbot.js) which asks a free AI model to answer using ONLY the same
+//   facts, or ask a clarifying question ("do you mean X?") if it's
+//   genuinely unclear what's being asked — real contextual understanding
+//   instead of requiring exact keyword matches.
+// - If that network call ever fails (function not deployed, no API key
+//   set, provider outage), it fails soft: the widget just shows the
+//   honest local fallback message instead of breaking.
+//
+// To add or change what it knows, edit BLOC_FAQ (see the comment above
+// it) AND the matching facts block in netlify/functions/chatbot.js so
+// the two stay consistent — the AI fallback only knows what's in that
+// second copy, not this array.
 
 (function () {
   // ── BLOC_FAQ ──────────────────────────────────────────────────────
-  // Everything the bot knows lives here, hardcoded, in this repo — no
-  // API, no external service, nothing that can be shut down or expire.
-  // Sourced from index.html's own sections plus the published articles
-  // (Competition Series recaps, the staking explainer, Celestial Yokais).
+  // The fast, free, always-available path. Sourced from index.html's own
+  // sections plus the published articles (Competition Series recaps, the
+  // staking explainer, Celestial Yokais).
   //
   // To add a new question: add an entry with a short list of `keywords`
   // (words/phrases a visitor might type) and the exact `answer` to show.
-  // Matching is simple keyword overlap, not real language understanding
-  // — so list a few natural variations of how someone might phrase it.
+  // Matching is keyword overlap — list a few natural variations of how
+  // someone might phrase it. A message that doesn't score confidently
+  // against any entry here falls through to the AI fallback instead of
+  // an immediate "I don't know".
   //
   // NOTE: if a keyword phrase contains an apostrophe (can't, it's, etc.)
   // and the list uses single quotes, the apostrophe MUST be escaped with
@@ -97,7 +108,7 @@
     {
       id: 'team',
       keywords: ['team', 'who made bloc', 'founder', 'artist', 'cfo', 'lore author', 'who is behind bloc', 'who runs bloc'],
-      answer: "The founding team: Buzz (Founder), FabQuilp (Artist), Thirty (Creative Spark), DJDave (CFO), and AKCMetaBeast (Lore Author). For more information about them, navigate the team section."
+      answer: "The founding team: Buzz (Founder), FabQuilp (Artist), Thirty (Creative Spark), DJDave (CFO), and AKCMetaBeast (Lore Author). For more information about them, navigate to the team section."
     },
     {
       id: 'lore',
@@ -127,8 +138,9 @@
   ];
 
   // Money-talk gets its own honest, human answer instead of being treated
-  // like a normal FAQ lookup — the bot should never sound like it's
-  // predicting prices or giving investment advice.
+  // like a normal FAQ lookup or sent to the AI — the bot should never
+  // sound like it's predicting prices or giving investment advice, and
+  // this guard has to hold even if the AI fallback is unreachable.
   var FINANCIAL_KEYWORDS = [
     'financial advice', 'investment advice', 'should i buy', 'should i invest',
     'should i sell', 'worth buying', 'worth investing', 'worth it',
@@ -144,8 +156,15 @@
   var FAREWELL_KEYWORDS = ['bye', 'goodbye', 'see you', 'see ya', 'later'];
   var IDENTITY_KEYWORDS = ['are you human', 'are you a bot', 'are you real', 'are you ai', 'are you a real person'];
 
-  var FALLBACK_ANSWER = "There's no information available on that yet. Feel free to ask about minting, staking, the trait store, the Competition Series, or the team instead.";
+  var FALLBACK_ANSWER = "There's no information available on that yet.";
   var FINANCIAL_ANSWER = "I can't give financial advice or predict where the price or market will go — that depends on way too many factors for anyone to say for sure. What I can tell you is this: BLOC is here to stay, regardless.";
+
+  // A local match only counts as "confident" (skip the AI entirely) when
+  // it's a clear, unambiguous winner — a decent-length phrase match, or
+  // several keyword hits, with no other entry scoring close behind. A
+  // weak/tied/no match falls through to the AI fallback instead of
+  // guessing or giving up immediately.
+  var CONFIDENCE_THRESHOLD = 2;
 
   function normalize(text) {
     return ' ' + text.toLowerCase().replace(/[^\w\s'$]/g, ' ') + ' ';
@@ -158,13 +177,11 @@
     return false;
   }
 
-  // Small scorer: for each entry, sums the word-count of every keyword
-  // phrase found in the message (so a specific 3-word phrase outweighs a
-  // generic single-word one shared by several entries), picks the best
-  // match. Good enough for a fixed FAQ — not meant to understand
-  // free-form language the way a real AI model would.
-  function findFaqAnswer(q) {
-    var best = null, bestScore = 0;
+  // Scores every entry, returns the answer ONLY when the top score clears
+  // CONFIDENCE_THRESHOLD and isn't tied with the runner-up — otherwise
+  // returns null so the caller knows to ask the AI instead of guessing.
+  function findConfidentFaqAnswer(q) {
+    var best = null, bestScore = 0, secondScore = 0;
     for (var i = 0; i < BLOC_FAQ.length; i++) {
       var entry = BLOC_FAQ[i];
       var score = 0;
@@ -172,23 +189,49 @@
         var kw = entry.keywords[j].toLowerCase();
         if (q.indexOf(kw) !== -1) score += kw.trim().split(/\s+/).length;
       }
-      if (score > bestScore) { bestScore = score; best = entry; }
+      if (score > bestScore) { secondScore = bestScore; bestScore = score; best = entry; }
+      else if (score > secondScore) { secondScore = score; }
     }
-    return best ? best.answer : null;
+    if (best && bestScore >= CONFIDENCE_THRESHOLD && bestScore > secondScore) return best.answer;
+    return null;
   }
 
-  function findAnswer(rawText) {
+  // Special cases + the fast local FAQ path. Returns a string when it can
+  // answer with confidence locally, or null when this needs the AI
+  // fallback (unclear phrasing, or a question BLOC_FAQ doesn't cover).
+  function findLocalAnswer(rawText) {
     var q = normalize(rawText);
 
     if (includesAny(q, FINANCIAL_KEYWORDS)) return FINANCIAL_ANSWER;
-    if (includesAny(q, IDENTITY_KEYWORDS)) return "I'm BLOC's site assistant, not a real person. Just here to help you find what you need about the Colony.";
+    if (includesAny(q, IDENTITY_KEYWORDS)) return "I'm Quil, BLOC's site assistant, not a real person. Just here to help you find what you need about the Colony.";
     if (includesAny(q, THANKS_KEYWORDS)) return "You're welcome! Let me know if there's anything else you'd like to know about BLOC.";
     if (includesAny(q, FAREWELL_KEYWORDS)) return "See you around the Colony!🦫";
     if (includesAny(q, GREETING_KEYWORDS) && rawText.trim().split(/\s+/).length <= 4) {
       return "Hey! What would you like to know about BLOC?";
     }
 
-    return findFaqAnswer(q) || FALLBACK_ANSWER;
+    return findConfidentFaqAnswer(q);
+  }
+
+  // ── AI fallback ───────────────────────────────────────────────────
+  // Only called when findLocalAnswer() can't answer confidently. Posts
+  // to the serverless function, which grounds the AI strictly to BLOC's
+  // real facts and tells it to ask a clarifying question when the intent
+  // genuinely isn't clear. If this fails for any reason (function not
+  // deployed, no GROQ_API_KEY set, provider hiccup), it resolves to the
+  // same honest FALLBACK_ANSWER rather than showing an error.
+  function askAi(message, history) {
+    return fetch('/.netlify/functions/chatbot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: message, history: history.slice(-6) }),
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('bad response');
+        return res.json();
+      })
+      .then(function (data) { return (data && data.reply) || FALLBACK_ANSWER; })
+      .catch(function () { return FALLBACK_ANSWER; });
   }
 
   var btn = document.getElementById('bloc-chat-btn');
@@ -197,8 +240,10 @@
   var messagesEl = document.getElementById('bloc-chat-messages');
   var form = document.getElementById('bloc-chat-form');
   var input = document.getElementById('bloc-chat-input');
+  var sendBtn = document.getElementById('bloc-chat-send');
 
   var greeted = false;
+  var history = []; // {role:'user'|'assistant', content:string} — gives the AI fallback conversational context
 
   function addMessage(role, text) {
     var el = document.createElement('div');
@@ -206,6 +251,7 @@
     el.textContent = text;
     messagesEl.appendChild(el);
     messagesEl.scrollTop = messagesEl.scrollHeight;
+    return el;
   }
 
   function openPanel() {
@@ -228,6 +274,30 @@
     if (!text) return;
     input.value = '';
     addMessage('user', text);
-    addMessage('bot', findAnswer(text));
+    history.push({ role: 'user', content: text });
+
+    var localAnswer = findLocalAnswer(text);
+    if (localAnswer !== null) {
+      addMessage('bot', localAnswer);
+      history.push({ role: 'assistant', content: localAnswer });
+      return;
+    }
+
+    // Unclear/uncovered — hand off to the AI fallback with a visible
+    // "thinking" state so it's obvious something is happening.
+    input.disabled = true;
+    sendBtn.disabled = true;
+    var typingEl = addMessage('bot', 'Thinking…');
+    typingEl.classList.add('typing');
+
+    askAi(text, history).then(function (reply) {
+      typingEl.remove();
+      addMessage('bot', reply);
+      history.push({ role: 'assistant', content: reply });
+    }).finally(function () {
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    });
   });
 })();

@@ -6,6 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 <title>Beaver Lodge Original Colony</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- "Ask BLOC" chat widget styling — lives in its own file, see chat-widget.css -->
+<link rel="stylesheet" href="bloc-assistant/files/chat-widget.css">
 <style>
   :root {
     --bg: #0a0a0b;
@@ -2047,5 +2049,38 @@ initCarousel('carousel-articles', 'prev-articles', 'next-articles', 'dots-articl
 initCarousel('carousel-partners', 'prev-partners', 'next-partners', 'dots-partners');
 initCarousel('carousel-collab', 'prev-collab', 'next-collab', 'dots-collab');
 </script>
+
+<!-- ═══════════ BLOC CHAT ASSISTANT ═══════════
+     Now split into its own files: chat-widget.css (styling, linked in
+     <head>), this markup, and chat-widget.js (logic + knowledge base,
+     loaded below). Edit chat-widget.js to change what the bot knows.
+     Safe to delete this block + the <link> in <head> + chat-widget.js
+     script tag below to remove the widget entirely. -->
+<!-- chat-widget.html
+     Button + panel markup for the "Ask BLOC" chat widget. This is the
+     snippet that's included directly in index.html. To add the widget to
+     another page, copy this snippet plus a <link> to chat-widget.css and
+     a <script src="chat-widget.js"> (adjust the paths if the page lives
+     in a subfolder), and make sure that page's :root defines the same
+     brand variables (--bg, --gold, --border, etc.) as index.html. -->
+<<button id="bloc-chat-btn" aria-label="Chat with BLOC"><img src="/bloc-assistant/files/Quil.wepb" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></button>
+
+<div id="bloc-chat-panel">
+  <div id="bloc-chat-header">
+    <div>
+      <span>BLOC Assistant</span>
+      <small>Ask everything about Beaver Lodge Orignal Colony.</small>
+    </div>
+    <button id="bloc-chat-close" aria-label="Close chat">✕</button>
+  </div>
+  <div id="bloc-chat-messages"></div>
+  <form id="bloc-chat-form">
+    <input id="bloc-chat-input" type="text" placeholder="Ask a question…" autocomplete="off" maxlength="200">
+    <button id="bloc-chat-send" type="submit">Send</button>
+  </form>
+</div>
+<script src="bloc-assistant/files/chat-widget.js"></script>
+<!-- ═══════════ /BLOC CHAT ASSISTANT ═══════════ -->
+
 </body>
 </html>

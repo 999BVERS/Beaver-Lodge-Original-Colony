@@ -14,6 +14,9 @@
 [functions."draw-raffle"]
   schedule = "*/5 * * * *"
 
+[functions."notify-raffle-subscribers"]
+  schedule = "*/5 * * * *"
+
   [[headers]]
     for = "/*"
     [headers.values]
